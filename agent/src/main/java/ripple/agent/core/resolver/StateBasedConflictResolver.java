@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ripple.agent.core.hlc.resolver;
+package ripple.agent.core.resolver;
 
-import com.alibaba.nacos.naming.consistency.Datum;
+import ripple.agent.core.hlc.Datum;
 
 /**
  * Public interface for a state based conflict resolver.
@@ -27,7 +27,7 @@ public interface StateBasedConflictResolver {
      * Apply target state on local data replica and resolve conflicts for concurrent updates
      *
      * @param current current value of the datum
-     * @param target target value of the datum
+     * @param target  target value of the datum
      */
     void merge(Datum current, Datum target);
 }

@@ -17,8 +17,6 @@ package ripple.agent.core.hlc;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.nacos.naming.misc.Loggers;
-import com.alibaba.nacos.naming.pojo.Record;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -37,7 +35,7 @@ import java.util.Map;
  * @author nkorange
  * @since 1.0.0
  */
-public class Instances implements java.lang.Record {
+public class Instances implements Record {
 
     private static MessageDigest MESSAGE_DIGEST;
 
@@ -45,7 +43,6 @@ public class Instances implements java.lang.Record {
         try {
             MESSAGE_DIGEST = MessageDigest.getInstance("MD5");
         } catch (NoSuchAlgorithmException e) {
-            Loggers.SRV_LOG.error("error while calculating checksum(md5) for instances", e);
             MESSAGE_DIGEST = null;
         }
     }
@@ -78,14 +75,14 @@ public class Instances implements java.lang.Record {
         Collections.sort(instanceList);
         for (Instance ip : instanceList) {
             String string = ip.getIp() + ":" + ip.getPort() + "_" + ip.getWeight() + "_"
-                + ip.isHealthy() + "_" + ip.isEnabled() + "_" + ip.getClusterName() + "_" + convertMap2String(ip.getMetadata());
+                    + ip.isHealthy() + "_" + ip.isEnabled() + "_" + ip.getClusterName() + "_" + convertMap2String(ip.getMetadata());
             sb.append(string);
             sb.append(",");
         }
 
         if (MESSAGE_DIGEST != null) {
             checksum =
-                new BigInteger(1, MESSAGE_DIGEST.digest((sb.toString()).getBytes(Charset.forName("UTF-8")))).toString(16);
+                    new BigInteger(1, MESSAGE_DIGEST.digest((sb.toString()).getBytes(Charset.forName("UTF-8")))).toString(16);
         } else {
             checksum = RandomStringUtils.randomAscii(32);
         }

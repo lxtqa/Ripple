@@ -1,4 +1,4 @@
-package ripple.agent.core.hlc.resolver;
+package ripple.agent.core.resolver;
 
 import ripple.agent.core.hlc.Datum;
 import ripple.agent.core.hlc.Operation;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ripple.agent.core.hlc.resolver;
+package ripple.agent.core.resolver;
 
 import ripple.agent.core.hlc.*;
 

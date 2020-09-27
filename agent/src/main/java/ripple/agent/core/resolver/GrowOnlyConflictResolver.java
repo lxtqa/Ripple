@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package ripple.agent.core.hlc.resolver;
+package ripple.agent.core.resolver;
 
-import com.alibaba.nacos.naming.consistency.Datum;
-import com.alibaba.nacos.naming.core.Instance;
-import com.alibaba.nacos.naming.core.Instances;
+
+import ripple.agent.core.hlc.Datum;
+import ripple.agent.core.hlc.Instance;
+import ripple.agent.core.hlc.Instances;
 
 import java.util.List;
 
