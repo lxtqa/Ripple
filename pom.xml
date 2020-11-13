@@ -10,6 +10,7 @@
     <version>0.0.1</version>
 
     <modules>
+        <module>core</module>
         <module>engine</module>
         <module>agent</module>
     </modules>
