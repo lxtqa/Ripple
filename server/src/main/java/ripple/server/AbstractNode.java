@@ -4,14 +4,18 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ripple.server.star.SubscribeServlet;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-
 public abstract class AbstractNode {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractNode.class);
+
     private int id;
     private String type;
     private List<NodeMetadata> nodeList;
@@ -133,6 +137,8 @@ public abstract class AbstractNode {
     }
 
     public synchronized void subscribe(String callbackAddress, int callbackPort, String key) {
+        logger.info("[AbstractNode] subscribe() called: Callback Address = "
+                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
         if (this.getSubscription().get(key) == null) {
             this.getSubscription().put(key, new ArrayList<>());
         }
@@ -148,7 +154,22 @@ public abstract class AbstractNode {
         subscribers.add(clientMetadata);
     }
 
-    public synchronized void unsubscribe() {
-        // TODO
+    public synchronized void unsubscribe(String callbackAddress, int callbackPort, String key) {
+        logger.info("[AbstractNode] unsubscribe() called: Callback Address = "
+                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
+        if (this.getSubscription().get(key) == null) {
+            return;
+        }
+        List<ClientMetadata> subscribers = this.getSubscription().get(key);
+        ClientMetadata toRemove = null;
+        for (ClientMetadata metadata : subscribers) {
+            if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
+                toRemove = metadata;
+                break;
+            }
+        }
+        if (toRemove != null) {
+            subscribers.remove(toRemove);
+        }
     }
 }

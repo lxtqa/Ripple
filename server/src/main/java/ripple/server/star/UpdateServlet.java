@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ripple.server.AbstractNode;
 import ripple.server.BaseServlet;
 import ripple.server.NodeMetadata;
+import ripple.server.Endpoint;
 import ripple.server.helper.HttpHelper;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class UpdateServlet extends BaseServlet {
         Map<String, String> headers = new HashMap<>(1);
         headers.put("x-star-message-uuid", messageUuid.toString());
         for (NodeMetadata metadata : this.getNode().getNodeList()) {
-            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + StarEndpoint.SYNC;
+            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.SYNC;
             HttpHelper.get(url, headers);
         }
     }
