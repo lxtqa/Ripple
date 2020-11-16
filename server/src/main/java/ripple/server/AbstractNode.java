@@ -1,4 +1,4 @@
-package ripple.core;
+package ripple.server;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -8,12 +8,15 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 public abstract class AbstractNode {
     private int id;
     private String type;
     private List<NodeMetadata> nodeList;
+    private ConcurrentHashMap<String, String> storage;
+    private ConcurrentHashMap<String, List<ClientMetadata>> subscription;
 
     private String address;
     private int port;
@@ -41,6 +44,22 @@ public abstract class AbstractNode {
 
     public void setNodeList(List<NodeMetadata> nodeList) {
         this.nodeList = nodeList;
+    }
+
+    public ConcurrentHashMap<String, String> getStorage() {
+        return storage;
+    }
+
+    public void setStorage(ConcurrentHashMap<String, String> storage) {
+        this.storage = storage;
+    }
+
+    public ConcurrentHashMap<String, List<ClientMetadata>> getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(ConcurrentHashMap<String, List<ClientMetadata>> subscription) {
+        this.subscription = subscription;
     }
 
     public String getAddress() {
@@ -78,11 +97,12 @@ public abstract class AbstractNode {
         this.setId(id);
         this.setType(type);
         this.setNodeList(new ArrayList<>());
+        this.setStorage(new ConcurrentHashMap<>());
+        this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);
-        this.initialize();
     }
 
-    private void initialize() {
+    public void start() {
         try {
             this.setServer(new Server());
             ServerConnector serverConnector = new ServerConnector(this.getServer());
@@ -112,4 +132,23 @@ public abstract class AbstractNode {
         }
     }
 
+    public synchronized void subscribe(String callbackAddress, int callbackPort, String key) {
+        if (this.getSubscription().get(key) == null) {
+            this.getSubscription().put(key, new ArrayList<>());
+        }
+        List<ClientMetadata> subscribers = this.getSubscription().get(key);
+        for (ClientMetadata metadata : subscribers) {
+            if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
+                return;
+            }
+        }
+        ClientMetadata clientMetadata = new ClientMetadata();
+        clientMetadata.setAddress(callbackAddress);
+        clientMetadata.setPort(callbackPort);
+        subscribers.add(clientMetadata);
+    }
+
+    public synchronized void unsubscribe() {
+        // TODO
+    }
 }

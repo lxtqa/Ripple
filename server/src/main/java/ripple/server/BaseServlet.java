@@ -1,4 +1,4 @@
-package ripple.core;
+package ripple.server;
 
 import javax.servlet.http.HttpServlet;
 

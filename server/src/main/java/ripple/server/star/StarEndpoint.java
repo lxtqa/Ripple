@@ -1,4 +1,4 @@
-package ripple.core.star;
+package ripple.server.star;
 
 public final class StarEndpoint {
     public static final String UPDATE = "/Star/Update";

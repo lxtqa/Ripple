@@ -1,4 +1,4 @@
-package ripple.core.helper;
+package ripple.server.helper;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;

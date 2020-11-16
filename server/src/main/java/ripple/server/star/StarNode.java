@@ -1,9 +1,9 @@
-package ripple.core.star;
+package ripple.server.star;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import ripple.core.AbstractNode;
-import ripple.core.NodeType;
+import ripple.server.AbstractNode;
+import ripple.server.NodeType;
 
 public class StarNode extends AbstractNode {
     public StarNode(int id, int port) {

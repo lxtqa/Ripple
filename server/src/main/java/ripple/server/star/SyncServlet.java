@@ -1,9 +1,9 @@
-package ripple.core.star;
+package ripple.server.star;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.core.AbstractNode;
-import ripple.core.BaseServlet;
+import ripple.server.AbstractNode;
+import ripple.server.BaseServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

@@ -1,4 +1,4 @@
-package ripple.core;
+package ripple.server;
 
 public class NodeMetadata {
     private int id;
