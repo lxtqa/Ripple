@@ -6,8 +6,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.Item;
-import ripple.server.star.SubscribeServlet;
+import ripple.server.entity.Item;
 
 import java.net.InetAddress;
 import java.util.ArrayList;

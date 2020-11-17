@@ -1,4 +1,4 @@
-package ripple.server.star;
+package ripple.server.protocol.star;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.AbstractNode;
 import ripple.server.BaseServlet;
-import ripple.server.core.Item;
+import ripple.server.entity.Item;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

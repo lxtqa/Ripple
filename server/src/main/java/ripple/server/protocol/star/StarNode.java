@@ -1,4 +1,4 @@
-package ripple.server.star;
+package ripple.server.protocol.star;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;

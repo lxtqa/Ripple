@@ -1,4 +1,4 @@
-package ripple.server.star;
+package ripple.server.protocol.star;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;

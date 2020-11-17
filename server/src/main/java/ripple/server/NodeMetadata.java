@@ -1,6 +1,6 @@
 package ripple.server;
 
-public class NodeMetadata {
+public final class NodeMetadata {
     private int id;
     private String address;
     private int port;
@@ -9,7 +9,7 @@ public class NodeMetadata {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -17,7 +17,7 @@ public class NodeMetadata {
         return address;
     }
 
-    public void setAddress(String address) {
+    private void setAddress(String address) {
         this.address = address;
     }
 
@@ -25,7 +25,13 @@ public class NodeMetadata {
         return port;
     }
 
-    public void setPort(int port) {
+    private void setPort(int port) {
         this.port = port;
+    }
+
+    public NodeMetadata(int id, String address, int port) {
+        this.setId(id);
+        this.setAddress(address);
+        this.setPort(port);
     }
 }

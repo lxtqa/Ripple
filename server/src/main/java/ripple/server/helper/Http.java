@@ -14,7 +14,7 @@ import org.apache.http.util.EntityUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-public final class HttpHelper {
+public final class Http {
     public static String get(String url, Map<String, String> headers) {
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();
