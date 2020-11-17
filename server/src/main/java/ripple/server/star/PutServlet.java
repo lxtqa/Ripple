@@ -33,13 +33,11 @@ public class PutServlet extends BaseServlet {
 
         // Update local storage
         Item item = null;
-        if (this.getNode().getStorage().containsKey(key)) {
-            item = this.getNode().getStorage().get(key);
-        } else {
+        if (!this.getNode().getStorage().containsKey(key)) {
             item = new Item();
             this.getNode().getStorage().put(key, item);
         }
-        synchronized (item) {
+        synchronized (item = this.getNode().getStorage().get(key)) {
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(new Date(System.currentTimeMillis()));
@@ -50,6 +48,7 @@ public class PutServlet extends BaseServlet {
         if (this.getNode().getSubscription().containsKey(key)) {
             List<ClientMetadata> clients = this.getNode().getSubscription().get(key);
             for (ClientMetadata metadata : clients) {
+                LOGGER.info("[PutServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
                 Api.notifyClient(metadata, item);
             }
         }
@@ -61,6 +60,7 @@ public class PutServlet extends BaseServlet {
                     && metadata.getPort() == this.getNode().getPort()) {
                 continue;
             }
+            LOGGER.info("[PutServlet] Sync to server " + metadata.getAddress() + ":" + metadata.getPort() + ".");
             Api.syncToServer(metadata, item);
         }
 
