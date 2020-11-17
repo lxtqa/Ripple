@@ -6,6 +6,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.server.core.Item;
 import ripple.server.star.SubscribeServlet;
 
 import java.net.InetAddress;
@@ -19,7 +20,7 @@ public abstract class AbstractNode {
     private int id;
     private String type;
     private List<NodeMetadata> nodeList;
-    private ConcurrentHashMap<String, String> storage;
+    private ConcurrentHashMap<String, Item> storage;
     private ConcurrentHashMap<String, List<ClientMetadata>> subscription;
 
     private String address;
@@ -50,11 +51,11 @@ public abstract class AbstractNode {
         this.nodeList = nodeList;
     }
 
-    public ConcurrentHashMap<String, String> getStorage() {
+    public ConcurrentHashMap<String, Item> getStorage() {
         return storage;
     }
 
-    public void setStorage(ConcurrentHashMap<String, String> storage) {
+    public void setStorage(ConcurrentHashMap<String, Item> storage) {
         this.storage = storage;
     }
 

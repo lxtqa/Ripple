@@ -21,5 +21,9 @@ public class StarNode extends AbstractNode {
         servletContextHandler.addServlet(new ServletHolder(subscribeServlet), Endpoint.SUBSCRIBE);
         UnsubscribeServlet unsubscribeServlet = new UnsubscribeServlet(this);
         servletContextHandler.addServlet(new ServletHolder(unsubscribeServlet), Endpoint.UNSUBSCRIBE);
+        GetServlet getServlet = new GetServlet(this);
+        servletContextHandler.addServlet(new ServletHolder(getServlet), Endpoint.GET);
+        PutServlet putServlet = new PutServlet(this);
+        servletContextHandler.addServlet(new ServletHolder(putServlet), Endpoint.PUT);
     }
 }

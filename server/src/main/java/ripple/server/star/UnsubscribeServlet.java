@@ -22,19 +22,15 @@ public class UnsubscribeServlet extends BaseServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
-        try {
-            String callbackAddress = request.getHeader("x-ripple-callback-address");
-            int callbackPort = Integer.parseInt(request.getHeader("x-ripple-callback-port"));
-            String key = request.getHeader("x-ripple-key");
-            LOGGER.info("[UnsubscribeServlet] Receive request: Callback Address = "
-                    + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
-            this.getNode().unsubscribe(callbackAddress, callbackPort, key);
-            response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpStatus.OK_200);
-            response.getWriter().println(MAPPER.writeValueAsString(true));
-        } catch (IOException exception) {
-            exception.printStackTrace();
-        }
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String callbackAddress = request.getHeader("x-ripple-callback-address");
+        int callbackPort = Integer.parseInt(request.getHeader("x-ripple-callback-port"));
+        String key = request.getHeader("x-ripple-key");
+        LOGGER.info("[UnsubscribeServlet] Receive request: Callback Address = "
+                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
+        this.getNode().unsubscribe(callbackAddress, callbackPort, key);
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpStatus.OK_200);
+        response.getWriter().println(MAPPER.writeValueAsString(true));
     }
 }
