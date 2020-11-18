@@ -24,18 +24,32 @@ public class Main {
 
         RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort());
         clientOne.startCallback();
-        clientOne.put("test", "test");
+        clientOne.subscribe("test");
         RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort());
         clientTwo.startCallback();
+        clientTwo.subscribe("test");
+
+        clientOne.put("test", "test");
+        System.out.println("Setting test = test by Client 1.");
         Item item = clientTwo.get("test");
-        System.out.println(item.getKey() + " = " + item.getValue());
+        System.out.println("[Client 2] " + item.getKey() + " = " + item.getValue());
 
         clientTwo.put("test", "newTest");
+        System.out.println("Setting test = newTest by Client 2.");
         item = clientOne.get("test");
-        System.out.println(item.getKey() + " = " + item.getValue());
+        System.out.println("[Client 1] " + item.getKey() + " = " + item.getValue());
+
+        clientTwo.put("test", "newTest1");
+        System.out.println("Setting test = newTest1 by Client 1.");
+        item = clientOne.get("test");
+        System.out.println("[Client 1] " + item.getKey() + " = " + item.getValue());
+        item = clientTwo.get("test");
+        System.out.println("[Client 2] " + item.getKey() + " = " + item.getValue());
 
         nodeOne.stop();
         nodeTwo.stop();
+        clientOne.unsubscribe("test");
+        clientTwo.unsubscribe("test");
         clientOne.stopCallback();
         clientTwo.stopCallback();
     }

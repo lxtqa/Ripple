@@ -74,4 +74,20 @@ public class RippleClient {
     public boolean stopCallback() {
         return this.getCallbackServer().stop();
     }
+
+    public boolean subscribe(String key) {
+        if (!this.getCallbackServer().isRunning()) {
+            this.startCallback();
+        }
+        return Api.subscribe(this.getServerAddress(), this.getServerPort()
+                , this.getCallbackServer().getAddress(), this.getCallbackServer().getPort(), key);
+    }
+
+    public boolean unsubscribe(String key) {
+        if (!this.getCallbackServer().isRunning()) {
+            this.startCallback();
+        }
+        return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
+                , this.getCallbackServer().getAddress(), this.getCallbackServer().getPort(), key);
+    }
 }
