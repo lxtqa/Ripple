@@ -23,8 +23,10 @@ public class Main {
         nodeTwo.setNodeList(nodeList);
 
         RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort());
+        clientOne.startCallback();
         clientOne.put("test", "test");
         RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort());
+        clientTwo.startCallback();
         Item item = clientTwo.get("test");
         System.out.println(item.getKey() + " = " + item.getValue());
 
@@ -34,5 +36,7 @@ public class Main {
 
         nodeOne.stop();
         nodeTwo.stop();
+        clientOne.stopCallback();
+        clientTwo.stopCallback();
     }
 }

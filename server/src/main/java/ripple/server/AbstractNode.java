@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class AbstractNode {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractNode.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractNode.class);
 
     private int id;
     private String type;
@@ -25,6 +25,7 @@ public abstract class AbstractNode {
     private String address;
     private int port;
     private Server server;
+    private boolean running;
 
     public int getId() {
         return id;
@@ -90,6 +91,14 @@ public abstract class AbstractNode {
         this.server = server;
     }
 
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
     public abstract void registerHandlers(ServletContextHandler servletContextHandler);
 
 
@@ -106,7 +115,10 @@ public abstract class AbstractNode {
         this.setPort(port);
     }
 
-    public void start() {
+    public synchronized boolean start() {
+        if (this.isRunning()) {
+            return true;
+        }
         try {
             this.setServer(new Server());
             ServerConnector serverConnector = new ServerConnector(this.getServer());
@@ -121,14 +133,21 @@ public abstract class AbstractNode {
             this.getServer().start();
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setPort(serverConnector.getLocalPort());
+            this.setRunning(true);
+            return true;
         } catch (Exception exception) {
             exception.printStackTrace();
+            return false;
         }
     }
 
-    public boolean stop() {
+    public synchronized boolean stop() {
+        if (!this.isRunning()) {
+            return true;
+        }
         try {
             this.getServer().stop();
+            this.setRunning(false);
             return true;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -137,7 +156,7 @@ public abstract class AbstractNode {
     }
 
     public synchronized void subscribe(String callbackAddress, int callbackPort, String key) {
-        logger.info("[AbstractNode] subscribe() called: Callback Address = "
+        LOGGER.info("[AbstractNode] subscribe() called: Callback Address = "
                 + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
         if (this.getSubscription().get(key) == null) {
             this.getSubscription().put(key, new ArrayList<>());
@@ -155,7 +174,7 @@ public abstract class AbstractNode {
     }
 
     public synchronized void unsubscribe(String callbackAddress, int callbackPort, String key) {
-        logger.info("[AbstractNode] unsubscribe() called: Callback Address = "
+        LOGGER.info("[AbstractNode] unsubscribe() called: Callback Address = "
                 + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
         if (this.getSubscription().get(key) == null) {
             return;
