@@ -3,6 +3,8 @@ package ripple.test;
 import ripple.client.RippleClient;
 import ripple.client.entity.Item;
 import ripple.server.NodeMetadata;
+import ripple.server.NodeType;
+import ripple.server.RippleServer;
 import ripple.server.protocol.star.StarNode;
 
 import java.util.ArrayList;
@@ -10,8 +12,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        StarNode nodeOne = new StarNode(1);
-        StarNode nodeTwo = new StarNode(2);
+        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1);
+        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2);
         nodeOne.start();
         System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
         nodeTwo.start();
@@ -23,10 +25,10 @@ public class Main {
         nodeTwo.setNodeList(nodeList);
 
         RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort());
-        clientOne.startCallback();
+        clientOne.start();
         clientOne.subscribe("test");
         RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort());
-        clientTwo.startCallback();
+        clientTwo.start();
         clientTwo.subscribe("test");
 
         clientOne.put("test", "test");
@@ -46,11 +48,11 @@ public class Main {
         item = clientTwo.get("test");
         System.out.println("[Client 2] " + item.getKey() + " = " + item.getValue());
 
-        nodeOne.stop();
-        nodeTwo.stop();
         clientOne.unsubscribe("test");
         clientTwo.unsubscribe("test");
-        clientOne.stopCallback();
-        clientTwo.stopCallback();
+        clientOne.stop();
+        clientTwo.stop();
+        nodeOne.stop();
+        nodeTwo.stop();
     }
 }
