@@ -1,6 +1,7 @@
 package ripple.server.protocol.star;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.AbstractNode;
@@ -8,9 +9,6 @@ import ripple.server.BaseServlet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.eclipse.jetty.http.HttpStatus;
-
 import java.io.IOException;
 
 public class UnsubscribeServlet extends BaseServlet {

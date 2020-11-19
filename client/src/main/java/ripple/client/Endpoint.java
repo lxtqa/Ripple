@@ -2,12 +2,11 @@ package ripple.client;
 
 public final class Endpoint {
     // Server
-    public static final String SUBSCRIBE = "/Subscribe";
-    public static final String UNSUBSCRIBE = "/Unsubscribe";
-    public static final String PUT = "/Put";
-    public static final String GET = "/Get";
-    public static final String SYNC = "/Sync";
+    public static final String SUBSCRIBE = "/Api/Subscribe";
+    public static final String UNSUBSCRIBE = "/Api/Unsubscribe";
+    public static final String PUT = "/Api/Put";
+    public static final String GET = "/Api/Get";
 
     // Client
-    public static final String NOTIFY = "/Notify";
+    public static final String NOTIFY = "/Api/Notify";
 }

@@ -1,6 +1,7 @@
 package ripple.server.protocol.star;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.AbstractNode;
@@ -9,8 +10,6 @@ import ripple.server.BaseServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-
-import org.eclipse.jetty.http.HttpStatus;
 
 public class SubscribeServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscribeServlet.class);

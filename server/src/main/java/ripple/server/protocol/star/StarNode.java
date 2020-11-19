@@ -3,8 +3,8 @@ package ripple.server.protocol.star;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.server.AbstractNode;
-import ripple.server.NodeType;
 import ripple.server.Endpoint;
+import ripple.server.NodeType;
 
 public class StarNode extends AbstractNode {
     public StarNode(int id, int port) {

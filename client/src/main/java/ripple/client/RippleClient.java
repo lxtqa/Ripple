@@ -1,16 +1,57 @@
 package ripple.client;
 
-import ripple.client.callback.CallbackServer;
+import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+import ripple.client.callback.NotifyServlet;
 import ripple.client.entity.Item;
 import ripple.client.helper.Api;
 
+import java.net.InetAddress;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class RippleClient {
     private String serverAddress;
     private int serverPort;
     private ConcurrentHashMap<String, Item> storage;
-    private CallbackServer callbackServer;
+    private String address;
+    private int port;
+    private Server server;
+    private boolean running;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public Server getServer() {
+        return server;
+    }
+
+    public void setServer(Server server) {
+        this.server = server;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
 
     public String getServerAddress() {
         return serverAddress;
@@ -36,19 +77,11 @@ public class RippleClient {
         this.storage = storage;
     }
 
-    public CallbackServer getCallbackServer() {
-        return callbackServer;
-    }
-
-    public void setCallbackServer(CallbackServer callbackServer) {
-        this.callbackServer = callbackServer;
-    }
-
     public RippleClient(String serverAddress, int serverPort) {
         this.setServerAddress(serverAddress);
         this.setServerPort(serverPort);
         this.setStorage(new ConcurrentHashMap<>());
-        this.setCallbackServer(new CallbackServer(this));
+        this.setRunning(false);
     }
 
     public Item get(String key) {
@@ -67,27 +100,65 @@ public class RippleClient {
         return result;
     }
 
-    public boolean startCallback() {
-        return this.getCallbackServer().start();
-    }
-
-    public boolean stopCallback() {
-        return this.getCallbackServer().stop();
-    }
-
     public boolean subscribe(String key) {
-        if (!this.getCallbackServer().isRunning()) {
-            this.startCallback();
+        if (!this.isRunning()) {
+            this.start();
         }
         return Api.subscribe(this.getServerAddress(), this.getServerPort()
-                , this.getCallbackServer().getAddress(), this.getCallbackServer().getPort(), key);
+                , this.getAddress(), this.getPort(), key);
     }
 
     public boolean unsubscribe(String key) {
-        if (!this.getCallbackServer().isRunning()) {
-            this.startCallback();
+        if (!this.isRunning()) {
+            this.start();
         }
         return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
-                , this.getCallbackServer().getAddress(), this.getCallbackServer().getPort(), key);
+                , this.getAddress(), this.getPort(), key);
+    }
+
+    public void registerHandlers(ServletContextHandler servletContextHandler) {
+        NotifyServlet notifyServlet = new NotifyServlet(this);
+        servletContextHandler.addServlet(new ServletHolder(notifyServlet), Endpoint.NOTIFY);
+    }
+
+
+    public synchronized boolean start() {
+        if (this.isRunning()) {
+            return true;
+        }
+        try {
+            this.setServer(new Server());
+            ServerConnector serverConnector = new ServerConnector(this.getServer());
+            serverConnector.setPort(0);
+            this.getServer().setConnectors(new Connector[]{serverConnector});
+
+            ServletContextHandler servletContextHandler = new ServletContextHandler();
+
+            this.registerHandlers(servletContextHandler);
+
+            this.getServer().setHandler(servletContextHandler);
+            this.getServer().start();
+            this.setAddress(InetAddress.getLocalHost().getHostAddress());
+            this.setPort(serverConnector.getLocalPort());
+            this.setRunning(true);
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
+    public synchronized boolean stop() {
+        if (!this.isRunning()) {
+            return true;
+        }
+        try {
+            this.getServer().stop();
+            this.setRunning(false);
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
     }
 }
