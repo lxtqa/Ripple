@@ -118,7 +118,7 @@ public class RippleClient {
 
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         NotifyServlet notifyServlet = new NotifyServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(notifyServlet), Endpoint.NOTIFY);
+        servletContextHandler.addServlet(new ServletHolder(notifyServlet), Endpoint.CLIENT_NOTIFY);
     }
 
 

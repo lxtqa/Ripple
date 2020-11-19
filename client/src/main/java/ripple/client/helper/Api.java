@@ -14,7 +14,7 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(1);
             headers.put("x-ripple-key", key);
-            String url = "http://" + address + ":" + port + Endpoint.GET;
+            String url = "http://" + address + ":" + port + Endpoint.SERVER_GET;
             String returnValue = Http.get(url, headers);
             return MAPPER.readValue(returnValue, Item.class);
         } catch (Exception exception) {
@@ -28,7 +28,7 @@ public final class Api {
             Map<String, String> headers = new HashMap<>(2);
             headers.put("x-ripple-key", key);
             headers.put("x-ripple-value", value);
-            String url = "http://" + address + ":" + port + Endpoint.PUT;
+            String url = "http://" + address + ":" + port + Endpoint.SERVER_PUT;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
@@ -44,7 +44,7 @@ public final class Api {
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);
-            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.SUBSCRIBE;
+            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.SERVER_SUBSCRIBE;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
@@ -60,7 +60,7 @@ public final class Api {
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);
-            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.UNSUBSCRIBE;
+            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.SERVER_UNSUBSCRIBE;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
