@@ -5,7 +5,6 @@ import ripple.client.entity.Item;
 import ripple.server.NodeMetadata;
 import ripple.server.NodeType;
 import ripple.server.RippleServer;
-import ripple.server.protocol.star.StarNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +51,7 @@ public class Main {
         clientTwo.unsubscribe("test");
         clientOne.stop();
         clientTwo.stop();
-        nodeOne.stop();
-        nodeTwo.stop();
+        // nodeOne.stop();
+        // nodeTwo.stop();
     }
 }

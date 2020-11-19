@@ -1,4 +1,4 @@
-package ripple.server.protocol.star;
+package ripple.server.core.star;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;

@@ -1,6 +1,6 @@
 package ripple.server;
 
-import ripple.server.protocol.star.StarNode;
+import ripple.server.core.star.StarNode;
 
 import java.util.List;
 
