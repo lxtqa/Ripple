@@ -1,4 +1,4 @@
-package ripple.client.entity;
+package ripple.client.core;
 
 import java.util.Date;
 

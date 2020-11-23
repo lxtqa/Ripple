@@ -3,8 +3,8 @@ package ripple.server.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.server.core.ClientMetadata;
 import ripple.server.core.Endpoint;
-import ripple.server.core.NodeMetadata;
 import ripple.server.core.Item;
+import ripple.server.core.NodeMetadata;
 
 import java.util.HashMap;
 import java.util.Map;

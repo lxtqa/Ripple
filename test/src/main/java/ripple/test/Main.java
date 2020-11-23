@@ -1,10 +1,10 @@
 package ripple.test;
 
 import ripple.client.RippleClient;
-import ripple.client.entity.Item;
+import ripple.client.core.Item;
+import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 import ripple.server.core.NodeType;
-import ripple.server.RippleServer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,10 +23,10 @@ public class Main {
         nodeOne.setNodeList(nodeList);
         nodeTwo.setNodeList(nodeList);
 
-        RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort());
+        RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort(), "D:\\client-1.txt");
         clientOne.start();
         clientOne.subscribe("test");
-        RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort());
+        RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort(), "D:\\client-2.txt");
         clientTwo.start();
         clientTwo.subscribe("test");
 

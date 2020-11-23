@@ -1,8 +1,8 @@
 package ripple.client.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ripple.client.Endpoint;
-import ripple.client.entity.Item;
+import ripple.client.core.Endpoint;
+import ripple.client.core.Item;
 
 import java.util.HashMap;
 import java.util.Map;

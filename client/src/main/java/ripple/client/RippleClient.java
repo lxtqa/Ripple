@@ -5,17 +5,18 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import ripple.client.callback.NotifyServlet;
-import ripple.client.entity.Item;
+import ripple.client.core.Endpoint;
+import ripple.client.core.Item;
+import ripple.client.core.callback.NotifyServlet;
 import ripple.client.helper.Api;
+import ripple.client.helper.Storage;
 
 import java.net.InetAddress;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class RippleClient {
     private String serverAddress;
     private int serverPort;
-    private ConcurrentHashMap<String, Item> storage;
+    private Storage storage;
     private String address;
     private int port;
     private Server server;
@@ -69,35 +70,38 @@ public class RippleClient {
         this.serverPort = serverPort;
     }
 
-    public ConcurrentHashMap<String, Item> getStorage() {
+    public Storage getStorage() {
         return storage;
     }
 
-    public void setStorage(ConcurrentHashMap<String, Item> storage) {
+    public void setStorage(Storage storage) {
         this.storage = storage;
     }
 
-    public RippleClient(String serverAddress, int serverPort) {
+    public RippleClient(String serverAddress, int serverPort, String storageLocation) {
         this.setServerAddress(serverAddress);
         this.setServerPort(serverPort);
-        this.setStorage(new ConcurrentHashMap<>());
+        this.setStorage(new Storage(storageLocation));
         this.setRunning(false);
     }
 
     public Item get(String key) {
-        if (this.getStorage().containsKey(key)) {
-            return this.getStorage().get(key);
-        } else {
-            Item item = Api.get(this.getServerAddress(), this.getServerPort(), key);
-            this.getStorage().put(key, item);
-            return item;
-        }
+        return this.loadItem(key);
     }
 
     public boolean put(String key, String value) {
         boolean result = Api.put(this.getServerAddress(), this.getServerPort(), key, value);
-        this.get(key);
+        this.loadItem(key);
         return result;
+    }
+
+    private Item loadItem(String key) {
+        Item item = this.getStorage().get(key);
+        if (item == null) {
+            item = Api.get(this.getServerAddress(), this.getServerPort(), key);
+            this.getStorage().put(item);
+        }
+        return item;
     }
 
     public boolean subscribe(String key) {
@@ -120,7 +124,6 @@ public class RippleClient {
         NotifyServlet notifyServlet = new NotifyServlet(this);
         servletContextHandler.addServlet(new ServletHolder(notifyServlet), Endpoint.CLIENT_NOTIFY);
     }
-
 
     public synchronized boolean start() {
         if (this.isRunning()) {

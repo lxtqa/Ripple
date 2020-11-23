@@ -1,11 +1,11 @@
-package ripple.client.callback;
+package ripple.client.core.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
-import ripple.client.entity.Item;
+import ripple.client.core.Item;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -43,17 +43,17 @@ public class NotifyServlet extends HttpServlet {
                 + ", Last Update Server Id = " + lastUpdateServerId);
 
         // Update local storage
-        Item item = null;
-        if (!this.getRippleClient().getStorage().containsKey(key)) {
+        Item item = this.getRippleClient().getStorage().get(key);
+        if (item == null) {
             item = new Item();
-            this.getRippleClient().getStorage().put(key, item);
         }
-        synchronized (item = this.getRippleClient().getStorage().get(key)) {
+        synchronized (this) {
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(lastUpdate);
             item.setLastUpdateServerId(lastUpdateServerId);
         }
+        this.getRippleClient().getStorage().put(item);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

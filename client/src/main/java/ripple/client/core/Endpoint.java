@@ -1,4 +1,4 @@
-package ripple.client;
+package ripple.client.core;
 
 public final class Endpoint {
     // Server
