@@ -15,15 +15,15 @@ public class RippleServer {
         this.node = node;
     }
 
-    public RippleServer(String type, int id) {
+    public RippleServer(String type, int id, String storageLocation) {
         if (type.equals(NodeType.STAR)) {
-            this.setNode(new StarNode(id));
+            this.setNode(new StarNode(id, storageLocation));
         }
     }
 
-    public RippleServer(String type, int id, int port) {
+    public RippleServer(String type, int id, String storageLocation, int port) {
         if (type.equals(NodeType.STAR)) {
-            this.setNode(new StarNode(id, port));
+            this.setNode(new StarNode(id, storageLocation, port));
         }
     }
 

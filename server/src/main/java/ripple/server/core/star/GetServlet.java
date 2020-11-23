@@ -24,11 +24,13 @@ public class GetServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String key = request.getHeader("x-ripple-key");
         LOGGER.info("[GetServlet] Receive request: Key = " + key + ".");
-        if (this.getNode().getStorage().containsKey(key)) {
-            Item item = this.getNode().getStorage().get(key);
+        Item item = this.getNode().getStorage().get(key);
+        if (item != null) {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpStatus.OK_200);
             response.getWriter().println(MAPPER.writeValueAsString(item));
+        } else {
+            response.sendError(HttpStatus.NOT_FOUND_404);
         }
     }
 }

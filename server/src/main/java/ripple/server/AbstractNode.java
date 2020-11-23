@@ -7,6 +7,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.entity.Item;
+import ripple.server.helper.Storage;
 
 import java.net.InetAddress;
 import java.util.ArrayList;
@@ -18,8 +19,8 @@ public abstract class AbstractNode {
 
     private int id;
     private String type;
+    private Storage storage;
     private List<NodeMetadata> nodeList;
-    private ConcurrentHashMap<String, Item> storage;
     private ConcurrentHashMap<String, List<ClientMetadata>> subscription;
 
     private String address;
@@ -31,7 +32,7 @@ public abstract class AbstractNode {
         return id;
     }
 
-    public void setId(int id) {
+    private void setId(int id) {
         this.id = id;
     }
 
@@ -39,8 +40,16 @@ public abstract class AbstractNode {
         return type;
     }
 
-    public void setType(String type) {
+    private void setType(String type) {
         this.type = type;
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+    private void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
     public List<NodeMetadata> getNodeList() {
@@ -49,14 +58,6 @@ public abstract class AbstractNode {
 
     public void setNodeList(List<NodeMetadata> nodeList) {
         this.nodeList = nodeList;
-    }
-
-    public ConcurrentHashMap<String, Item> getStorage() {
-        return storage;
-    }
-
-    public void setStorage(ConcurrentHashMap<String, Item> storage) {
-        this.storage = storage;
     }
 
     public ConcurrentHashMap<String, List<ClientMetadata>> getSubscription() {
@@ -102,15 +103,15 @@ public abstract class AbstractNode {
     public abstract void registerHandlers(ServletContextHandler servletContextHandler);
 
 
-    public AbstractNode(int id, String type) {
-        this(id, type, 0);
+    public AbstractNode(int id, String type, String storageLocation) {
+        this(id, type, storageLocation, 0);
     }
 
-    public AbstractNode(int id, String type, int port) {
+    public AbstractNode(int id, String type, String storageLocation, int port) {
         this.setId(id);
         this.setType(type);
         this.setNodeList(new ArrayList<>());
-        this.setStorage(new ConcurrentHashMap<>());
+        this.setStorage(new Storage(storageLocation));
         this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);
     }

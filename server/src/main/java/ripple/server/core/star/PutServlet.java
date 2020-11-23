@@ -32,17 +32,17 @@ public class PutServlet extends BaseServlet {
         LOGGER.info("[PutServlet] Receive request: Key = " + key + ", Value = " + value + ".");
 
         // Update local storage
-        Item item = null;
-        if (!this.getNode().getStorage().containsKey(key)) {
+        Item item = this.getNode().getStorage().get(key);
+        if (item == null) {
             item = new Item();
-            this.getNode().getStorage().put(key, item);
         }
-        synchronized (item = this.getNode().getStorage().get(key)) {
+        synchronized (this) {
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(new Date(System.currentTimeMillis()));
             item.setLastUpdateServerId(this.getNode().getId());
         }
+        this.getNode().getStorage().put(item);
 
         // Notify clients
         if (this.getNode().getSubscription().containsKey(key)) {

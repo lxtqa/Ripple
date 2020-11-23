@@ -37,17 +37,17 @@ public class SyncServlet extends BaseServlet {
                 + ", Last Update Server Id = " + lastUpdateServerId);
 
         // Update local storage
-        Item item = null;
-        if (!this.getNode().getStorage().containsKey(key)) {
+        Item item = this.getNode().getStorage().get(key);
+        if (item == null) {
             item = new Item();
-            this.getNode().getStorage().put(key, item);
         }
-        synchronized (item = this.getNode().getStorage().get(key)) {
+        synchronized (this) {
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(lastUpdate);
             item.setLastUpdateServerId(lastUpdateServerId);
         }
+        this.getNode().getStorage().put(item);
 
         // Notify clients
         if (this.getNode().getSubscription().containsKey(key)) {

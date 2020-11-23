@@ -9,20 +9,20 @@ import ripple.server.core.ui.HomeServlet;
 import ripple.server.core.ui.StyleServlet;
 
 public class StarNode extends AbstractNode {
-    public StarNode(int id, int port) {
-        super(id, NodeType.STAR, port);
+    public StarNode(int id, String storageLocation, int port) {
+        super(id, NodeType.STAR, storageLocation, port);
     }
 
-    public StarNode(int id) {
-        super(id, NodeType.STAR);
+    public StarNode(int id, String storageLocation) {
+        super(id, NodeType.STAR, storageLocation);
     }
 
     @Override
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // UI
-        HomeServlet homeServlet = new HomeServlet();
+        HomeServlet homeServlet = new HomeServlet(this);
         servletContextHandler.addServlet(new ServletHolder(homeServlet), Endpoint.UI_HOME);
-        StyleServlet styleServlet = new StyleServlet();
+        StyleServlet styleServlet = new StyleServlet(this);
         servletContextHandler.addServlet(new ServletHolder(styleServlet), Endpoint.UI_STYLE);
 
 

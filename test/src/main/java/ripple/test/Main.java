@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1);
-        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2);
+        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1,"D:\\1.txt");
+        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2,"D:\\2.txt");
         nodeOne.start();
         System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
         nodeTwo.start();

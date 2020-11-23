@@ -3,14 +3,20 @@ package ripple.server.core.ui;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.server.AbstractNode;
+import ripple.server.BaseServlet;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-public class StyleServlet extends HttpServlet {
+public class StyleServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleServlet.class);
+
+    public StyleServlet(AbstractNode node) {
+        super(node);
+    }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
