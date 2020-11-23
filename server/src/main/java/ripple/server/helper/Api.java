@@ -1,10 +1,10 @@
 package ripple.server.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ripple.server.ClientMetadata;
-import ripple.server.Endpoint;
-import ripple.server.NodeMetadata;
-import ripple.server.entity.Item;
+import ripple.server.core.ClientMetadata;
+import ripple.server.core.Endpoint;
+import ripple.server.core.NodeMetadata;
+import ripple.server.core.Item;
 
 import java.util.HashMap;
 import java.util.Map;

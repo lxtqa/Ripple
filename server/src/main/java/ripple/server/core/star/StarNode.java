@@ -2,9 +2,9 @@ package ripple.server.core.star;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import ripple.server.AbstractNode;
-import ripple.server.Endpoint;
-import ripple.server.NodeType;
+import ripple.server.core.AbstractNode;
+import ripple.server.core.Endpoint;
+import ripple.server.core.NodeType;
 import ripple.server.core.ui.HomeServlet;
 import ripple.server.core.ui.StyleServlet;
 

@@ -1,5 +1,8 @@
 package ripple.server;
 
+import ripple.server.core.AbstractNode;
+import ripple.server.core.NodeMetadata;
+import ripple.server.core.NodeType;
 import ripple.server.core.star.StarNode;
 
 import java.util.List;

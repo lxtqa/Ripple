@@ -2,8 +2,8 @@ package ripple.test;
 
 import ripple.client.RippleClient;
 import ripple.client.entity.Item;
-import ripple.server.NodeMetadata;
-import ripple.server.NodeType;
+import ripple.server.core.NodeMetadata;
+import ripple.server.core.NodeType;
 import ripple.server.RippleServer;
 
 import java.util.ArrayList;
@@ -11,8 +11,8 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1,"D:\\1.txt");
-        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2,"D:\\2.txt");
+        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1, "D:\\server-1.txt");
+        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2, "D:\\server-2.txt");
         nodeOne.start();
         System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
         nodeTwo.start();

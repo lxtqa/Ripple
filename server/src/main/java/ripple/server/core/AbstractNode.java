@@ -1,4 +1,4 @@
-package ripple.server;
+package ripple.server.core;
 
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -6,7 +6,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.entity.Item;
 import ripple.server.helper.Storage;
 
 import java.net.InetAddress;
