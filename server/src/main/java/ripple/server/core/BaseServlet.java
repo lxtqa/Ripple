@@ -2,6 +2,9 @@ package ripple.server.core;
 
 import javax.servlet.http.HttpServlet;
 
+/**
+ * @author Zhen Tang
+ */
 public class BaseServlet extends HttpServlet {
     private AbstractNode node;
 

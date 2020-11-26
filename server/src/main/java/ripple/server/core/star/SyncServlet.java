@@ -17,6 +17,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * @author Zhen Tang
+ */
 public class SyncServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();

@@ -10,6 +10,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author Zhen Tang
+ */
 public class HomeServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(HomeServlet.class);
 

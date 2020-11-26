@@ -3,7 +3,7 @@ package ripple.server.core;
 /**
  * Type of atomic operations
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public enum OperationType {
     /**

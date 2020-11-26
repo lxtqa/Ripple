@@ -6,7 +6,7 @@ import ripple.server.core.Operation;
 /**
  * Public interface for a operation based conflict resolver.
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public interface OperationBasedConflictResolver {
     /**

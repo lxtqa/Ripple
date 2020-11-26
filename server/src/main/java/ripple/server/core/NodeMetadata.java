@@ -1,5 +1,8 @@
 package ripple.server.core;
 
+/**
+ * @author Zhen Tang
+ */
 public final class NodeMetadata {
     private int id;
     private String address;

@@ -1,5 +1,8 @@
 package ripple.server.core;
 
+/**
+ * @author Zhen Tang
+ */
 public class ClientMetadata {
     private String address;
     private int port;

@@ -6,7 +6,7 @@ import ripple.server.core.Item;
  * A simple grow-only conflict resolver.
  * For concurrent updates which can not be ordered, it calculates the union
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public class GrowOnlyConflictResolver implements StateBasedConflictResolver {
     private long maxTimeDifference;

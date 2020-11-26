@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * @author Zhen Tang
+ */
 public abstract class AbstractNode {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractNode.class);
 

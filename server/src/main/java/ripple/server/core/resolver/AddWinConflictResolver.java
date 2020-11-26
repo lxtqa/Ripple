@@ -9,7 +9,7 @@ import ripple.server.core.OperationType;
  * Currently, it solves conflicts by calculating union of two sets, and discards removal operations.
  * Still needs to be improved for a production-ready CRDT (Conflict-free Replicated Data Type).
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public class AddWinConflictResolver implements OperationBasedConflictResolver {
     private long maxTimeDifference;

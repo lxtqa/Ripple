@@ -7,6 +7,9 @@ import ripple.server.core.star.StarNode;
 
 import java.util.List;
 
+/**
+ * @author Zhen Tang
+ */
 public class RippleServer {
     private AbstractNode node;
 

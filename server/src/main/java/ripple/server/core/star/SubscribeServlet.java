@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+/**
+ * @author Zhen Tang
+ */
 public class SubscribeServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SubscribeServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();

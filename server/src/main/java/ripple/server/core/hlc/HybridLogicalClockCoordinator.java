@@ -2,6 +2,9 @@ package ripple.server.core.hlc;
 
 import java.util.UUID;
 
+/**
+ * @author Zhen Tang
+ */
 public class HybridLogicalClockCoordinator {
     private static final long STEPS = 1;
     private HybridLogicalClock current;

@@ -8,6 +8,9 @@ import ripple.server.core.NodeType;
 import ripple.server.core.ui.HomeServlet;
 import ripple.server.core.ui.StyleServlet;
 
+/**
+ * @author Zhen Tang
+ */
 public class StarNode extends AbstractNode {
     public StarNode(int id, String storageLocation, int port) {
         super(id, NodeType.STAR, storageLocation, port);

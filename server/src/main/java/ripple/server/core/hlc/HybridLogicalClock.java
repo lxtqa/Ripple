@@ -1,5 +1,8 @@
 package ripple.server.core.hlc;
 
+/**
+ * @author Zhen Tang
+ */
 public class HybridLogicalClock {
     private String processName;
     private long wallTime;

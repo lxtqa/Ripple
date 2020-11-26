@@ -5,7 +5,7 @@ import ripple.server.core.Item;
 /**
  * Public interface for a state based conflict resolver.
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public interface StateBasedConflictResolver {
     /**

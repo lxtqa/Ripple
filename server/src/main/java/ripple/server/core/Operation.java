@@ -2,12 +2,11 @@ package ripple.server.core;
 
 import java.util.Date;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Atomic operation on the key-value store
  *
- * @author lostcharlie
+ * @author Zhen Tang
  */
 public class Operation {
     private UUID uuid;

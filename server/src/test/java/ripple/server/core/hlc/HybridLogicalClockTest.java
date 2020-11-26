@@ -3,6 +3,9 @@ package ripple.server.core.hlc;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * @author Zhen Tang
+ */
 public class HybridLogicalClockTest {
     @Test
     public void testGenerateForSending() throws Exception {

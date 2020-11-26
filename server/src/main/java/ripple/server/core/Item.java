@@ -2,6 +2,9 @@ package ripple.server.core;
 
 import java.util.Date;
 
+/**
+ * @author Zhen Tang
+ */
 public class Item {
     private String key;
     private String value;
