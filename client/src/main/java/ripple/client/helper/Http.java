@@ -14,6 +14,9 @@ import org.apache.http.util.EntityUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * @author Zhen Tang
+ */
 public final class Http {
     public static String get(String url, Map<String, String> headers) {
         try {

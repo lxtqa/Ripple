@@ -1,5 +1,8 @@
 package ripple.client.core;
 
+/**
+ * @author Zhen Tang
+ */
 public final class Endpoint {
     // Server
     public static final String SERVER_SUBSCRIBE = "/Api/Subscribe";

@@ -13,6 +13,9 @@ import ripple.client.helper.Storage;
 
 import java.net.InetAddress;
 
+/**
+ * @author Zhen Tang
+ */
 public class RippleClient {
     private String serverAddress;
     private int serverPort;

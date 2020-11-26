@@ -7,6 +7,9 @@ import ripple.client.core.Item;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Zhen Tang
+ */
 public final class Api {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 

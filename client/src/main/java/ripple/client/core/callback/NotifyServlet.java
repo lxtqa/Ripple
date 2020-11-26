@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * @author Zhen Tang
+ */
 public class NotifyServlet extends HttpServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
