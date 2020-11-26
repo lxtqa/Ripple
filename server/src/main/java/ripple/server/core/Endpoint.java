@@ -11,8 +11,9 @@ public final class Endpoint {
     // Server
     public static final String SERVER_SUBSCRIBE = "/Api/Subscribe";
     public static final String SERVER_UNSUBSCRIBE = "/Api/Unsubscribe";
-    public static final String SERVER_PUT = "/Api/Put";
     public static final String SERVER_GET = "/Api/Get";
+    public static final String SERVER_PUT = "/Api/Put";
+    public static final String SERVER_DELETE = "/Api/Delete";
     public static final String SERVER_SYNC = "/Api/Sync";
 
     // Client

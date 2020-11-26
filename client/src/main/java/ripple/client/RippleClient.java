@@ -102,12 +102,6 @@ public class RippleClient {
         return this.loadItem(applicationName, key);
     }
 
-    public boolean put(String applicationName, String key, String value) {
-        boolean result = Api.put(this.getServerAddress(), this.getServerPort(), applicationName, key, value);
-        this.loadItem(applicationName, key);
-        return result;
-    }
-
     private Item loadItem(String applicationName, String key) {
         Item item = this.getStorage().get(applicationName, key);
         if (item == null) {
@@ -115,6 +109,21 @@ public class RippleClient {
             this.getStorage().put(item);
         }
         return item;
+    }
+
+    public boolean put(String applicationName, String key, String value) {
+        boolean result = Api.put(this.getServerAddress(), this.getServerPort(), applicationName, key, value);
+        this.loadItem(applicationName, key);
+        return result;
+    }
+
+    public boolean delete(String applicationName, String key) {
+        boolean result = Api.delete(this.getServerAddress(), this.getServerPort(), applicationName, key);
+        Item item = this.getStorage().get(applicationName, key);
+        if (item != null) {
+            this.getStorage().delete(item);
+        }
+        return result;
     }
 
     public boolean subscribe(String applicationName, String key) {

@@ -2,8 +2,10 @@ package ripple.server;
 
 import ripple.server.core.AbstractNode;
 import ripple.server.core.NodeMetadata;
-import ripple.server.core.NodeType;
+import ripple.server.core.expander.ExpanderNode;
+import ripple.server.core.gossip.GossipNode;
 import ripple.server.core.star.StarNode;
+import ripple.server.core.tree.TreeNode;
 
 import java.util.List;
 
@@ -21,16 +23,40 @@ public class RippleServer {
         this.node = node;
     }
 
-    public RippleServer(String type, int id, String storageLocation) {
-        if (type.equals(NodeType.STAR)) {
-            this.setNode(new StarNode(id, storageLocation));
-        }
+    private RippleServer(AbstractNode node) {
+        this.setNode(node);
     }
 
-    public RippleServer(String type, int id, String storageLocation, int port) {
-        if (type.equals(NodeType.STAR)) {
-            this.setNode(new StarNode(id, storageLocation, port));
-        }
+    public static RippleServer starProtocol(int id, String storageLocation) {
+        return new RippleServer(new StarNode(id, storageLocation));
+    }
+
+    public static RippleServer starProtocol(int id, String storageLocation, int port) {
+        return new RippleServer(new StarNode(id, storageLocation, port));
+    }
+
+    public static RippleServer treeProtocol(int id, String storageLocation, int branch) {
+        return new RippleServer(new TreeNode(id, storageLocation, branch));
+    }
+
+    public static RippleServer treeProtocol(int id, String storageLocation, int port, int branch) {
+        return new RippleServer(new TreeNode(id, storageLocation, port, branch));
+    }
+
+    public static RippleServer expanderProtocol(int id, String storageLocation, int scale) {
+        return new RippleServer(new ExpanderNode(id, storageLocation, scale));
+    }
+
+    public static RippleServer expanderProtocol(int id, String storageLocation, int port, int scale) {
+        return new RippleServer(new ExpanderNode(id, storageLocation, port, scale));
+    }
+
+    public static RippleServer gossipProtocol(int id, String storageLocation, int fanout) {
+        return new RippleServer(new GossipNode(id, storageLocation, fanout));
+    }
+
+    public static RippleServer gossipProtocol(int id, String storageLocation, int port, int fanout) {
+        return new RippleServer(new GossipNode(id, storageLocation, port, fanout));
     }
 
     public boolean start() {

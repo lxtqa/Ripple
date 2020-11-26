@@ -4,15 +4,14 @@ import ripple.client.RippleClient;
 import ripple.client.core.Item;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
-import ripple.server.core.NodeType;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        RippleServer nodeOne = new RippleServer(NodeType.STAR, 1, "D:\\server-1.txt");
-        RippleServer nodeTwo = new RippleServer(NodeType.STAR, 2, "D:\\server-2.txt");
+        RippleServer nodeOne = RippleServer.starProtocol(1, "D:\\server-1.txt");
+        RippleServer nodeTwo = RippleServer.starProtocol(2, "D:\\server-2.txt");
         nodeOne.start();
         System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
         nodeTwo.start();

@@ -97,5 +97,32 @@ public class Storage {
             return false;
         }
     }
+
+    public synchronized boolean delete(Item item) {
+        try {
+            List<Item> items = null;
+            if (Files.exists(Paths.get(this.getFileName()))) {
+                items = MAPPER.readValue(new File(this.getFileName()), new TypeReference<List<Item>>() {
+                });
+            } else {
+                return false;
+            }
+            Item toDelete = null;
+            for (Item elem : items) {
+                if (elem.getApplicationName().equals(item.getApplicationName())
+                        && elem.getKey().equals(item.getKey())) {
+                    toDelete = elem;
+                }
+            }
+            if (toDelete != null) {
+                items.remove(toDelete);
+            }
+            MAPPER.writeValue(new File(this.getFileName()), items);
+            return true;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
 }
 

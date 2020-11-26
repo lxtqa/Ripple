@@ -83,6 +83,10 @@ public class StarNode extends AbstractNode {
         ServletHolder putServletHolder = new ServletHolder(putServlet);
         servletContextHandler.addServlet(putServletHolder, Endpoint.SERVER_PUT);
 
+        DeleteServlet deleteServlet = new DeleteServlet(this);
+        ServletHolder deleteServletHolder = new ServletHolder(deleteServlet);
+        servletContextHandler.addServlet(deleteServletHolder, Endpoint.SERVER_DELETE);
+
         SyncServlet syncServlet = new SyncServlet(this);
         ServletHolder syncServletHolder = new ServletHolder(syncServlet);
         servletContextHandler.addServlet(syncServletHolder, Endpoint.SERVER_SYNC);

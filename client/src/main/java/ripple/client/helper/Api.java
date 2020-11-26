@@ -46,6 +46,20 @@ public final class Api {
         }
     }
 
+    public static boolean delete(String address, int port, String applicationName, String key) {
+        try {
+            Map<String, String> headers = new HashMap<>(2);
+            headers.put("x-ripple-application-name", applicationName);
+            headers.put("x-ripple-key", key);
+            String url = "http://" + address + ":" + port + Endpoint.SERVER_DELETE;
+            String returnValue = Http.post(url, headers);
+            return MAPPER.readValue(returnValue, Boolean.class);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean subscribe(String serverAddress, int serverPort
             , String callbackAddress, int callbackPort, String applicationName, String key) {
         try {
