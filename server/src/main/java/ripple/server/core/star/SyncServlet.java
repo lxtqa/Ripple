@@ -4,10 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.AbstractNode;
-import ripple.server.core.BaseServlet;
-import ripple.server.core.ClientMetadata;
-import ripple.server.core.Item;
+import ripple.server.core.*;
 import ripple.server.helper.Api;
 
 import javax.servlet.http.HttpServletRequest;
@@ -55,10 +52,10 @@ public class SyncServlet extends BaseServlet {
         }
         this.getNode().getStorage().put(item);
 
-        String internalKey = this.getNode().generateInternalKey(applicationName, key);
+        ItemKey itemKey = new ItemKey(applicationName, key);
         // Notify clients
-        if (this.getNode().getSubscription().containsKey(internalKey)) {
-            List<ClientMetadata> clients = this.getNode().getSubscription().get(internalKey);
+        if (this.getNode().getSubscription().containsKey(itemKey)) {
+            List<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[SyncServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
                 Api.notifyClient(metadata, item);

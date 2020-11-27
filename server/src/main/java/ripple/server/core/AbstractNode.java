@@ -23,7 +23,7 @@ public abstract class AbstractNode {
     private String type;
     private Storage storage;
     private List<NodeMetadata> nodeList;
-    private ConcurrentHashMap<String, List<ClientMetadata>> subscription;
+    private ConcurrentHashMap<ItemKey, List<ClientMetadata>> subscription;
 
     private String address;
     private int port;
@@ -62,11 +62,11 @@ public abstract class AbstractNode {
         this.nodeList = nodeList;
     }
 
-    public ConcurrentHashMap<String, List<ClientMetadata>> getSubscription() {
+    public ConcurrentHashMap<ItemKey, List<ClientMetadata>> getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(ConcurrentHashMap<String, List<ClientMetadata>> subscription) {
+    public void setSubscription(ConcurrentHashMap<ItemKey, List<ClientMetadata>> subscription) {
         this.subscription = subscription;
     }
 
@@ -158,21 +158,17 @@ public abstract class AbstractNode {
         }
     }
 
-    public String generateInternalKey(String applicationName, String key) {
-        return "[" + applicationName + "][" + key + "]";
-    }
-
     public synchronized void subscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
         LOGGER.info("[AbstractNode] subscribe() called: Callback Address = "
                 + callbackAddress + "; Callback Port = "
                 + callbackPort + "; Application Name = "
                 + applicationName + "; Key = "
                 + key + ".");
-        String internalKey = this.generateInternalKey(applicationName, key);
-        if (this.getSubscription().get(internalKey) == null) {
-            this.getSubscription().put(internalKey, new ArrayList<>());
+        ItemKey itemKey = new ItemKey(applicationName, key);
+        if (this.getSubscription().get(itemKey) == null) {
+            this.getSubscription().put(itemKey, new ArrayList<>());
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(internalKey);
+        List<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
         for (ClientMetadata metadata : subscribers) {
             if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
                 return;
@@ -190,11 +186,11 @@ public abstract class AbstractNode {
                 + callbackPort + "; Application Name = "
                 + applicationName + "; Key = "
                 + key + ".");
-        String internalKey = this.generateInternalKey(applicationName, key);
-        if (this.getSubscription().get(internalKey) == null) {
+        ItemKey itemKey = new ItemKey(applicationName, key);
+        if (this.getSubscription().get(itemKey) == null) {
             return;
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(internalKey);
+        List<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
         ClientMetadata toRemove = null;
         for (ClientMetadata metadata : subscribers) {
             if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {

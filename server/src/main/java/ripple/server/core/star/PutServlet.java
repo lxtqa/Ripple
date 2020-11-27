@@ -47,10 +47,10 @@ public class PutServlet extends BaseServlet {
         }
         this.getNode().getStorage().put(item);
 
-        String internalKey = this.getNode().generateInternalKey(applicationName, key);
+        ItemKey itemKey = new ItemKey(applicationName, key);
         // Notify clients
-        if (this.getNode().getSubscription().containsKey(internalKey)) {
-            List<ClientMetadata> clients = this.getNode().getSubscription().get(internalKey);
+        if (this.getNode().getSubscription().containsKey(itemKey)) {
+            List<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[PutServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
                 Api.notifyClient(metadata, item);
