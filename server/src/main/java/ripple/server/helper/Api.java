@@ -18,6 +18,7 @@ public final class Api {
     public static boolean notifyClient(ClientMetadata metadata, Item item) {
         try {
             Map<String, String> headers = new HashMap<>(4);
+            headers.put("x-ripple-application-name", item.getApplicationName());
             headers.put("x-ripple-key", item.getKey());
             headers.put("x-ripple-value", item.getValue());
             headers.put("x-ripple-last-update", String.valueOf(item.getLastUpdate().getTime()));
@@ -34,6 +35,7 @@ public final class Api {
     public static boolean syncToServer(NodeMetadata metadata, Item item) {
         try {
             Map<String, String> headers = new HashMap<>(4);
+            headers.put("x-ripple-application-name", item.getApplicationName());
             headers.put("x-ripple-key", item.getKey());
             headers.put("x-ripple-value", item.getValue());
             headers.put("x-ripple-last-update", String.valueOf(item.getLastUpdate().getTime()));

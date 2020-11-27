@@ -13,9 +13,10 @@ import java.util.Map;
 public final class Api {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public static Item get(String address, int port, String key) {
+    public static Item get(String address, int port, String applicationName, String key) {
         try {
-            Map<String, String> headers = new HashMap<>(1);
+            Map<String, String> headers = new HashMap<>(2);
+            headers.put("x-ripple-application-name", applicationName);
             headers.put("x-ripple-key", key);
             String url = "http://" + address + ":" + port + Endpoint.SERVER_GET;
             String returnValue = Http.get(url, headers);
@@ -26,9 +27,10 @@ public final class Api {
         }
     }
 
-    public static boolean put(String address, int port, String key, String value) {
+    public static boolean put(String address, int port, String applicationName, String key, String value) {
         try {
-            Map<String, String> headers = new HashMap<>(2);
+            Map<String, String> headers = new HashMap<>(3);
+            headers.put("x-ripple-application-name", applicationName);
             headers.put("x-ripple-key", key);
             headers.put("x-ripple-value", value);
             String url = "http://" + address + ":" + port + Endpoint.SERVER_PUT;
@@ -41,9 +43,10 @@ public final class Api {
     }
 
     public static boolean subscribe(String serverAddress, int serverPort
-            , String callbackAddress, int callbackPort, String key) {
+            , String callbackAddress, int callbackPort, String applicationName, String key) {
         try {
-            Map<String, String> headers = new HashMap<>(3);
+            Map<String, String> headers = new HashMap<>(4);
+            headers.put("x-ripple-application-name", applicationName);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);
@@ -57,9 +60,10 @@ public final class Api {
     }
 
     public static boolean unsubscribe(String serverAddress, int serverPort
-            , String callbackAddress, int callbackPort, String key) {
+            , String callbackAddress, int callbackPort, String applicationName, String key) {
         try {
-            Map<String, String> headers = new HashMap<>(3);
+            Map<String, String> headers = new HashMap<>(4);
+            headers.put("x-ripple-application-name", applicationName);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);

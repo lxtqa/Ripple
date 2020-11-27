@@ -88,39 +88,39 @@ public class RippleClient {
         this.setRunning(false);
     }
 
-    public Item get(String key) {
-        return this.loadItem(key);
+    public Item get(String applicationName, String key) {
+        return this.loadItem(applicationName, key);
     }
 
-    public boolean put(String key, String value) {
-        boolean result = Api.put(this.getServerAddress(), this.getServerPort(), key, value);
-        this.loadItem(key);
+    public boolean put(String applicationName, String key, String value) {
+        boolean result = Api.put(this.getServerAddress(), this.getServerPort(), applicationName, key, value);
+        this.loadItem(applicationName, key);
         return result;
     }
 
-    private Item loadItem(String key) {
-        Item item = this.getStorage().get(key);
+    private Item loadItem(String applicationName, String key) {
+        Item item = this.getStorage().get(applicationName, key);
         if (item == null) {
-            item = Api.get(this.getServerAddress(), this.getServerPort(), key);
+            item = Api.get(this.getServerAddress(), this.getServerPort(), applicationName, key);
             this.getStorage().put(item);
         }
         return item;
     }
 
-    public boolean subscribe(String key) {
+    public boolean subscribe(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
         return Api.subscribe(this.getServerAddress(), this.getServerPort()
-                , this.getAddress(), this.getPort(), key);
+                , this.getAddress(), this.getPort(), applicationName, key);
     }
 
-    public boolean unsubscribe(String key) {
+    public boolean unsubscribe(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
         return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
-                , this.getAddress(), this.getPort(), key);
+                , this.getAddress(), this.getPort(), applicationName, key);
     }
 
     public void registerHandlers(ServletContextHandler servletContextHandler) {

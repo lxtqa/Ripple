@@ -29,7 +29,7 @@ public class Storage {
         this.setFileName(fileName);
     }
 
-    public Item get(String key) {
+    public Item get(String applicationName, String key) {
         try {
             List<Item> items = null;
             if (Files.exists(Paths.get(this.getFileName()))) {
@@ -39,7 +39,8 @@ public class Storage {
                 return null;
             }
             for (Item elem : items) {
-                if (elem.getKey().equals(key)) {
+                if (elem.getApplicationName().equals(applicationName)
+                        && elem.getKey().equals(key)) {
                     return elem;
                 }
             }
@@ -61,7 +62,8 @@ public class Storage {
             }
             Item toModify = null;
             for (Item elem : items) {
-                if (elem.getKey().equals(item.getKey())) {
+                if (elem.getApplicationName().equals(item.getApplicationName())
+                        && elem.getKey().equals(item.getKey())) {
                     toModify = elem;
                 }
             }

@@ -36,21 +36,24 @@ public class NotifyServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
         String value = request.getHeader("x-ripple-value");
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
-        LOGGER.info("[NotifyServlet] Receive request: Key = " + key
+        LOGGER.info("[NotifyServlet] Receive request: Application Name = " + applicationName
+                + ", Key = " + key
                 + ", Value = " + value
                 + ", Last Update = " + SimpleDateFormat.getDateTimeInstance().format(lastUpdate)
                 + ", Last Update Server Id = " + lastUpdateServerId);
 
         // Update local storage
-        Item item = this.getRippleClient().getStorage().get(key);
+        Item item = this.getRippleClient().getStorage().get(applicationName, key);
         if (item == null) {
             item = new Item();
         }
         synchronized (this) {
+            item.setApplicationName(applicationName);
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(lastUpdate);

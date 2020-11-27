@@ -24,12 +24,15 @@ public class SubscribeServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String applicationName = request.getHeader("x-ripple-application-name");
         String callbackAddress = request.getHeader("x-ripple-callback-address");
         int callbackPort = Integer.parseInt(request.getHeader("x-ripple-callback-port"));
         String key = request.getHeader("x-ripple-key");
-        LOGGER.info("[SubscribeServlet] Receive request: Callback Address = "
-                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
-        this.getNode().subscribe(callbackAddress, callbackPort, key);
+        LOGGER.info("[SubscribeServlet] Receive request: Callback Address = " + callbackAddress
+                + "; Callback Port = " + callbackPort
+                + "; Application Name = " + applicationName
+                + "; Key = " + key + ".");
+        this.getNode().subscribe(callbackAddress, callbackPort, applicationName, key);
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
         response.getWriter().println(MAPPER.writeValueAsString(true));

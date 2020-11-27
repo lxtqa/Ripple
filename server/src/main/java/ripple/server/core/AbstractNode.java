@@ -158,13 +158,21 @@ public abstract class AbstractNode {
         }
     }
 
-    public synchronized void subscribe(String callbackAddress, int callbackPort, String key) {
+    public String generateInternalKey(String applicationName, String key) {
+        return "[" + applicationName + "][" + key + "]";
+    }
+
+    public synchronized void subscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
         LOGGER.info("[AbstractNode] subscribe() called: Callback Address = "
-                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
-        if (this.getSubscription().get(key) == null) {
-            this.getSubscription().put(key, new ArrayList<>());
+                + callbackAddress + "; Callback Port = "
+                + callbackPort + "; Application Name = "
+                + applicationName + "; Key = "
+                + key + ".");
+        String internalKey = this.generateInternalKey(applicationName, key);
+        if (this.getSubscription().get(internalKey) == null) {
+            this.getSubscription().put(internalKey, new ArrayList<>());
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(key);
+        List<ClientMetadata> subscribers = this.getSubscription().get(internalKey);
         for (ClientMetadata metadata : subscribers) {
             if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
                 return;
@@ -176,13 +184,17 @@ public abstract class AbstractNode {
         subscribers.add(clientMetadata);
     }
 
-    public synchronized void unsubscribe(String callbackAddress, int callbackPort, String key) {
+    public synchronized void unsubscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
         LOGGER.info("[AbstractNode] unsubscribe() called: Callback Address = "
-                + callbackAddress + "; Callback Port = " + callbackPort + "; Key = " + key + ".");
-        if (this.getSubscription().get(key) == null) {
+                + callbackAddress + "; Callback Port = "
+                + callbackPort + "; Application Name = "
+                + applicationName + "; Key = "
+                + key + ".");
+        String internalKey = this.generateInternalKey(applicationName, key);
+        if (this.getSubscription().get(internalKey) == null) {
             return;
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(key);
+        List<ClientMetadata> subscribers = this.getSubscription().get(internalKey);
         ClientMetadata toRemove = null;
         for (ClientMetadata metadata : subscribers) {
             if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {

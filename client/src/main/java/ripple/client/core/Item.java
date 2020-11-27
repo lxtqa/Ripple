@@ -6,10 +6,19 @@ import java.util.Date;
  * @author Zhen Tang
  */
 public class Item {
+    private String applicationName;
     private String key;
     private String value;
     private int lastUpdateServerId;
     private Date lastUpdate;
+
+    public String getApplicationName() {
+        return applicationName;
+    }
+
+    public void setApplicationName(String applicationName) {
+        this.applicationName = applicationName;
+    }
 
     public String getKey() {
         return key;

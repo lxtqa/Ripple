@@ -30,21 +30,24 @@ public class SyncServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
         String value = request.getHeader("x-ripple-value");
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
-        LOGGER.info("[SyncServlet] Receive request: Key = " + key
+        LOGGER.info("[SyncServlet] Receive request: Application Name = " + applicationName
+                + ", Key = " + key
                 + ", Value = " + value
                 + ", Last Update = " + SimpleDateFormat.getDateTimeInstance().format(lastUpdate)
                 + ", Last Update Server Id = " + lastUpdateServerId);
 
         // Update local storage
-        Item item = this.getNode().getStorage().get(key);
+        Item item = this.getNode().getStorage().get(applicationName, key);
         if (item == null) {
             item = new Item();
         }
         synchronized (this) {
+            item.setApplicationName(applicationName);
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(lastUpdate);
@@ -52,9 +55,10 @@ public class SyncServlet extends BaseServlet {
         }
         this.getNode().getStorage().put(item);
 
+        String internalKey = this.getNode().generateInternalKey(applicationName, key);
         // Notify clients
-        if (this.getNode().getSubscription().containsKey(key)) {
-            List<ClientMetadata> clients = this.getNode().getSubscription().get(key);
+        if (this.getNode().getSubscription().containsKey(internalKey)) {
+            List<ClientMetadata> clients = this.getNode().getSubscription().get(internalKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[SyncServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
                 Api.notifyClient(metadata, item);

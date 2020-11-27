@@ -26,16 +26,20 @@ public class PutServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
         String value = request.getHeader("x-ripple-value");
-        LOGGER.info("[PutServlet] Receive request: Key = " + key + ", Value = " + value + ".");
+        LOGGER.info("[PutServlet] Receive request: Application Name = " + applicationName
+                + ", Key = " + key
+                + ", Value = " + value + ".");
 
         // Update local storage
-        Item item = this.getNode().getStorage().get(key);
+        Item item = this.getNode().getStorage().get(applicationName, key);
         if (item == null) {
             item = new Item();
         }
         synchronized (this) {
+            item.setApplicationName(applicationName);
             item.setKey(key);
             item.setValue(value);
             item.setLastUpdate(new Date(System.currentTimeMillis()));
@@ -43,9 +47,10 @@ public class PutServlet extends BaseServlet {
         }
         this.getNode().getStorage().put(item);
 
+        String internalKey = this.getNode().generateInternalKey(applicationName, key);
         // Notify clients
-        if (this.getNode().getSubscription().containsKey(key)) {
-            List<ClientMetadata> clients = this.getNode().getSubscription().get(key);
+        if (this.getNode().getSubscription().containsKey(internalKey)) {
+            List<ClientMetadata> clients = this.getNode().getSubscription().get(internalKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[PutServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
                 Api.notifyClient(metadata, item);
