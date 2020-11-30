@@ -23,8 +23,15 @@ public class HomeServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[HomeServlet] Get");
-        String pageContent = PageGenerator.buildPage("Ripple Server - 主页", "主页", "主页");
-        
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("                <p>\n");
+        stringBuilder.append("                    ").append("主页").append("\n");
+        stringBuilder.append("                </p>\n");
+        String content = stringBuilder.toString();
+
+        String pageContent = PageGenerator.buildPage("Ripple Server - 主页", "主页", content);
+
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
         response.getWriter().println(pageContent);

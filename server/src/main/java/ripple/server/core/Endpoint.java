@@ -22,6 +22,7 @@ public final class Endpoint {
     public static final String UI_STYLE = "/Style";
     public static final String UI_HOME = "/";
     public static final String UI_GET_CONFIG = "/Config/Get";
-    public static final String UI_New_CONFIG = "/Config/New";
-
+    public static final String UI_NEW_CONFIG = "/Config/New";
+    public static final String UI_MODIFY_CONFIG = "/Config/Modify";
+    public static final String UI_DELETE_CONFIG = "/Config/Delete";
 }

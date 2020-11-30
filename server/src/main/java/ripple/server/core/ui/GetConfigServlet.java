@@ -23,7 +23,14 @@ public class GetConfigServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[GetConfigServlet] Get");
-        String pageContent = PageGenerator.buildPage("Ripple Server - 查询配置", "查询配置", "查询配置");
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("                <p>\n");
+        stringBuilder.append("                    ").append("查询配置").append("\n");
+        stringBuilder.append("                </p>\n");
+        String content = stringBuilder.toString();
+
+        String pageContent = PageGenerator.buildPage("Ripple Server - 查询配置", "查询配置", content);
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

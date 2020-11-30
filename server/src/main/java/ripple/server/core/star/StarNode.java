@@ -5,10 +5,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.server.core.AbstractNode;
 import ripple.server.core.Endpoint;
 import ripple.server.core.NodeType;
-import ripple.server.core.ui.GetConfigServlet;
-import ripple.server.core.ui.HomeServlet;
-import ripple.server.core.ui.NewConfigServlet;
-import ripple.server.core.ui.StyleServlet;
+import ripple.server.core.ui.*;
 
 /**
  * @author Zhen Tang
@@ -34,23 +31,38 @@ public class StarNode extends AbstractNode {
         GetConfigServlet getConfigServlet = new GetConfigServlet(this);
         ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);
         servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG);
-        servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG + "/");
 
         NewConfigServlet newConfigServlet = new NewConfigServlet(this);
         ServletHolder newConfigServletHolder = new ServletHolder(newConfigServlet);
-        servletContextHandler.addServlet(newConfigServletHolder, Endpoint.UI_New_CONFIG);
-        servletContextHandler.addServlet(newConfigServletHolder, Endpoint.UI_New_CONFIG + "/");
+        servletContextHandler.addServlet(newConfigServletHolder, Endpoint.UI_NEW_CONFIG);
+
+        ModifyConfigServlet modifyConfigServlet = new ModifyConfigServlet(this);
+        ServletHolder modifyConfigServletHolder = new ServletHolder(modifyConfigServlet);
+        servletContextHandler.addServlet(modifyConfigServletHolder, Endpoint.UI_MODIFY_CONFIG);
+
+        DeleteConfigServlet deleteConfigServlet = new DeleteConfigServlet(this);
+        ServletHolder deleteConfigServletHolder = new ServletHolder(deleteConfigServlet);
+        servletContextHandler.addServlet(deleteConfigServletHolder, Endpoint.UI_DELETE_CONFIG);
 
         // Business
         SubscribeServlet subscribeServlet = new SubscribeServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(subscribeServlet), Endpoint.SERVER_SUBSCRIBE);
+        ServletHolder subscribeServletHolder = new ServletHolder(subscribeServlet);
+        servletContextHandler.addServlet(subscribeServletHolder, Endpoint.SERVER_SUBSCRIBE);
+
         UnsubscribeServlet unsubscribeServlet = new UnsubscribeServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(unsubscribeServlet), Endpoint.SERVER_UNSUBSCRIBE);
+        ServletHolder unsubscribeServletHolder = new ServletHolder(unsubscribeServlet);
+        servletContextHandler.addServlet(unsubscribeServletHolder, Endpoint.SERVER_UNSUBSCRIBE);
+
         GetServlet getServlet = new GetServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(getServlet), Endpoint.SERVER_GET);
+        ServletHolder getServletHolder = new ServletHolder(getServlet);
+        servletContextHandler.addServlet(getServletHolder, Endpoint.SERVER_GET);
+
         PutServlet putServlet = new PutServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(putServlet), Endpoint.SERVER_PUT);
+        ServletHolder putServletHolder = new ServletHolder(putServlet);
+        servletContextHandler.addServlet(putServletHolder, Endpoint.SERVER_PUT);
+
         SyncServlet syncServlet = new SyncServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(syncServlet), Endpoint.SERVER_SYNC);
+        ServletHolder syncServletHolder = new ServletHolder(syncServlet);
+        servletContextHandler.addServlet(syncServletHolder, Endpoint.SERVER_SYNC);
     }
 }

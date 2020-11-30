@@ -94,7 +94,7 @@ public final class PageGenerator {
         if (currentFunction.equals(function)) {
             stringBuilder.append("                        <a class=\"nav-link active\" href=\"").append(link).append("\">\n");
         } else {
-            stringBuilder.append("                        <a class=\"nav-link\" href=\"").append(link).append("/\">\n");
+            stringBuilder.append("                        <a class=\"nav-link\" href=\"").append(link).append("\">\n");
         }
         stringBuilder.append("                            <span data-feather=\"").append(logo).append("\"></span>\n");
         if (currentFunction.equals(function)) {
@@ -117,9 +117,7 @@ public final class PageGenerator {
         stringBuilder.append("                <h2>").append(title).append("</h2>\n");
         stringBuilder.append("            </div>\n");
         stringBuilder.append("            <div>\n");
-        stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append(content.trim()).append("\n");
-        stringBuilder.append("                </p>\n");
+        stringBuilder.append(content);
         stringBuilder.append("            </div>\n");
         stringBuilder.append("        </main>\n");
     }
