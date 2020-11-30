@@ -13,16 +13,16 @@ import java.io.IOException;
 /**
  * @author Zhen Tang
  */
-public class DeleteConfigServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteConfigServlet.class);
+public class RemoveConfigServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveConfigServlet.class);
 
-    public DeleteConfigServlet(RippleClient client) {
+    public RemoveConfigServlet(RippleClient client) {
         super(client);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[DeleteConfigServlet] Get");
+        LOGGER.info("[RemoveConfigServlet] Get");
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

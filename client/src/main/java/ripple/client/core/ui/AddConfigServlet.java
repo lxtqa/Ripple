@@ -13,17 +13,17 @@ import java.io.IOException;
 /**
  * @author Zhen Tang
  */
-public class NewConfigServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewConfigServlet.class);
+public class AddConfigServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddConfigServlet.class);
 
-    public NewConfigServlet(RippleClient client) {
+    public AddConfigServlet(RippleClient client) {
         super(client);
     }
 
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[NewConfigServlet] Get");
+        LOGGER.info("[AddConfigServlet] Get");
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
