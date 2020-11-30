@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.client.core.Item;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,6 +47,20 @@ public class Storage {
             }
             return null;
         } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Item> getAll() {
+        try {
+            if (Files.exists(Paths.get(this.getFileName()))) {
+                return MAPPER.readValue(new File(this.getFileName()), new TypeReference<List<Item>>() {
+                });
+            } else {
+                return null;
+            }
+        } catch (IOException exception) {
             exception.printStackTrace();
             return null;
         }
