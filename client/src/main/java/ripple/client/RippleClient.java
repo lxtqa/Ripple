@@ -8,12 +8,15 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.Endpoint;
 import ripple.client.core.Item;
 import ripple.client.core.callback.NotifyServlet;
+import ripple.client.core.ui.AddSubscriptionServlet;
 import ripple.client.core.ui.DeleteConfigServlet;
 import ripple.client.core.ui.GetConfigServlet;
 import ripple.client.core.ui.GetSubscriptionServlet;
 import ripple.client.core.ui.HomeServlet;
 import ripple.client.core.ui.ModifyConfigServlet;
 import ripple.client.core.ui.NewConfigServlet;
+import ripple.client.core.ui.RemoveSubscriptionServlet;
+import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.client.helper.Storage;
@@ -159,6 +162,18 @@ public class RippleClient {
         GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
         ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);
         servletContextHandler.addServlet(getSubscriptionServletHolder, Endpoint.UI_GET_SUBSCRIPTION);
+
+        AddSubscriptionServlet addSubscriptionServlet = new AddSubscriptionServlet(this);
+        ServletHolder addSubscriptionServletHolder = new ServletHolder(addSubscriptionServlet);
+        servletContextHandler.addServlet(addSubscriptionServletHolder, Endpoint.UI_ADD_SUBSCRIPTION);
+
+        RemoveSubscriptionServlet removeSubscriptionServlet = new RemoveSubscriptionServlet(this);
+        ServletHolder removeSubscriptionServletHolder = new ServletHolder(removeSubscriptionServlet);
+        servletContextHandler.addServlet(removeSubscriptionServletHolder, Endpoint.UI_REMOVE_SUBSCRIPTION);
+
+        ServerInfoServlet serverInfoServlet = new ServerInfoServlet(this);
+        ServletHolder serverInfoServletHolder = new ServletHolder(serverInfoServlet);
+        servletContextHandler.addServlet(serverInfoServletHolder, Endpoint.UI_SERVER_INFO);
 
         // Business
         NotifyServlet notifyServlet = new NotifyServlet(this);
