@@ -8,7 +8,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.Endpoint;
 import ripple.client.core.Item;
 import ripple.client.core.callback.NotifyServlet;
+import ripple.client.core.ui.DeleteConfigServlet;
+import ripple.client.core.ui.GetConfigServlet;
+import ripple.client.core.ui.GetSubscriptionServlet;
 import ripple.client.core.ui.HomeServlet;
+import ripple.client.core.ui.ModifyConfigServlet;
+import ripple.client.core.ui.NewConfigServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.client.helper.Storage;
@@ -134,6 +139,26 @@ public class RippleClient {
         StyleServlet styleServlet = new StyleServlet(this);
         ServletHolder styleServletHolder = new ServletHolder(styleServlet);
         servletContextHandler.addServlet(styleServletHolder, Endpoint.UI_STYLE);
+
+        GetConfigServlet getConfigServlet = new GetConfigServlet(this);
+        ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);
+        servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG);
+
+        NewConfigServlet newConfigServlet = new NewConfigServlet(this);
+        ServletHolder newConfigServletHolder = new ServletHolder(newConfigServlet);
+        servletContextHandler.addServlet(newConfigServletHolder, Endpoint.UI_NEW_CONFIG);
+
+        ModifyConfigServlet modifyConfigServlet = new ModifyConfigServlet(this);
+        ServletHolder modifyConfigServletHolder = new ServletHolder(modifyConfigServlet);
+        servletContextHandler.addServlet(modifyConfigServletHolder, Endpoint.UI_MODIFY_CONFIG);
+
+        DeleteConfigServlet deleteConfigServlet = new DeleteConfigServlet(this);
+        ServletHolder deleteConfigServletHolder = new ServletHolder(deleteConfigServlet);
+        servletContextHandler.addServlet(deleteConfigServletHolder, Endpoint.UI_DELETE_CONFIG);
+
+        GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
+        ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);
+        servletContextHandler.addServlet(getSubscriptionServletHolder, Endpoint.UI_GET_SUBSCRIPTION);
 
         // Business
         NotifyServlet notifyServlet = new NotifyServlet(this);
