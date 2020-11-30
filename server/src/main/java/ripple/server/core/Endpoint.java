@@ -19,6 +19,9 @@ public final class Endpoint {
     public static final String CLIENT_NOTIFY = "/Api/Notify";
 
     // UI
-    public static final String UI_STYLE = "/styles/style.css";
+    public static final String UI_STYLE = "/Style";
     public static final String UI_HOME = "/";
+    public static final String UI_GET_CONFIG = "/Config/Get";
+    public static final String UI_New_CONFIG = "/Config/New";
+
 }

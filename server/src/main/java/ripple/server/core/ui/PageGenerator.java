@@ -32,7 +32,7 @@ public final class PageGenerator {
         stringBuilder.append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>\n");
         stringBuilder.append("    <title>").append(title).append("</title>\n");
         stringBuilder.append("    <link href=\"https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css\" rel=\"stylesheet\">\n");
-        stringBuilder.append("    <link href=\"styles/style.css\" rel=\"stylesheet\" type=\"text/css\"/>\n");
+        stringBuilder.append("    <link href=\"/Style\" rel=\"stylesheet\" type=\"text/css\"/>\n");
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.min.js\"></script>\n");
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/popper.js/2.5.4/umd/popper.min.js\"></script>\n");
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js\"></script>\n");
