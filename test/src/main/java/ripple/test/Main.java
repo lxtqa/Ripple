@@ -25,9 +25,11 @@ public class Main {
 
         RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort(), "D:\\client-1.txt");
         clientOne.start();
+        System.out.println("Client One: " + clientOne.getAddress() + ":" + clientOne.getPort());
         clientOne.subscribe("testApp", "test");
         RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort(), "D:\\client-2.txt");
         clientTwo.start();
+        System.out.println("Client Two: " + clientTwo.getAddress() + ":" + clientTwo.getPort());
         clientTwo.subscribe("testApp", "test");
 
         clientOne.put("testApp", "test", "test");
@@ -47,10 +49,10 @@ public class Main {
         item = clientTwo.get("testApp", "test");
         System.out.println("[Client 2] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
 
-        clientOne.unsubscribe("testApp", "test");
-        clientTwo.unsubscribe("testApp", "test");
-        clientOne.stop();
-        clientTwo.stop();
+        // clientOne.unsubscribe("testApp", "test");
+        // clientTwo.unsubscribe("testApp", "test");
+        // clientOne.stop();
+        // clientTwo.stop();
         // nodeOne.stop();
         // nodeTwo.stop();
     }

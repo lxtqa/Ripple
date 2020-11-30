@@ -5,9 +5,9 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.client.core.BaseServlet;
 import ripple.client.core.Item;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -17,21 +17,12 @@ import java.util.Date;
 /**
  * @author Zhen Tang
  */
-public class NotifyServlet extends HttpServlet {
+public class NotifyServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(NotifyServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private RippleClient rippleClient;
 
-    public RippleClient getRippleClient() {
-        return rippleClient;
-    }
-
-    public void setRippleClient(RippleClient rippleClient) {
-        this.rippleClient = rippleClient;
-    }
-
-    public NotifyServlet(RippleClient rippleClient) {
-        this.setRippleClient(rippleClient);
+    public NotifyServlet(RippleClient client) {
+        super(client);
     }
 
     @Override
@@ -48,7 +39,7 @@ public class NotifyServlet extends HttpServlet {
                 + ", Last Update Server Id = " + lastUpdateServerId);
 
         // Update local storage
-        Item item = this.getRippleClient().getStorage().get(applicationName, key);
+        Item item = this.getClient().getStorage().get(applicationName, key);
         if (item == null) {
             item = new Item();
         }
@@ -59,7 +50,7 @@ public class NotifyServlet extends HttpServlet {
             item.setLastUpdate(lastUpdate);
             item.setLastUpdateServerId(lastUpdateServerId);
         }
-        this.getRippleClient().getStorage().put(item);
+        this.getClient().getStorage().put(item);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

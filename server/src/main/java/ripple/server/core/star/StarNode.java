@@ -23,10 +23,12 @@ public class StarNode extends AbstractNode {
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // UI
         HomeServlet homeServlet = new HomeServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(homeServlet), Endpoint.UI_HOME);
+        ServletHolder homeServletHolder = new ServletHolder(homeServlet);
+        servletContextHandler.addServlet(homeServletHolder, Endpoint.UI_HOME);
 
         StyleServlet styleServlet = new StyleServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(styleServlet), Endpoint.UI_STYLE);
+        ServletHolder styleServletHolder = new ServletHolder(styleServlet);
+        servletContextHandler.addServlet(styleServletHolder, Endpoint.UI_STYLE);
 
         GetConfigServlet getConfigServlet = new GetConfigServlet(this);
         ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);

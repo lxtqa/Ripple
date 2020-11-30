@@ -8,6 +8,8 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.Endpoint;
 import ripple.client.core.Item;
 import ripple.client.core.callback.NotifyServlet;
+import ripple.client.core.ui.HomeServlet;
+import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.client.helper.Storage;
 
@@ -124,8 +126,19 @@ public class RippleClient {
     }
 
     public void registerHandlers(ServletContextHandler servletContextHandler) {
+        // UI
+        HomeServlet homeServlet = new HomeServlet(this);
+        ServletHolder homeServletHolder = new ServletHolder(homeServlet);
+        servletContextHandler.addServlet(homeServletHolder, Endpoint.UI_HOME);
+
+        StyleServlet styleServlet = new StyleServlet(this);
+        ServletHolder styleServletHolder = new ServletHolder(styleServlet);
+        servletContextHandler.addServlet(styleServletHolder, Endpoint.UI_STYLE);
+
+        // Business
         NotifyServlet notifyServlet = new NotifyServlet(this);
-        servletContextHandler.addServlet(new ServletHolder(notifyServlet), Endpoint.CLIENT_NOTIFY);
+        ServletHolder notifyServletHolder = new ServletHolder(notifyServlet);
+        servletContextHandler.addServlet(notifyServletHolder, Endpoint.CLIENT_NOTIFY);
     }
 
     public synchronized boolean start() {
