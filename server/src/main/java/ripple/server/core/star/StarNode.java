@@ -6,12 +6,12 @@ import ripple.server.core.AbstractNode;
 import ripple.server.core.Endpoint;
 import ripple.server.core.NodeType;
 import ripple.server.core.ui.ClientClusterServlet;
-import ripple.server.core.ui.DeleteConfigServlet;
+import ripple.server.core.ui.RemoveConfigServlet;
 import ripple.server.core.ui.GetConfigServlet;
 import ripple.server.core.ui.GetSubscriptionServlet;
 import ripple.server.core.ui.HomeServlet;
 import ripple.server.core.ui.ModifyConfigServlet;
-import ripple.server.core.ui.NewConfigServlet;
+import ripple.server.core.ui.AddConfigServlet;
 import ripple.server.core.ui.ServerClusterServlet;
 import ripple.server.core.ui.StyleServlet;
 
@@ -42,17 +42,17 @@ public class StarNode extends AbstractNode {
         ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);
         servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG);
 
-        NewConfigServlet newConfigServlet = new NewConfigServlet(this);
-        ServletHolder newConfigServletHolder = new ServletHolder(newConfigServlet);
-        servletContextHandler.addServlet(newConfigServletHolder, Endpoint.UI_NEW_CONFIG);
+        AddConfigServlet addConfigServlet = new AddConfigServlet(this);
+        ServletHolder addConfigServletHolder = new ServletHolder(addConfigServlet);
+        servletContextHandler.addServlet(addConfigServletHolder, Endpoint.UI_ADD_CONFIG);
 
         ModifyConfigServlet modifyConfigServlet = new ModifyConfigServlet(this);
         ServletHolder modifyConfigServletHolder = new ServletHolder(modifyConfigServlet);
         servletContextHandler.addServlet(modifyConfigServletHolder, Endpoint.UI_MODIFY_CONFIG);
 
-        DeleteConfigServlet deleteConfigServlet = new DeleteConfigServlet(this);
-        ServletHolder deleteConfigServletHolder = new ServletHolder(deleteConfigServlet);
-        servletContextHandler.addServlet(deleteConfigServletHolder, Endpoint.UI_DELETE_CONFIG);
+        RemoveConfigServlet removeConfigServlet = new RemoveConfigServlet(this);
+        ServletHolder removeConfigServletHolder = new ServletHolder(removeConfigServlet);
+        servletContextHandler.addServlet(removeConfigServletHolder, Endpoint.UI_REMOVE_CONFIG);
 
         GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
         ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);

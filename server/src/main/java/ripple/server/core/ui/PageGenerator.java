@@ -66,9 +66,9 @@ public final class PageGenerator {
         PageGenerator.buildSidebarTitle(stringBuilder, "配置管理");
         stringBuilder.append("                <ul class=\"nav flex-column mb-2\">\n");
         PageGenerator.buildSidebarItem(stringBuilder, "查询配置", "/Config/Get", "search", currentFunction);
-        PageGenerator.buildSidebarItem(stringBuilder, "添加配置", "/Config/New", "file-plus", currentFunction);
+        PageGenerator.buildSidebarItem(stringBuilder, "添加配置", "/Config/Add", "file-plus", currentFunction);
         PageGenerator.buildSidebarItem(stringBuilder, "修改配置", "/Config/Modify", "edit", currentFunction);
-        PageGenerator.buildSidebarItem(stringBuilder, "删除配置", "/Config/Delete", "trash-2", currentFunction);
+        PageGenerator.buildSidebarItem(stringBuilder, "删除配置", "/Config/Remove", "trash-2", currentFunction);
         stringBuilder.append("                </ul>\n");
         PageGenerator.buildSidebarTitle(stringBuilder, "订阅管理");
         stringBuilder.append("                <ul class=\"nav flex-column mb-2\">\n");

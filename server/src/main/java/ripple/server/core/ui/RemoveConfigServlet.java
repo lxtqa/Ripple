@@ -13,24 +13,24 @@ import java.io.IOException;
 /**
  * @author Zhen Tang
  */
-public class NewConfigServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NewConfigServlet.class);
+public class RemoveConfigServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RemoveConfigServlet.class);
 
-    public NewConfigServlet(AbstractNode node) {
+    public RemoveConfigServlet(AbstractNode node) {
         super(node);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[NewConfigServlet] Get");
+        LOGGER.info("[RemoveConfigServlet] Get");
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("添加配置").append("\n");
+        stringBuilder.append("                    ").append("删除配置").append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 添加配置", "添加配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 删除配置", "删除配置", content);
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
