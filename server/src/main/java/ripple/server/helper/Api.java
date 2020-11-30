@@ -15,6 +15,10 @@ import java.util.Map;
 public final class Api {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private Api() {
+
+    }
+
     public static boolean notifyClient(ClientMetadata metadata, Item item) {
         try {
             Map<String, String> headers = new HashMap<>(4);

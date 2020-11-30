@@ -51,7 +51,7 @@ public class Main {
         clientTwo.unsubscribe("testApp", "test");
         clientOne.stop();
         clientTwo.stop();
-        nodeOne.stop();
-        nodeTwo.stop();
+        // nodeOne.stop();
+        // nodeTwo.stop();
     }
 }

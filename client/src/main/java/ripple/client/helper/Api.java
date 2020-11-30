@@ -13,6 +13,10 @@ import java.util.Map;
 public final class Api {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
+    private Api() {
+
+    }
+
     public static Item get(String address, int port, String applicationName, String key) {
         try {
             Map<String, String> headers = new HashMap<>(2);
