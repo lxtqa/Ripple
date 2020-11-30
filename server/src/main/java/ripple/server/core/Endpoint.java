@@ -25,4 +25,7 @@ public final class Endpoint {
     public static final String UI_NEW_CONFIG = "/Config/New";
     public static final String UI_MODIFY_CONFIG = "/Config/Modify";
     public static final String UI_DELETE_CONFIG = "/Config/Delete";
+    public static final String UI_GET_SUBSCRIPTION = "/Subscription/Get";
+    public static final String UI_SERVER_CLUSTER = "/Cluster/Server";
+    public static final String UI_CLIENT_CLUSTER = "/Cluster/Client";
 }

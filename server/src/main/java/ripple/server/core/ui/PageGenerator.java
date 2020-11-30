@@ -122,15 +122,15 @@ public final class PageGenerator {
         stringBuilder.append("        </main>\n");
     }
 
-    public static String buildPage(String title, String currentFunction, String content) {
+    public static String buildPage(String pageTitle, String currentFunction, String content) {
         StringBuilder stringBuilder = new StringBuilder();
         PageGenerator.appendHtmlStartTag(stringBuilder);
-        PageGenerator.appendHeadSection(stringBuilder, title);
+        PageGenerator.appendHeadSection(stringBuilder, pageTitle);
         PageGenerator.appendBodyStartTag(stringBuilder);
         PageGenerator.appendNavigationBar(stringBuilder, "Ripple Server");
         PageGenerator.appendDivStartTag(stringBuilder);
         PageGenerator.appendSideBar(stringBuilder, currentFunction);
-        PageGenerator.appendMainSection(stringBuilder, title, content);
+        PageGenerator.appendMainSection(stringBuilder, currentFunction, content);
         PageGenerator.appendDivEndTag(stringBuilder);
         PageGenerator.appendFeatherScriptSection(stringBuilder);
         PageGenerator.appendBodyEndTag(stringBuilder);

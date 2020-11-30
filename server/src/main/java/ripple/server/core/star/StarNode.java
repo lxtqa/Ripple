@@ -44,6 +44,18 @@ public class StarNode extends AbstractNode {
         ServletHolder deleteConfigServletHolder = new ServletHolder(deleteConfigServlet);
         servletContextHandler.addServlet(deleteConfigServletHolder, Endpoint.UI_DELETE_CONFIG);
 
+        GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
+        ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);
+        servletContextHandler.addServlet(getSubscriptionServletHolder, Endpoint.UI_GET_SUBSCRIPTION);
+
+        ServerClusterServlet serverClusterServlet = new ServerClusterServlet(this);
+        ServletHolder serverClusterServletHolder = new ServletHolder(serverClusterServlet);
+        servletContextHandler.addServlet(serverClusterServletHolder, Endpoint.UI_SERVER_CLUSTER);
+
+        ClientClusterServlet clientClusterServlet = new ClientClusterServlet(this);
+        ServletHolder clientClusterServletHolder = new ServletHolder(clientClusterServlet);
+        servletContextHandler.addServlet(clientClusterServletHolder, Endpoint.UI_CLIENT_CLUSTER);
+
         // Business
         SubscribeServlet subscribeServlet = new SubscribeServlet(this);
         ServletHolder subscribeServletHolder = new ServletHolder(subscribeServlet);
