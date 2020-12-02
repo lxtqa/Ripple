@@ -22,7 +22,9 @@ public class ClientClusterServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[ClientClusterServlet] Get");
+        LOGGER.info("[ClientClusterServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

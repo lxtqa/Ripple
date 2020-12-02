@@ -22,7 +22,9 @@ public class HomeServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[HomeServlet] Get");
+        LOGGER.info("[HomeServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

@@ -22,7 +22,9 @@ public class ServerInfoServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[ServerInfoServlet] Get");
+        LOGGER.info("[ServerInfoServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

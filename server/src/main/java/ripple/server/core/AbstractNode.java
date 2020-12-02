@@ -159,11 +159,8 @@ public abstract class AbstractNode {
     }
 
     public synchronized void subscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
-        LOGGER.info("[AbstractNode] subscribe() called: Callback Address = "
-                + callbackAddress + "; Callback Port = "
-                + callbackPort + "; Application Name = "
-                + applicationName + "; Key = "
-                + key + ".");
+        LOGGER.info("[AbstractNode] subscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
+                , callbackAddress, callbackPort, applicationName, key);
         ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().get(itemKey) == null) {
             this.getSubscription().put(itemKey, new ArrayList<>());
@@ -181,11 +178,8 @@ public abstract class AbstractNode {
     }
 
     public synchronized void unsubscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
-        LOGGER.info("[AbstractNode] unsubscribe() called: Callback Address = "
-                + callbackAddress + "; Callback Port = "
-                + callbackPort + "; Application Name = "
-                + applicationName + "; Key = "
-                + key + ".");
+        LOGGER.info("[AbstractNode] unsubscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
+                , callbackAddress, callbackPort, applicationName, key);
         ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().get(itemKey) == null) {
             return;

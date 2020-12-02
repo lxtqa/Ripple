@@ -25,7 +25,7 @@ public class GetConfigServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[GetConfigServlet] Get");
+        LOGGER.info("[GetConfigServlet] Receive GET request.");
 
         List<Item> allConfigs = this.getNode().getStorage().getAll();
 

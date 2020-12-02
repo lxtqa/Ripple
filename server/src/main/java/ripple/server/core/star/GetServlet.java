@@ -27,7 +27,7 @@ public class GetServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
-        LOGGER.info("[GetServlet] Receive request: Application Name = " + applicationName + ", Key = " + key + ".");
+        LOGGER.info("[GetServlet] Receive request: Application Name = {}, Key = {}.", applicationName, key);
         Item item = this.getNode().getStorage().get(applicationName, key);
         if (item != null) {
             response.setContentType("application/json;charset=UTF-8");

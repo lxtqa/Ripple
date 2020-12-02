@@ -25,9 +25,7 @@ public class AddConfigServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[AddConfigServlet] Get");
-
-        // TODO
+        LOGGER.info("[AddConfigServlet] Receive GET request.");
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <form action=\"").append(Endpoint.UI_ADD_CONFIG).append("\" method=\"post\">\n");
@@ -61,7 +59,8 @@ public class AddConfigServlet extends BaseServlet {
         String applicationName = request.getParameter("applicationName");
         String key = request.getParameter("key");
         String value = request.getParameter("value");
-        LOGGER.info("[AddConfigServlet] Post applicationName = " + applicationName + ", key = " + key + ", value = " + value);
+        LOGGER.info("[AddConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
+                , applicationName, key, value);
 
         boolean success = this.getClient().put(applicationName, key, value);
 

@@ -28,10 +28,8 @@ public class UnsubscribeServlet extends BaseServlet {
         String callbackAddress = request.getHeader("x-ripple-callback-address");
         int callbackPort = Integer.parseInt(request.getHeader("x-ripple-callback-port"));
         String key = request.getHeader("x-ripple-key");
-        LOGGER.info("[UnsubscribeServlet] Receive request: Callback Address = " + callbackAddress
-                + "; Callback Port = " + callbackPort
-                + "; Application Name = " + applicationName
-                + "; Key = " + key + ".");
+        LOGGER.info("[UnsubscribeServlet] Receive POST request. Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
+                , callbackAddress, callbackPort, applicationName, key);
         this.getNode().unsubscribe(callbackAddress, callbackPort, applicationName, key);
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

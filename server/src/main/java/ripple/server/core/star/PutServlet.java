@@ -34,9 +34,8 @@ public class PutServlet extends BaseServlet {
         String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
         String value = request.getHeader("x-ripple-value");
-        LOGGER.info("[PutServlet] Receive request: Application Name = " + applicationName
-                + ", Key = " + key
-                + ", Value = " + value + ".");
+        LOGGER.info("[PutServlet] Receive POST request. Application Name = {}, Key = {}, Value = {}."
+                , applicationName, key, value);
 
         // Update local storage
         Item item = this.getNode().getStorage().get(applicationName, key);
@@ -57,7 +56,7 @@ public class PutServlet extends BaseServlet {
         if (this.getNode().getSubscription().containsKey(itemKey)) {
             List<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[PutServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
+                LOGGER.info("[PutServlet] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyClient(metadata, item);
             }
         }
@@ -69,7 +68,7 @@ public class PutServlet extends BaseServlet {
                     && metadata.getPort() == this.getNode().getPort()) {
                 continue;
             }
-            LOGGER.info("[PutServlet] Sync to server " + metadata.getAddress() + ":" + metadata.getPort() + ".");
+            LOGGER.info("[PutServlet] Sync to server {}:{}.", metadata.getAddress(), metadata.getPort());
             Api.syncToServer(metadata, item);
         }
 

@@ -26,8 +26,7 @@ public class DeleteServlet extends BaseServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
-        LOGGER.info("[DeleteServlet] Receive request: Application Name = " + applicationName
-                + ", Key = " + key + ".");
+        LOGGER.info("[DeleteServlet] Receive POST request. Application Name = {}, Key = {}.", applicationName, key);
 
         // TODO
 

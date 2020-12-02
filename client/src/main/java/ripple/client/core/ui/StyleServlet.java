@@ -22,7 +22,8 @@ public class StyleServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[StyleServlet] Get");
+        LOGGER.info("[StyleServlet] Receive GET request.");
+
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("@CHARSET \"UTF-8\";\n");
         stringBuilder.append("body {\n");

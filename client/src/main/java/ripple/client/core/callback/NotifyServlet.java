@@ -32,11 +32,8 @@ public class NotifyServlet extends BaseServlet {
         String value = request.getHeader("x-ripple-value");
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
-        LOGGER.info("[NotifyServlet] Receive request: Application Name = " + applicationName
-                + ", Key = " + key
-                + ", Value = " + value
-                + ", Last Update = " + SimpleDateFormat.getDateTimeInstance().format(lastUpdate)
-                + ", Last Update Server Id = " + lastUpdateServerId);
+        LOGGER.info("[NotifyServlet] Receive request: Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}"
+                , applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 
         // Update local storage
         Item item = this.getClient().getStorage().get(applicationName, key);

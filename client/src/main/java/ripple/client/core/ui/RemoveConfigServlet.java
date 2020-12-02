@@ -22,7 +22,9 @@ public class RemoveConfigServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[RemoveConfigServlet] Get");
+        LOGGER.info("[RemoveConfigServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

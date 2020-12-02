@@ -22,7 +22,9 @@ public class GetSubscriptionServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[GetSubscriptionServlet] Get");
+        LOGGER.info("[GetSubscriptionServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");

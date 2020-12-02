@@ -36,11 +36,8 @@ public class SyncServlet extends BaseServlet {
         String value = request.getHeader("x-ripple-value");
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
-        LOGGER.info("[SyncServlet] Receive request: Application Name = " + applicationName
-                + ", Key = " + key
-                + ", Value = " + value
-                + ", Last Update = " + SimpleDateFormat.getDateTimeInstance().format(lastUpdate)
-                + ", Last Update Server Id = " + lastUpdateServerId);
+        LOGGER.info("[SyncServlet] Receive POST request. Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
+                , applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 
         // Update local storage
         Item item = this.getNode().getStorage().get(applicationName, key);
@@ -61,7 +58,7 @@ public class SyncServlet extends BaseServlet {
         if (this.getNode().getSubscription().containsKey(itemKey)) {
             List<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[SyncServlet] Notify client " + metadata.getAddress() + ":" + metadata.getPort() + ".");
+                LOGGER.info("[SyncServlet] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyClient(metadata, item);
             }
         }

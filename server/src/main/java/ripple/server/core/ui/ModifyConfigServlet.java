@@ -22,7 +22,9 @@ public class ModifyConfigServlet extends BaseServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[ModifyConfigServlet] Get");
+        LOGGER.info("[ModifyConfigServlet] Receive GET request.");
+
+        // TODO
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
