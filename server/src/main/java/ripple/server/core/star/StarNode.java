@@ -2,8 +2,14 @@ package ripple.server.core.star;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ripple.server.core.AbstractNode;
+import ripple.server.core.ClientMetadata;
 import ripple.server.core.Endpoint;
+import ripple.server.core.Item;
+import ripple.server.core.ItemKey;
+import ripple.server.core.NodeMetadata;
 import ripple.server.core.NodeType;
 import ripple.server.core.ui.AddConfigServlet;
 import ripple.server.core.ui.ClientClusterServlet;
@@ -14,11 +20,17 @@ import ripple.server.core.ui.ModifyConfigServlet;
 import ripple.server.core.ui.RemoveConfigServlet;
 import ripple.server.core.ui.ServerClusterServlet;
 import ripple.server.core.ui.StyleServlet;
+import ripple.server.helper.Api;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Zhen Tang
  */
 public class StarNode extends AbstractNode {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StarNode.class);
+
     public StarNode(int id, String storageLocation, int port) {
         super(id, NodeType.STAR, storageLocation, port);
     }
@@ -90,5 +102,44 @@ public class StarNode extends AbstractNode {
         SyncServlet syncServlet = new SyncServlet(this);
         ServletHolder syncServletHolder = new ServletHolder(syncServlet);
         servletContextHandler.addServlet(syncServletHolder, Endpoint.SERVER_SYNC);
+    }
+
+    @Override
+    public boolean put(String applicationName, String key, String value) {
+        // Update local storage
+        Item item = this.getStorage().get(applicationName, key);
+        if (item == null) {
+            item = new Item();
+        }
+        synchronized (this) {
+            item.setApplicationName(applicationName);
+            item.setKey(key);
+            item.setValue(value);
+            item.setLastUpdate(new Date(System.currentTimeMillis()));
+            item.setLastUpdateServerId(this.getId());
+        }
+        this.getStorage().put(item);
+
+        ItemKey itemKey = new ItemKey(applicationName, key);
+        // Notify clients
+        if (this.getSubscription().containsKey(itemKey)) {
+            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
+            for (ClientMetadata metadata : clients) {
+                LOGGER.info("[StarNode] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
+                Api.notifyClient(metadata, item);
+            }
+        }
+
+        // [Star protocol] Sync to all the other servers
+        for (NodeMetadata metadata : this.getNodeList()) {
+            if (metadata.getId() == this.getId()
+                    && metadata.getAddress().equals(this.getAddress())
+                    && metadata.getPort() == this.getPort()) {
+                continue;
+            }
+            LOGGER.info("[StarNode] Sync to server {}:{}.", metadata.getAddress(), metadata.getPort());
+            Api.syncToServer(metadata, item);
+        }
+        return true;
     }
 }

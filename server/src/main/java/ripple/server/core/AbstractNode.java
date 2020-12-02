@@ -104,6 +104,8 @@ public abstract class AbstractNode {
 
     public abstract void registerHandlers(ServletContextHandler servletContextHandler);
 
+    public abstract boolean put(String applicationName, String key, String value);
+
 
     public AbstractNode(int id, String type, String storageLocation) {
         this(id, type, storageLocation, 0);

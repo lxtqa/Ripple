@@ -32,4 +32,10 @@ public class GossipNode extends AbstractNode {
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // TODO
     }
+
+    @Override
+    public boolean put(String applicationName, String key, String value) {
+        // TODO
+        return false;
+    }
 }
