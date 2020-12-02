@@ -110,6 +110,8 @@ public abstract class AbstractNode {
 
     public abstract boolean put(String applicationName, String key, String value);
 
+    public abstract boolean delete(String applicationName, String key);
+
 
     public AbstractNode(int id, String type, String storageLocation) {
         this(id, type, storageLocation, 0);

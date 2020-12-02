@@ -117,28 +117,10 @@ public class StarNode extends AbstractNode {
     @Override
     public boolean put(String applicationName, String key, String value) {
         // Update local storage
-        Item item = this.getStorage().get(applicationName, key);
-        if (item == null) {
-            item = new Item();
-        }
-        synchronized (this) {
-            item.setApplicationName(applicationName);
-            item.setKey(key);
-            item.setValue(value);
-            item.setLastUpdate(new Date(System.currentTimeMillis()));
-            item.setLastUpdateServerId(this.getId());
-        }
-        this.getStorage().put(item);
+        Item item = this.doUpdateItem(applicationName, key, value, new Date(System.currentTimeMillis()), this.getId());
 
-        ItemKey itemKey = new ItemKey(applicationName, key);
         // Notify clients
-        if (this.getSubscription().containsKey(itemKey)) {
-            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
-            for (ClientMetadata metadata : clients) {
-                LOGGER.info("[StarNode] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyUpdateToClient(metadata, item);
-            }
-        }
+        this.doNotifyUpdateToClients(item);
 
         // [Star protocol] Sync to all the other servers
         for (NodeMetadata metadata : this.getNodeList()) {
@@ -147,14 +129,62 @@ public class StarNode extends AbstractNode {
                     && metadata.getPort() == this.getPort()) {
                 continue;
             }
-            LOGGER.info("[StarNode] Sync to server {}:{}.", metadata.getAddress(), metadata.getPort());
+            LOGGER.info("[StarNode] Sync update to server {}:{}.", metadata.getAddress(), metadata.getPort());
             Api.syncUpdateToServer(metadata, item);
         }
         return true;
     }
 
+    @Override
+    public boolean delete(String applicationName, String key) {
+        // Update local storage
+        this.doDeleteItem(applicationName, key);
+
+        // Notify clients
+        this.doNotifyDeleteToClients(applicationName, key);
+
+        // [Star protocol] Sync to all the other servers
+        for (NodeMetadata metadata : this.getNodeList()) {
+            if (metadata.getId() == this.getId()
+                    && metadata.getAddress().equals(this.getAddress())
+                    && metadata.getPort() == this.getPort()) {
+                continue;
+            }
+            LOGGER.info("[StarNode] Sync delete to server {}:{}.", metadata.getAddress(), metadata.getPort());
+            Api.syncDeleteToServer(metadata, applicationName, key);
+        }
+        return true;
+    }
+
+    private void doDeleteItem(String applicationName, String key) {
+        Item item = this.getStorage().get(applicationName, key);
+        if (item != null) {
+            this.getStorage().delete(item);
+        }
+    }
+
     public boolean onSyncUpdateReceived(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
         // Update local storage
+        Item item = this.doUpdateItem(applicationName, key, value, lastUpdate, lastUpdateServerId);
+
+        // Notify clients
+        this.doNotifyUpdateToClients(item);
+
+        return true;
+    }
+
+    private void doNotifyUpdateToClients(Item item) {
+        ItemKey itemKey = new ItemKey(item.getApplicationName(), item.getKey());
+        if (this.getSubscription().containsKey(itemKey)) {
+            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
+            for (ClientMetadata metadata : clients) {
+                LOGGER.info("[SyncServlet] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
+                Api.notifyUpdateToClient(metadata, item);
+            }
+        }
+    }
+
+    private Item doUpdateItem(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
         Item item = this.getStorage().get(applicationName, key);
         if (item == null) {
             item = new Item();
@@ -167,28 +197,20 @@ public class StarNode extends AbstractNode {
             item.setLastUpdateServerId(lastUpdateServerId);
         }
         this.getStorage().put(item);
-
-        ItemKey itemKey = new ItemKey(applicationName, key);
-        // Notify clients
-        if (this.getSubscription().containsKey(itemKey)) {
-            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
-            for (ClientMetadata metadata : clients) {
-                LOGGER.info("[SyncServlet] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyUpdateToClient(metadata, item);
-            }
-        }
-        return true;
+        return item;
     }
 
     public boolean onSyncDeleteReceived(String applicationName, String key) {
         // Update local storage
-        Item item = this.getStorage().get(applicationName, key);
-        if (item != null) {
-            this.getStorage().delete(item);
-        }
+        this.doDeleteItem(applicationName, key);
 
-        ItemKey itemKey = new ItemKey(applicationName, key);
         // Notify clients
+        this.doNotifyDeleteToClients(applicationName, key);
+        return true;
+    }
+
+    private void doNotifyDeleteToClients(String applicationName, String key) {
+        ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().containsKey(itemKey)) {
             List<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
@@ -196,6 +218,5 @@ public class StarNode extends AbstractNode {
                 Api.notifyDeleteToClient(metadata, applicationName, key);
             }
         }
-        return true;
     }
 }
