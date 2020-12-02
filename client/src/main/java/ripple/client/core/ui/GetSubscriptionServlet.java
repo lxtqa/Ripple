@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
+import ripple.client.core.ItemKey;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -24,12 +25,45 @@ public class GetSubscriptionServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[GetSubscriptionServlet] Receive GET request.");
 
-        // TODO
-
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("已订阅配置").append("\n");
+        stringBuilder.append("                    ")
+                .append("当前客户端节点共订阅了 <strong>")
+                .append(this.getClient().getSubscription().size())
+                .append("</strong> 条配置。")
+                .append("\n");
         stringBuilder.append("                </p>\n");
+        if (this.getClient().getSubscription().size() > 0) {
+            stringBuilder.append("                <table class=\"table table-striped\">\n");
+            stringBuilder.append("                    <thead>\n");
+            stringBuilder.append("                    <tr>\n");
+            stringBuilder.append("                        <th>序号</th>\n");
+            stringBuilder.append("                        <th>应用名称</th>\n");
+            stringBuilder.append("                        <th>键</th>\n");
+            stringBuilder.append("                    </tr>\n");
+            stringBuilder.append("                    </thead>\n");
+            stringBuilder.append("                    <tbody>\n");
+
+            int i = 0;
+            for (ItemKey itemKey : this.getClient().getSubscription()) {
+                stringBuilder.append("                    <tr>\n");
+                stringBuilder.append("                        <td>")
+                        .append(i + 1)
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(itemKey.getApplicationName())
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(itemKey.getKey())
+                        .append("</td>\n");
+                stringBuilder.append("                    </tr>\n");
+                i++;
+            }
+
+            stringBuilder.append("                    </tbody>\n");
+            stringBuilder.append("                </table>\n");
+        }
+
         String content = stringBuilder.toString();
 
         String pageContent = PageGenerator.buildPage("Ripple Client - 已订阅配置", "已订阅配置", content);

@@ -7,6 +7,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.Endpoint;
 import ripple.client.core.Item;
+import ripple.client.core.ItemKey;
 import ripple.client.core.callback.NotifyServlet;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
@@ -22,6 +23,8 @@ import ripple.client.helper.Api;
 import ripple.client.helper.Storage;
 
 import java.net.InetAddress;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Zhen Tang
@@ -34,6 +37,7 @@ public class RippleClient {
     private int port;
     private Server server;
     private boolean running;
+    private Set<ItemKey> subscription;
 
     public String getAddress() {
         return address;
@@ -91,11 +95,20 @@ public class RippleClient {
         this.storage = storage;
     }
 
+    public Set<ItemKey> getSubscription() {
+        return subscription;
+    }
+
+    public void setSubscription(Set<ItemKey> subscription) {
+        this.subscription = subscription;
+    }
+
     public RippleClient(String serverAddress, int serverPort, String storageLocation) {
         this.setServerAddress(serverAddress);
         this.setServerPort(serverPort);
         this.setStorage(new Storage(storageLocation));
         this.setRunning(false);
+        this.setSubscription(new HashSet<>());
     }
 
     public Item get(String applicationName, String key) {
@@ -130,6 +143,7 @@ public class RippleClient {
         if (!this.isRunning()) {
             this.start();
         }
+        this.getSubscription().add(new ItemKey(applicationName, key));
         return Api.subscribe(this.getServerAddress(), this.getServerPort()
                 , this.getAddress(), this.getPort(), applicationName, key);
     }
@@ -138,6 +152,7 @@ public class RippleClient {
         if (!this.isRunning()) {
             this.start();
         }
+        this.getSubscription().remove(new ItemKey(applicationName, key));
         return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
                 , this.getAddress(), this.getPort(), applicationName, key);
     }
