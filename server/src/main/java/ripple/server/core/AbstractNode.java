@@ -204,6 +204,11 @@ public abstract class AbstractNode {
         if (subscribers.contains(clientMetadata)) {
             subscribers.remove(clientMetadata);
         }
+
+        this.cleanUpConnectedClients(clientMetadata);
+    }
+
+    private void cleanUpConnectedClients(ClientMetadata clientMetadata) {
         boolean exist = false;
         for (Set<ClientMetadata> clients : this.getSubscription().values()) {
             if (clients.contains(clientMetadata)) {
