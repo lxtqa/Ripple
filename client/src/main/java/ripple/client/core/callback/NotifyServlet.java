@@ -27,27 +27,45 @@ public class NotifyServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String applicationName = request.getHeader("x-ripple-application-name");
-        String key = request.getHeader("x-ripple-key");
-        String value = request.getHeader("x-ripple-value");
-        Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
-        int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
-        LOGGER.info("[NotifyServlet] Receive request: Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}"
-                , applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
+        boolean result = false;
+        String type = request.getHeader("x-ripple-type");
+        if (type.equals(NotifyType.UPDATE)) {
+            String applicationName = request.getHeader("x-ripple-application-name");
+            String key = request.getHeader("x-ripple-key");
+            String value = request.getHeader("x-ripple-value");
+            Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
+            int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
+            LOGGER.info("[NotifyServlet] Receive request: Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
+                    , type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 
-        // Update local storage
-        Item item = this.getClient().getStorage().get(applicationName, key);
-        if (item == null) {
-            item = new Item();
+            // Update local storage
+            Item item = this.getClient().getStorage().get(applicationName, key);
+            if (item == null) {
+                item = new Item();
+            }
+            synchronized (this) {
+                item.setApplicationName(applicationName);
+                item.setKey(key);
+                item.setValue(value);
+                item.setLastUpdate(lastUpdate);
+                item.setLastUpdateServerId(lastUpdateServerId);
+            }
+            this.getClient().getStorage().put(item);
+
+            result = true;
+        } else if (type.equals(NotifyType.DELETE)) {
+            String applicationName = request.getHeader("x-ripple-application-name");
+            String key = request.getHeader("x-ripple-key");
+            LOGGER.info("[NotifyServlet] Receive request: Type = {}, Application Name = {}, Key = {}."
+                    , type, applicationName, key);
+
+            Item item = this.getClient().getStorage().get(applicationName, key);
+            if (item != null) {
+                this.getClient().getStorage().delete(item);
+            }
+
+            result = true;
         }
-        synchronized (this) {
-            item.setApplicationName(applicationName);
-            item.setKey(key);
-            item.setValue(value);
-            item.setLastUpdate(lastUpdate);
-            item.setLastUpdateServerId(lastUpdateServerId);
-        }
-        this.getClient().getStorage().put(item);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
