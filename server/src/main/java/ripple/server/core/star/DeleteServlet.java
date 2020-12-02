@@ -28,11 +28,10 @@ public class DeleteServlet extends BaseServlet {
         String key = request.getHeader("x-ripple-key");
         LOGGER.info("[DeleteServlet] Receive POST request. Application Name = {}, Key = {}.", applicationName, key);
 
-        // TODO
-
+        boolean result = this.getNode().delete(applicationName, key);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
-        response.getWriter().println(MAPPER.writeValueAsString(true));
+        response.getWriter().println(MAPPER.writeValueAsString(result));
     }
 }

@@ -48,6 +48,8 @@ public class Main {
         item = clientTwo.get("testApp", "test");
         System.out.println("[Client 2] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
 
+        // clientOne.delete("testApp", "test");
+
         // clientOne.unsubscribe("testApp", "test");
         // clientTwo.unsubscribe("testApp", "test");
         // clientOne.stop();

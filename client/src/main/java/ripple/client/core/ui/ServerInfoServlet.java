@@ -24,11 +24,12 @@ public class ServerInfoServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[ServerInfoServlet] Receive GET request.");
 
-        // TODO
-
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("已连接的服务器").append("\n");
+        stringBuilder.append("                    ").append("服务器IP地址：").append(this.getClient().getServerAddress()).append("\n");
+        stringBuilder.append("                </p>\n");
+        stringBuilder.append("                <p>\n");
+        stringBuilder.append("                    ").append("服务器端口号：").append(this.getClient().getServerPort()).append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 

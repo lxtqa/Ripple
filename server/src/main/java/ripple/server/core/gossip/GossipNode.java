@@ -53,4 +53,10 @@ public class GossipNode extends AbstractNode {
         // TODO
         return false;
     }
+
+    @Override
+    public boolean delete(String applicationName, String key) {
+        // TODO
+        return false;
+    }
 }
