@@ -24,11 +24,12 @@ public class HomeServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[HomeServlet] Receive GET request.");
 
-        // TODO
-
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("主页").append("\n");
+        stringBuilder.append("                    ").append("服务器IP地址：").append(this.getNode().getAddress()).append("\n");
+        stringBuilder.append("                </p>\n");
+        stringBuilder.append("                <p>\n");
+        stringBuilder.append("                    ").append("服务器端口号：").append(this.getNode().getPort()).append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
