@@ -4,19 +4,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.AbstractNode;
 import ripple.server.core.BaseServlet;
-import ripple.server.core.ClientMetadata;
-import ripple.server.core.Item;
-import ripple.server.core.ItemKey;
-import ripple.server.helper.Api;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author Zhen Tang
@@ -25,7 +19,7 @@ public class SyncServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public SyncServlet(AbstractNode node) {
+    public SyncServlet(StarNode node) {
         super(node);
     }
 
@@ -39,32 +33,10 @@ public class SyncServlet extends BaseServlet {
         LOGGER.info("[SyncServlet] Receive POST request. Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                 , applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 
-        // Update local storage
-        Item item = this.getNode().getStorage().get(applicationName, key);
-        if (item == null) {
-            item = new Item();
-        }
-        synchronized (this) {
-            item.setApplicationName(applicationName);
-            item.setKey(key);
-            item.setValue(value);
-            item.setLastUpdate(lastUpdate);
-            item.setLastUpdateServerId(lastUpdateServerId);
-        }
-        this.getNode().getStorage().put(item);
-
-        ItemKey itemKey = new ItemKey(applicationName, key);
-        // Notify clients
-        if (this.getNode().getSubscription().containsKey(itemKey)) {
-            List<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
-            for (ClientMetadata metadata : clients) {
-                LOGGER.info("[SyncServlet] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyClient(metadata, item);
-            }
-        }
+        boolean result = ((StarNode) this.getNode()).syncUpdate(applicationName, key, value, lastUpdate, lastUpdateServerId);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
-        response.getWriter().println(MAPPER.writeValueAsString(true));
+        response.getWriter().println(MAPPER.writeValueAsString(result));
     }
 }

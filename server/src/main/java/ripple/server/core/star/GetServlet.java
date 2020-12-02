@@ -28,7 +28,7 @@ public class GetServlet extends BaseServlet {
         String applicationName = request.getHeader("x-ripple-application-name");
         String key = request.getHeader("x-ripple-key");
         LOGGER.info("[GetServlet] Receive request: Application Name = {}, Key = {}.", applicationName, key);
-        Item item = this.getNode().getStorage().get(applicationName, key);
+        Item item = this.getNode().get(applicationName, key);
         if (item != null) {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpStatus.OK_200);

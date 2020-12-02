@@ -2,7 +2,10 @@ package ripple.server.core.expander;
 
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import ripple.server.core.AbstractNode;
+import ripple.server.core.Item;
 import ripple.server.core.NodeType;
+
+import java.util.List;
 
 /**
  * @author Zhen Tang
@@ -31,6 +34,18 @@ public class ExpanderNode extends AbstractNode {
     @Override
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // TODO
+    }
+
+    @Override
+    public Item get(String applicationName, String key) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public List<Item> getAll() {
+        // TODO
+        return null;
     }
 
     @Override

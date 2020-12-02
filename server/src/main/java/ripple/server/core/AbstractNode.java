@@ -46,11 +46,11 @@ public abstract class AbstractNode {
         this.type = type;
     }
 
-    public Storage getStorage() {
+    protected Storage getStorage() {
         return storage;
     }
 
-    private void setStorage(Storage storage) {
+    protected void setStorage(Storage storage) {
         this.storage = storage;
     }
 
@@ -103,6 +103,10 @@ public abstract class AbstractNode {
     }
 
     public abstract void registerHandlers(ServletContextHandler servletContextHandler);
+
+    public abstract Item get(String applicationName, String key);
+
+    public abstract List<Item> getAll();
 
     public abstract boolean put(String applicationName, String key, String value);
 

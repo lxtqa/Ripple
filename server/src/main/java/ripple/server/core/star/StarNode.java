@@ -105,6 +105,16 @@ public class StarNode extends AbstractNode {
     }
 
     @Override
+    public Item get(String applicationName, String key) {
+        return this.getStorage().get(applicationName, key);
+    }
+
+    @Override
+    public List<Item> getAll() {
+        return this.getStorage().getAll();
+    }
+
+    @Override
     public boolean put(String applicationName, String key, String value) {
         // Update local storage
         Item item = this.getStorage().get(applicationName, key);
@@ -139,6 +149,33 @@ public class StarNode extends AbstractNode {
             }
             LOGGER.info("[StarNode] Sync to server {}:{}.", metadata.getAddress(), metadata.getPort());
             Api.syncToServer(metadata, item);
+        }
+        return true;
+    }
+
+    public boolean syncUpdate(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
+        // Update local storage
+        Item item = this.getStorage().get(applicationName, key);
+        if (item == null) {
+            item = new Item();
+        }
+        synchronized (this) {
+            item.setApplicationName(applicationName);
+            item.setKey(key);
+            item.setValue(value);
+            item.setLastUpdate(lastUpdate);
+            item.setLastUpdateServerId(lastUpdateServerId);
+        }
+        this.getStorage().put(item);
+
+        ItemKey itemKey = new ItemKey(applicationName, key);
+        // Notify clients
+        if (this.getSubscription().containsKey(itemKey)) {
+            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
+            for (ClientMetadata metadata : clients) {
+                LOGGER.info("[SyncServlet] Notify client {}:{}.", metadata.getAddress(), metadata.getPort());
+                Api.notifyClient(metadata, item);
+            }
         }
         return true;
     }
