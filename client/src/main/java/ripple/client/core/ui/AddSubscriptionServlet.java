@@ -25,8 +25,8 @@ public class AddSubscriptionServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[AddSubscriptionServlet] Receive GET request.");
-        StringBuilder stringBuilder = new StringBuilder();
 
+        StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <form action=\"").append(Endpoint.UI_ADD_SUBSCRIPTION).append("\" method=\"post\">\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
         stringBuilder.append("                        <label for=\"applicationName\">应用名称</label>\n");
