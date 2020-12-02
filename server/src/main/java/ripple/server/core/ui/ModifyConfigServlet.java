@@ -58,7 +58,7 @@ public class ModifyConfigServlet extends BaseServlet {
         String applicationName = request.getParameter("applicationName");
         String key = request.getParameter("key");
         String value = request.getParameter("value");
-        LOGGER.info("[AddConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
+        LOGGER.info("[ModifyConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
                 , applicationName, key, value);
 
         boolean success = this.getNode().put(applicationName, key, value);
