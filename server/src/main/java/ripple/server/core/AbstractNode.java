@@ -9,8 +9,9 @@ import org.slf4j.LoggerFactory;
 import ripple.server.helper.Storage;
 
 import java.net.InetAddress;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -22,8 +23,9 @@ public abstract class AbstractNode {
     private int id;
     private String type;
     private Storage storage;
-    private List<NodeMetadata> nodeList;
-    private ConcurrentHashMap<ItemKey, List<ClientMetadata>> subscription;
+    private Set<NodeMetadata> nodeList;
+    private ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription;
+    private Set<ClientMetadata> connectedClients;
 
     private String address;
     private int port;
@@ -54,20 +56,28 @@ public abstract class AbstractNode {
         this.storage = storage;
     }
 
-    public List<NodeMetadata> getNodeList() {
+    public Set<NodeMetadata> getNodeList() {
         return nodeList;
     }
 
-    public void setNodeList(List<NodeMetadata> nodeList) {
+    public void setNodeList(Set<NodeMetadata> nodeList) {
         this.nodeList = nodeList;
     }
 
-    public ConcurrentHashMap<ItemKey, List<ClientMetadata>> getSubscription() {
+    public ConcurrentHashMap<ItemKey, Set<ClientMetadata>> getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(ConcurrentHashMap<ItemKey, List<ClientMetadata>> subscription) {
+    public void setSubscription(ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription) {
         this.subscription = subscription;
+    }
+
+    public Set<ClientMetadata> getConnectedClients() {
+        return connectedClients;
+    }
+
+    public void setConnectedClients(Set<ClientMetadata> connectedClients) {
+        this.connectedClients = connectedClients;
     }
 
     public String getAddress() {
@@ -120,10 +130,11 @@ public abstract class AbstractNode {
     public AbstractNode(int id, String type, String storageLocation, int port) {
         this.setId(id);
         this.setType(type);
-        this.setNodeList(new ArrayList<>());
+        this.setNodeList(new HashSet<>());
         this.setStorage(new Storage(storageLocation));
         this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);
+        this.setConnectedClients(new HashSet<>());
     }
 
     public synchronized boolean start() {
@@ -171,18 +182,14 @@ public abstract class AbstractNode {
                 , callbackAddress, callbackPort, applicationName, key);
         ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().get(itemKey) == null) {
-            this.getSubscription().put(itemKey, new ArrayList<>());
+            this.getSubscription().put(itemKey, new HashSet<>());
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
-        for (ClientMetadata metadata : subscribers) {
-            if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
-                return;
-            }
+        Set<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
+        ClientMetadata clientMetadata = new ClientMetadata(callbackAddress, callbackPort);
+        if (!subscribers.contains(clientMetadata)) {
+            subscribers.add(clientMetadata);
         }
-        ClientMetadata clientMetadata = new ClientMetadata();
-        clientMetadata.setAddress(callbackAddress);
-        clientMetadata.setPort(callbackPort);
-        subscribers.add(clientMetadata);
+        this.getConnectedClients().add(clientMetadata);
     }
 
     public synchronized void unsubscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
@@ -192,16 +199,20 @@ public abstract class AbstractNode {
         if (this.getSubscription().get(itemKey) == null) {
             return;
         }
-        List<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
-        ClientMetadata toRemove = null;
-        for (ClientMetadata metadata : subscribers) {
-            if (metadata.getAddress().equals(callbackAddress) && metadata.getPort() == callbackPort) {
-                toRemove = metadata;
+        Set<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
+        ClientMetadata clientMetadata = new ClientMetadata(callbackAddress, callbackPort);
+        if (subscribers.contains(clientMetadata)) {
+            subscribers.remove(clientMetadata);
+        }
+        boolean exist = false;
+        for (Set<ClientMetadata> clients : this.getSubscription().values()) {
+            if (clients.contains(clientMetadata)) {
+                exist = true;
                 break;
             }
         }
-        if (toRemove != null) {
-            subscribers.remove(toRemove);
+        if (!exist) {
+            this.getConnectedClients().remove(clientMetadata);
         }
     }
 }

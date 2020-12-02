@@ -1,5 +1,7 @@
 package ripple.server.core;
 
+import java.util.Objects;
+
 /**
  * @author Zhen Tang
  */
@@ -36,5 +38,20 @@ public final class NodeMetadata {
         this.setId(id);
         this.setAddress(address);
         this.setPort(port);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        NodeMetadata that = (NodeMetadata) o;
+        return id == that.id &&
+                port == that.port &&
+                Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, address, port);
     }
 }

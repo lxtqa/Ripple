@@ -7,7 +7,7 @@ import ripple.server.core.gossip.GossipNode;
 import ripple.server.core.star.StarNode;
 import ripple.server.core.tree.TreeNode;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author Zhen Tang
@@ -83,11 +83,11 @@ public class RippleServer {
         return this.getNode().getPort();
     }
 
-    public List<NodeMetadata> getNodeList() {
+    public Set<NodeMetadata> getNodeList() {
         return this.getNode().getNodeList();
     }
 
-    public void setNodeList(List<NodeMetadata> nodeList) {
+    public void setNodeList(Set<NodeMetadata> nodeList) {
         this.getNode().setNodeList(nodeList);
     }
 }

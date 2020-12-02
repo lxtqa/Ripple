@@ -24,6 +24,7 @@ import ripple.server.helper.Api;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Zhen Tang
@@ -176,7 +177,7 @@ public class StarNode extends AbstractNode {
     private void doNotifyUpdateToClients(Item item) {
         ItemKey itemKey = new ItemKey(item.getApplicationName(), item.getKey());
         if (this.getSubscription().containsKey(itemKey)) {
-            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
+            Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[SyncServlet] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyUpdateToClient(metadata, item);
@@ -212,7 +213,7 @@ public class StarNode extends AbstractNode {
     private void doNotifyDeleteToClients(String applicationName, String key) {
         ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().containsKey(itemKey)) {
-            List<ClientMetadata> clients = this.getSubscription().get(itemKey);
+            Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[SyncServlet] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyDeleteToClient(metadata, applicationName, key);

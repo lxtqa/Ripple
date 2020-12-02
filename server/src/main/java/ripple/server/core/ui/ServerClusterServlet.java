@@ -46,8 +46,7 @@ public class ServerClusterServlet extends BaseServlet {
             stringBuilder.append("                    <tbody>\n");
 
             int i = 0;
-            for (i = 0; i < this.getNode().getNodeList().size(); i++) {
-                NodeMetadata metadata = this.getNode().getNodeList().get(i);
+            for (NodeMetadata metadata : this.getNode().getNodeList()) {
                 stringBuilder.append("                    <tr>\n");
                 stringBuilder.append("                        <td>")
                         .append(i + 1)
@@ -62,6 +61,7 @@ public class ServerClusterServlet extends BaseServlet {
                         .append(metadata.getPort())
                         .append("</td>\n");
                 stringBuilder.append("                    </tr>\n");
+                i++;
             }
 
             stringBuilder.append("                    </tbody>\n");
