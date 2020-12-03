@@ -1,10 +1,11 @@
 package ripple.test;
 
 import ripple.client.RippleClient;
-import ripple.client.core.Item;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,52 +13,71 @@ import java.util.List;
  * @author Zhen Tang
  */
 public class Main {
+    private static final int SERVER_COUNT = 10;
+    private static final int CLIENTS_PER_SERVER = 5;
+    private static final String SERVER_DATABASE_PATH = "D:\\ripple-test-dir\\server";
+    private static final String CLIENT_DATABASE_PATH = "D:\\ripple-test-dir\\client";
+
     public static void main(String[] args) {
-        RippleServer nodeOne = RippleServer.starProtocol(1, "D:\\server-1.txt");
-        RippleServer nodeTwo = RippleServer.starProtocol(2, "D:\\server-2.txt");
-        nodeOne.start();
-        System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
-        nodeTwo.start();
-        System.out.println("Node Two: " + nodeTwo.getAddress() + ":" + nodeTwo.getPort());
-        List<NodeMetadata> nodeList = new ArrayList<>();
-        nodeList.add(new NodeMetadata(nodeOne.getId(), nodeOne.getAddress(), nodeOne.getPort()));
-        nodeList.add(new NodeMetadata(nodeTwo.getId(), nodeTwo.getAddress(), nodeTwo.getPort()));
-        nodeOne.setNodeList(nodeList);
-        nodeTwo.setNodeList(nodeList);
+        try {
+            Files.createDirectories(Paths.get(SERVER_DATABASE_PATH));
+            Files.createDirectories(Paths.get(CLIENT_DATABASE_PATH));
 
-        RippleClient clientOne = new RippleClient(nodeOne.getAddress(), nodeOne.getPort(), "D:\\client-1.txt");
-        clientOne.start();
-        System.out.println("Client One: " + clientOne.getAddress() + ":" + clientOne.getPort());
-        clientOne.subscribe("testApp", "test");
-        RippleClient clientTwo = new RippleClient(nodeTwo.getAddress(), nodeTwo.getPort(), "D:\\client-2.txt");
-        clientTwo.start();
-        System.out.println("Client Two: " + clientTwo.getAddress() + ":" + clientTwo.getPort());
-        clientTwo.subscribe("testApp", "test");
+            List<RippleServer> serverList = new ArrayList<>();
+            List<RippleClient> clientList = new ArrayList<>();
+            List<NodeMetadata> nodeList = new ArrayList<>();
+            int i = 0;
+            for (i = 0; i < SERVER_COUNT; i++) {
+                int serverId = i + 1;
+                String storageLocation = SERVER_DATABASE_PATH + "\\server-" + serverId + ".txt";
+                RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
+                rippleServer.start();
+                serverList.add(rippleServer);
+                System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
+                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getPort()));
+            }
+            for (i = 0; i < SERVER_COUNT; i++) {
+                serverList.get(i).initCluster(nodeList);
+            }
 
-        clientOne.put("testApp", "test", "test");
-        System.out.println("Setting testApp.test = test by Client 1.");
-        Item item = clientTwo.get("testApp", "test");
-        System.out.println("[Client 2] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
+            String applicationName = "testApp";
+            String key = "test";
+            String value = "test";
 
-        clientTwo.put("testApp", "test", "newTest");
-        System.out.println("Setting testApp.test = newTest by Client 2.");
-        item = clientOne.get("testApp", "test");
-        System.out.println("[Client 1] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
+            int j = 0;
+            for (i = 0; i < SERVER_COUNT; i++) {
+                for (j = 0; j < CLIENTS_PER_SERVER; j++) {
+                    RippleServer rippleServer = serverList.get(i);
+                    String serverAddress = rippleServer.getAddress();
+                    int serverPort = rippleServer.getPort();
+                    String storageLocation = CLIENT_DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".txt";
+                    RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
+                    rippleClient.start();
+                    clientList.add(rippleClient);
+                    System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
+                            + rippleClient.getAddress() + ":" + rippleClient.getPort());
+                }
+            }
 
-        clientTwo.put("testApp", "test", "newTest1");
-        System.out.println("Setting testApp.test = newTest1 by Client 1.");
-        item = clientOne.get("testApp", "test");
-        System.out.println("[Client 1] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
-        item = clientTwo.get("testApp", "test");
-        System.out.println("[Client 2] " + item.getApplicationName() + "." + item.getKey() + " = " + item.getValue());
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.subscribe(applicationName, key);
+            }
 
-        clientOne.delete("testApp", "test");
+            clientList.get(0).put(applicationName, key, value);
 
-        clientOne.unsubscribe("testApp", "test");
-        clientTwo.unsubscribe("testApp", "test");
-        clientOne.stop();
-        clientTwo.stop();
-        nodeOne.stop();
-        nodeTwo.stop();
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.unsubscribe(applicationName, key);
+            }
+
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.stop();
+            }
+
+            for (RippleServer rippleServer : serverList) {
+                rippleServer.stop();
+            }
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 }
