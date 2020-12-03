@@ -41,9 +41,11 @@ public class SyncServlet extends BaseServlet {
         } else if (type.equals(SyncType.DELETE)) {
             String applicationName = request.getHeader("x-ripple-application-name");
             String key = request.getHeader("x-ripple-key");
-            LOGGER.info("[SyncServlet] Receive POST request. Tyep = {}, Application Name = {}, Key = {}."
-                    , type, applicationName, key);
-            result = this.getNode().onSyncDeleteReceived(applicationName, key);
+            Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
+            int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
+            LOGGER.info("[SyncServlet] Receive POST request. Tyep = {}, Application Name = {}, Key = {}, Last Update = {}, Last Update Server Id = {}."
+                    , type, applicationName, key, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
+            result = this.getNode().onSyncDeleteReceived(applicationName, key, lastUpdate, lastUpdateServerId);
         }
 
         response.setContentType("application/json;charset=UTF-8");

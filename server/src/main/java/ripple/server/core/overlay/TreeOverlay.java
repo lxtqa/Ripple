@@ -1,6 +1,5 @@
 package ripple.server.core.overlay;
 
-import ripple.server.core.Item;
 import ripple.server.core.NodeMetadata;
 
 import java.util.List;
@@ -24,7 +23,7 @@ public class TreeOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(Item toSend, NodeMetadata current, List<NodeMetadata> cluster) {
+    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> cluster) {
         // TODO
         return null;
     }

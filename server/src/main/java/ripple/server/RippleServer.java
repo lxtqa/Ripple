@@ -7,7 +7,7 @@ import ripple.server.core.overlay.GossipOverlay;
 import ripple.server.core.overlay.StarOverlay;
 import ripple.server.core.overlay.TreeOverlay;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * @author Zhen Tang
@@ -83,11 +83,11 @@ public class RippleServer {
         return this.getNode().getPort();
     }
 
-    public Set<NodeMetadata> getNodeList() {
+    public List<NodeMetadata> getNodeList() {
         return this.getNode().getNodeList();
     }
 
-    public void setNodeList(Set<NodeMetadata> nodeList) {
+    public void setNodeList(List<NodeMetadata> nodeList) {
         this.getNode().setNodeList(nodeList);
     }
 }

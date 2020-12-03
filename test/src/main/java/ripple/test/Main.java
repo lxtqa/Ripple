@@ -5,9 +5,12 @@ import ripple.client.core.Item;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * @author Zhen Tang
+ */
 public class Main {
     public static void main(String[] args) {
         RippleServer nodeOne = RippleServer.starProtocol(1, "D:\\server-1.txt");
@@ -16,7 +19,7 @@ public class Main {
         System.out.println("Node One: " + nodeOne.getAddress() + ":" + nodeOne.getPort());
         nodeTwo.start();
         System.out.println("Node Two: " + nodeTwo.getAddress() + ":" + nodeTwo.getPort());
-        Set<NodeMetadata> nodeList = new HashSet<>();
+        List<NodeMetadata> nodeList = new ArrayList<>();
         nodeList.add(new NodeMetadata(nodeOne.getId(), nodeOne.getAddress(), nodeOne.getPort()));
         nodeList.add(new NodeMetadata(nodeTwo.getId(), nodeTwo.getAddress(), nodeTwo.getPort()));
         nodeOne.setNodeList(nodeList);

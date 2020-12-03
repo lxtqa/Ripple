@@ -8,6 +8,7 @@ import ripple.server.core.NodeMetadata;
 import ripple.server.core.NotifyType;
 import ripple.server.core.SyncType;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -54,15 +55,15 @@ public final class Api {
         }
     }
 
-    public static boolean syncUpdateToServer(NodeMetadata metadata, Item item) {
+    public static boolean syncUpdateToServer(NodeMetadata metadata, String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
         try {
             Map<String, String> headers = new HashMap<>(6);
             headers.put("x-ripple-type", SyncType.UPDATE);
-            headers.put("x-ripple-application-name", item.getApplicationName());
-            headers.put("x-ripple-key", item.getKey());
-            headers.put("x-ripple-value", item.getValue());
-            headers.put("x-ripple-last-update", String.valueOf(item.getLastUpdate().getTime()));
-            headers.put("x-ripple-last-update-server-id", String.valueOf(item.getLastUpdateServerId()));
+            headers.put("x-ripple-application-name", applicationName);
+            headers.put("x-ripple-key", key);
+            headers.put("x-ripple-value", value);
+            headers.put("x-ripple-last-update", String.valueOf(lastUpdate.getTime()));
+            headers.put("x-ripple-last-update-server-id", String.valueOf(lastUpdateServerId));
             String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.SERVER_SYNC;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
@@ -72,12 +73,14 @@ public final class Api {
         }
     }
 
-    public static boolean syncDeleteToServer(NodeMetadata metadata, String applicationName, String key) {
+    public static boolean syncDeleteToServer(NodeMetadata metadata, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
         try {
-            Map<String, String> headers = new HashMap<>(3);
+            Map<String, String> headers = new HashMap<>(5);
             headers.put("x-ripple-type", SyncType.DELETE);
             headers.put("x-ripple-application-name", applicationName);
             headers.put("x-ripple-key", key);
+            headers.put("x-ripple-last-update", String.valueOf(lastUpdate.getTime()));
+            headers.put("x-ripple-last-update-server-id", String.valueOf(lastUpdateServerId));
             String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.SERVER_SYNC;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);

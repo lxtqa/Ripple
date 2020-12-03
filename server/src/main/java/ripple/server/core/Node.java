@@ -27,6 +27,7 @@ import ripple.server.helper.Api;
 import ripple.server.helper.Storage;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -42,7 +43,7 @@ public class Node {
     private int id;
     private Overlay overlay;
     private Storage storage;
-    private Set<NodeMetadata> nodeList;
+    private List<NodeMetadata> nodeList;
     private ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
 
@@ -75,11 +76,11 @@ public class Node {
         this.storage = storage;
     }
 
-    public Set<NodeMetadata> getNodeList() {
+    public List<NodeMetadata> getNodeList() {
         return nodeList;
     }
 
-    public void setNodeList(Set<NodeMetadata> nodeList) {
+    public void setNodeList(List<NodeMetadata> nodeList) {
         this.nodeList = nodeList;
     }
 
@@ -205,41 +206,36 @@ public class Node {
 
     public boolean put(String applicationName, String key, String value) {
         // Update local storage
-        Item item = this.doUpdateItem(applicationName, key, value, new Date(System.currentTimeMillis()), this.getId());
+        Date lastUpdate = new Date(System.currentTimeMillis());
+        int lastUpdateServerId = this.getId();
+        Item item = this.doUpdateItem(applicationName, key, value, lastUpdate, lastUpdateServerId);
 
         // Notify clients
         this.doNotifyUpdateToClients(item);
 
-        // [Star protocol] Sync to all the other servers
-        for (NodeMetadata metadata : this.getNodeList()) {
-            if (metadata.getId() == this.getId()
-                    && metadata.getAddress().equals(this.getAddress())
-                    && metadata.getPort() == this.getPort()) {
-                continue;
-            }
-            LOGGER.info("[StarNode] Sync update to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncUpdateToServer(metadata, item);
-        }
+        int sourceId = lastUpdateServerId;
+        int currentId = this.getId();
+
+        this.doSyncUpdate(applicationName, key, value, lastUpdate, lastUpdateServerId, sourceId, currentId);
+
         return true;
     }
 
     public boolean delete(String applicationName, String key) {
+        Date lastUpdate = new Date(System.currentTimeMillis());
+        int lastUpdateServerId = this.getId();
+
         // Update local storage
         this.doDeleteItem(applicationName, key);
 
         // Notify clients
         this.doNotifyDeleteToClients(applicationName, key);
 
-        // [Star protocol] Sync to all the other servers
-        for (NodeMetadata metadata : this.getNodeList()) {
-            if (metadata.getId() == this.getId()
-                    && metadata.getAddress().equals(this.getAddress())
-                    && metadata.getPort() == this.getPort()) {
-                continue;
-            }
-            LOGGER.info("[StarNode] Sync delete to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncDeleteToServer(metadata, applicationName, key);
-        }
+        int sourceId = lastUpdateServerId;
+        int currentId = this.getId();
+
+        this.doSyncDelete(applicationName, key, lastUpdate, lastUpdateServerId, sourceId, currentId);
+
         return true;
     }
 
@@ -250,6 +246,15 @@ public class Node {
         }
     }
 
+    private NodeMetadata findServerById(int serverId) {
+        for (NodeMetadata nodeMetadata : this.getNodeList()) {
+            if (nodeMetadata.getId() == serverId) {
+                return nodeMetadata;
+            }
+        }
+        return null;
+    }
+
     public boolean onSyncUpdateReceived(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
         // Update local storage
         Item item = this.doUpdateItem(applicationName, key, value, lastUpdate, lastUpdateServerId);
@@ -257,7 +262,51 @@ public class Node {
         // Notify clients
         this.doNotifyUpdateToClients(item);
 
+        int sourceId = lastUpdateServerId;
+        int currentId = this.getId();
+
+        this.doSyncUpdate(applicationName, key, value, lastUpdate, lastUpdateServerId, sourceId, currentId);
+
         return true;
+    }
+
+    private void doSyncUpdate(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
+        NodeMetadata source = this.findServerById(sourceId);
+        NodeMetadata current = this.findServerById(currentId);
+        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current, this.getNodeList());
+
+        // Sync to servers following the overlay
+        for (NodeMetadata metadata : toSend) {
+            LOGGER.info("[Node] Sync update to server {}:{}.", metadata.getAddress(), metadata.getPort());
+            Api.syncUpdateToServer(metadata, applicationName, key, value, lastUpdate, lastUpdateServerId);
+        }
+    }
+
+    public boolean onSyncDeleteReceived(String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
+        // Update local storage
+        this.doDeleteItem(applicationName, key);
+
+        // Notify clients
+        this.doNotifyDeleteToClients(applicationName, key);
+
+        int sourceId = lastUpdateServerId;
+        int currentId = this.getId();
+
+        this.doSyncDelete(applicationName, key, lastUpdate, lastUpdateServerId, sourceId, currentId);
+
+        return true;
+    }
+
+    private void doSyncDelete(String applicationName, String key, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
+        NodeMetadata source = this.findServerById(sourceId);
+        NodeMetadata current = this.findServerById(currentId);
+        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current, this.getNodeList());
+
+        // Sync to servers following the overlay
+        for (NodeMetadata metadata : toSend) {
+            LOGGER.info("[Node] Sync delete to server {}:{}.", metadata.getAddress(), metadata.getPort());
+            Api.syncDeleteToServer(metadata, applicationName, key, lastUpdate, lastUpdateServerId);
+        }
     }
 
     private void doNotifyUpdateToClients(Item item) {
@@ -265,7 +314,7 @@ public class Node {
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[SyncServlet] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
+                LOGGER.info("[Node] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyUpdateToClient(metadata, item);
             }
         }
@@ -287,21 +336,12 @@ public class Node {
         return item;
     }
 
-    public boolean onSyncDeleteReceived(String applicationName, String key) {
-        // Update local storage
-        this.doDeleteItem(applicationName, key);
-
-        // Notify clients
-        this.doNotifyDeleteToClients(applicationName, key);
-        return true;
-    }
-
     private void doNotifyDeleteToClients(String applicationName, String key) {
         ItemKey itemKey = new ItemKey(applicationName, key);
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[SyncServlet] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
+                LOGGER.info("[Node] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
                 Api.notifyDeleteToClient(metadata, applicationName, key);
             }
         }
@@ -314,7 +354,7 @@ public class Node {
     public Node(int id, Overlay overlay, String storageLocation, int port) {
         this.setId(id);
         this.setOverlay(overlay);
-        this.setNodeList(new HashSet<>());
+        this.setNodeList(new ArrayList<>());
         this.setStorage(new Storage(storageLocation));
         this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);

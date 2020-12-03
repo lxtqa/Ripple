@@ -2,6 +2,9 @@ package ripple.server.core;
 
 import java.util.Objects;
 
+/**
+ * @author Zhen Tang
+ */
 public class ItemKey {
     private String applicationName;
     private String key;
