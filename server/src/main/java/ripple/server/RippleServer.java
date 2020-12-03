@@ -83,11 +83,7 @@ public class RippleServer {
         return this.getNode().getPort();
     }
 
-    public List<NodeMetadata> getNodeList() {
-        return this.getNode().getNodeList();
-    }
-
-    public void setNodeList(List<NodeMetadata> nodeList) {
-        this.getNode().setNodeList(nodeList);
+    public void initCluster(List<NodeMetadata> nodeList) {
+        this.getNode().initCluster(nodeList);
     }
 }

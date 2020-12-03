@@ -23,7 +23,12 @@ public class ExpanderOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> cluster) {
+    public void buildOverlay(List<NodeMetadata> nodeList) {
+
+    }
+
+    @Override
+    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList) {
         // TODO
         return null;
     }

@@ -14,7 +14,12 @@ public class StarOverlay implements Overlay {
     private static final Logger LOGGER = LoggerFactory.getLogger(StarOverlay.class);
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> cluster) {
+    public void buildOverlay(List<NodeMetadata> nodeList) {
+
+    }
+
+    @Override
+    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList) {
         LOGGER.info("[StarOverlay] calculateNodesToSync() called. sourceId = {}, currentId = {}", source.getId(), current.getId());
         if (source.getId() != current.getId()) {
             // Leaf node
@@ -22,7 +27,7 @@ public class StarOverlay implements Overlay {
             return new ArrayList<>();
         } else {
             List<NodeMetadata> ret = new ArrayList<>();
-            for (NodeMetadata nodeMetadata : cluster) {
+            for (NodeMetadata nodeMetadata : nodeList) {
                 if (nodeMetadata.getId() != current.getId()) {
                     ret.add(nodeMetadata);
                     LOGGER.info("[StarOverlay] Attempting to send to node {} ({}:{})."

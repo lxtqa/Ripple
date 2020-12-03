@@ -8,5 +8,7 @@ import java.util.List;
  * @author Zhen Tang
  */
 public interface Overlay {
-    List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> cluster);
+    void buildOverlay(List<NodeMetadata> nodeList);
+
+    List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList);
 }

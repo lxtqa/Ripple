@@ -444,4 +444,9 @@ public class Node {
             this.getConnectedClients().remove(clientMetadata);
         }
     }
+
+    public void initCluster(List<NodeMetadata> nodeList) {
+        this.setNodeList(nodeList);
+        this.getOverlay().buildOverlay(this.getNodeList());
+    }
 }
