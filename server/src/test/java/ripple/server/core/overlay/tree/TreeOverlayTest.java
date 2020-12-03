@@ -70,4 +70,32 @@ public class TreeOverlayTest {
             Assert.assertEquals(0, completeTree.getNodeList().get(i).getChildren().size());
         }
     }
+
+    @Test
+    public void testCalculateNodesToSync() {
+        int branch = 3;
+        int nodeCount = 10;
+        int i = 0;
+        List<NodeMetadata> nodeList = new ArrayList<>();
+        for (i = 0; i < nodeCount; i++) {
+            nodeList.add(new NodeMetadata(i + 1, "test", 0));
+        }
+
+        TreeOverlay treeOverlay = new TreeOverlay(branch);
+        treeOverlay.buildOverlay(nodeList);
+
+        NodeMetadata source = new NodeMetadata(1, "test", 0);
+        NodeMetadata current = new NodeMetadata(3, "test", 0);
+        List<NodeMetadata> nodes = treeOverlay.calculateNodesToSync(source, current);
+
+        Assert.assertEquals(3, nodes.size());
+        Assert.assertEquals(new NodeMetadata(8, "test", 0), nodes.get(0));
+        Assert.assertEquals(new NodeMetadata(9, "test", 0), nodes.get(1));
+        Assert.assertEquals(new NodeMetadata(10, "test", 0), nodes.get(2));
+
+        source = new NodeMetadata(3, "test", 0);
+        current = new NodeMetadata(1, "test", 0);
+        nodes = treeOverlay.calculateNodesToSync(source, current);
+        Assert.assertEquals(0, nodes.size());
+    }
 }

@@ -273,7 +273,7 @@ public class Node {
     private void doSyncUpdate(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current, this.getNodeList());
+        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
 
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {
@@ -300,7 +300,7 @@ public class Node {
     private void doSyncDelete(String applicationName, String key, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current, this.getNodeList());
+        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
 
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {

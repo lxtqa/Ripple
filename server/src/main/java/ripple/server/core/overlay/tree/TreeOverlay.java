@@ -67,13 +67,17 @@ public class TreeOverlay implements Overlay {
         List<NodeMetadata> ret = new ArrayList<>();
         int i = 0;
         for (i = 0; i < treeNodeList.size(); i++) {
-            ret.add(treeNodeList.get(i).getNodeMetadata());
+            NodeMetadata nodeMetadata = treeNodeList.get(i).getNodeMetadata();
+            LOGGER.info("[TreeOverlay] Attempting to send to node {} ({}:{})."
+                    , nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
+            ret.add(nodeMetadata);
         }
         return ret;
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList) {
+    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current) {
+        LOGGER.info("[TreeOverlay] calculateNodesToSync() called. sourceId = {}, currentId = {}", source.getId(), current.getId());
         CompleteTree tree = this.getTrees().get(source);
         for (TreeNode treeNode : tree.getNodeList()) {
             if (treeNode.getNodeMetadata().equals(current)) {

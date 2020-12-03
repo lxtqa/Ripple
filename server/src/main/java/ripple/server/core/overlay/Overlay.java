@@ -10,5 +10,5 @@ import java.util.List;
 public interface Overlay {
     void buildOverlay(List<NodeMetadata> nodeList);
 
-    List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList);
+    List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current);
 }

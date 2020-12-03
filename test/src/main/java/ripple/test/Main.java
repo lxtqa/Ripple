@@ -24,11 +24,13 @@ public class Main {
             List<RippleServer> serverList = new ArrayList<>();
             List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
+
+            int branch = 2;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
                 String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".txt";
-                RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
+                RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
                 rippleServer.start();
                 serverList.add(rippleServer);
                 System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
@@ -62,6 +64,7 @@ public class Main {
             }
 
             clientList.get(0).put(applicationName, key, value);
+            clientList.get((SERVER_COUNT - 1) * CLIENTS_PER_SERVER).put(applicationName, key, value);
 
             for (RippleClient rippleClient : clientList) {
                 rippleClient.unsubscribe(applicationName, key);

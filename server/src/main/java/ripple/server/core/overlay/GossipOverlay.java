@@ -28,7 +28,7 @@ public class GossipOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current, List<NodeMetadata> nodeList) {
+    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current) {
         // TODO
         return null;
     }
