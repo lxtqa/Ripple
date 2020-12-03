@@ -3,7 +3,7 @@ package ripple.server.core.ui;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.AbstractNode;
+import ripple.server.core.Node;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Item;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class GetConfigServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetConfigServlet.class);
 
-    public GetConfigServlet(AbstractNode node) {
+    public GetConfigServlet(Node node) {
         super(node);
     }
 

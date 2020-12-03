@@ -3,7 +3,7 @@ package ripple.server.core.ui;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.AbstractNode;
+import ripple.server.core.Node;
 import ripple.server.core.BaseServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,7 +16,7 @@ import java.io.IOException;
 public class StyleServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(StyleServlet.class);
 
-    public StyleServlet(AbstractNode node) {
+    public StyleServlet(Node node) {
         super(node);
     }
 

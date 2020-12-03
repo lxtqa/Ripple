@@ -1,10 +1,10 @@
-package ripple.server.core.star;
+package ripple.server.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.AbstractNode;
+import ripple.server.core.Node;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Item;
 
@@ -19,7 +19,7 @@ public class GetServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public GetServlet(AbstractNode node) {
+    public GetServlet(Node node) {
         super(node);
     }
 

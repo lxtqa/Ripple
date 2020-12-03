@@ -1,10 +1,11 @@
-package ripple.server.core.star;
+package ripple.server.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.core.BaseServlet;
+import ripple.server.core.Node;
 import ripple.server.core.SyncType;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,7 +21,7 @@ public class SyncServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(SyncServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public SyncServlet(StarNode node) {
+    public SyncServlet(Node node) {
         super(node);
     }
 
@@ -36,13 +37,13 @@ public class SyncServlet extends BaseServlet {
             int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
             LOGGER.info("[SyncServlet] Receive POST request. Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
-            result = ((StarNode) this.getNode()).onSyncUpdateReceived(applicationName, key, value, lastUpdate, lastUpdateServerId);
+            result = this.getNode().onSyncUpdateReceived(applicationName, key, value, lastUpdate, lastUpdateServerId);
         } else if (type.equals(SyncType.DELETE)) {
             String applicationName = request.getHeader("x-ripple-application-name");
             String key = request.getHeader("x-ripple-key");
             LOGGER.info("[SyncServlet] Receive POST request. Tyep = {}, Application Name = {}, Key = {}."
                     , type, applicationName, key);
-            result = ((StarNode) this.getNode()).onSyncDeleteReceived(applicationName, key);
+            result = this.getNode().onSyncDeleteReceived(applicationName, key);
         }
 
         response.setContentType("application/json;charset=UTF-8");

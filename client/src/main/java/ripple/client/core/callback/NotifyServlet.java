@@ -69,6 +69,6 @@ public class NotifyServlet extends BaseServlet {
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
-        response.getWriter().println(MAPPER.writeValueAsString(true));
+        response.getWriter().println(MAPPER.writeValueAsString(result));
     }
 }
