@@ -14,14 +14,12 @@ import java.util.List;
  */
 public class Main {
     private static final int SERVER_COUNT = 10;
-    private static final int CLIENTS_PER_SERVER = 5;
-    private static final String SERVER_DATABASE_PATH = "D:\\ripple-test-dir\\server";
-    private static final String CLIENT_DATABASE_PATH = "D:\\ripple-test-dir\\client";
+    private static final int CLIENTS_PER_SERVER = 1;
+    private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
         try {
-            Files.createDirectories(Paths.get(SERVER_DATABASE_PATH));
-            Files.createDirectories(Paths.get(CLIENT_DATABASE_PATH));
+            Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
             List<RippleClient> clientList = new ArrayList<>();
@@ -29,7 +27,7 @@ public class Main {
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
-                String storageLocation = SERVER_DATABASE_PATH + "\\server-" + serverId + ".txt";
+                String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".txt";
                 RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
                 rippleServer.start();
                 serverList.add(rippleServer);
@@ -50,7 +48,7 @@ public class Main {
                     RippleServer rippleServer = serverList.get(i);
                     String serverAddress = rippleServer.getAddress();
                     int serverPort = rippleServer.getPort();
-                    String storageLocation = CLIENT_DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".txt";
+                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".txt";
                     RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
                     rippleClient.start();
                     clientList.add(rippleClient);

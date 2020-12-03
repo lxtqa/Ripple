@@ -5,7 +5,7 @@ import ripple.server.core.NodeMetadata;
 import ripple.server.core.overlay.ExpanderOverlay;
 import ripple.server.core.overlay.GossipOverlay;
 import ripple.server.core.overlay.StarOverlay;
-import ripple.server.core.overlay.TreeOverlay;
+import ripple.server.core.overlay.tree.TreeOverlay;
 
 import java.util.List;
 
