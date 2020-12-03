@@ -4,6 +4,8 @@ import ripple.server.core.NodeMetadata;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 /**
  * @author Zhen Tang
@@ -44,7 +46,31 @@ public class CompleteTree {
     }
 
     private void buildCompleteTree(List<NodeMetadata> nodeList) {
-        // TODO
+        int i = 0;
+        for (i = 0; i < nodeList.size(); i++) {
+            this.getNodeList().add(new TreeNode(nodeList.get(i)));
+        }
 
+        Queue<TreeNode> nodes = new ArrayBlockingQueue<>(nodeList.size());
+        Queue<TreeNode> toAssign = new ArrayBlockingQueue<>(nodeList.size());
+        for (i = 0; i < this.getNodeList().size(); i++) {
+            TreeNode treeNode = this.getNodeList().get(i);
+            nodes.offer(treeNode);
+            toAssign.offer(treeNode);
+        }
+
+        this.setRoot(toAssign.poll());
+        for (i = 0; i < this.getNodeList().size(); i++) {
+            TreeNode treeNode = nodes.poll();
+            if (treeNode != null) {
+                int j = 0;
+                for (j = 0; j < this.getBranch(); j++) {
+                    TreeNode element = toAssign.poll();
+                    if (element != null) {
+                        treeNode.getChildren().add(element);
+                    }
+                }
+            }
+        }
     }
 }
