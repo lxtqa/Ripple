@@ -1,4 +1,4 @@
-package ripple.client.core.callback;
+package ripple.common;
 
 /**
  * @author Zhen Tang

@@ -3,9 +3,10 @@ package ripple.server.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.Endpoint;
 import ripple.common.Item;
+import ripple.common.helper.Http;
 import ripple.server.core.ClientMetadata;
 import ripple.server.core.NodeMetadata;
-import ripple.server.core.NotifyType;
+import ripple.common.NotifyType;
 import ripple.server.core.SyncType;
 
 import java.util.Date;

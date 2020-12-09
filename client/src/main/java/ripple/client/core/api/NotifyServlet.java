@@ -1,4 +1,4 @@
-package ripple.client.core.callback;
+package ripple.client.core.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
 import ripple.common.Item;
+import ripple.common.NotifyType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
