@@ -1,6 +1,5 @@
 package ripple.server.core.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,6 @@ import java.io.IOException;
  */
 public class GetServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(GetServlet.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public GetServlet(Node node) {
         super(node);
@@ -32,7 +30,7 @@ public class GetServlet extends BaseServlet {
         if (item != null) {
             response.setContentType("application/json;charset=UTF-8");
             response.setStatus(HttpStatus.OK_200);
-            response.getWriter().println(MAPPER.writeValueAsString(item));
+            response.getWriter().println(this.getNode().getObjectMapper().writeValueAsString(item));
         } else {
             response.sendError(HttpStatus.NOT_FOUND_404);
         }

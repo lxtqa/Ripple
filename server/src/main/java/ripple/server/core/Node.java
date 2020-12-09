@@ -1,5 +1,6 @@
 package ripple.server.core;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -39,6 +40,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class Node {
     private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private int id;
     private Overlay overlay;
@@ -130,6 +132,10 @@ public class Node {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public ObjectMapper getObjectMapper() {
+        return MAPPER;
     }
 
     public void registerHandlers(ServletContextHandler servletContextHandler) {

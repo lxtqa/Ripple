@@ -16,7 +16,6 @@ import java.io.IOException;
  */
 public class DeleteServlet extends BaseServlet {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteServlet.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public DeleteServlet(Node node) {
         super(node);
@@ -32,6 +31,6 @@ public class DeleteServlet extends BaseServlet {
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
-        response.getWriter().println(MAPPER.writeValueAsString(result));
+        response.getWriter().println(this.getNode().getObjectMapper().writeValueAsString(result));
     }
 }
