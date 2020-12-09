@@ -6,8 +6,6 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.Endpoint;
-import ripple.client.core.Item;
-import ripple.client.core.ItemKey;
 import ripple.client.core.callback.NotifyServlet;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
@@ -21,6 +19,8 @@ import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.client.helper.Storage;
+import ripple.common.Item;
+import ripple.common.ItemKey;
 
 import java.net.InetAddress;
 import java.util.HashSet;

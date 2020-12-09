@@ -1,4 +1,4 @@
-package ripple.server.core;
+package ripple.common;
 
 import java.util.Date;
 

@@ -3,8 +3,8 @@ package ripple.server.core.api;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.Item;
 import ripple.server.core.BaseServlet;
-import ripple.server.core.Item;
 import ripple.server.core.Node;
 
 import javax.servlet.http.HttpServletRequest;

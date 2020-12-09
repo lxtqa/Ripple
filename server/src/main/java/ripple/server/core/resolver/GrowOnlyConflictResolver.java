@@ -1,6 +1,6 @@
 package ripple.server.core.resolver;
 
-import ripple.server.core.Item;
+import ripple.common.Item;
 
 /**
  * A simple grow-only conflict resolver.

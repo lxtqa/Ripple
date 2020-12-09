@@ -1,6 +1,6 @@
 package ripple.server.core.resolver;
 
-import ripple.server.core.Item;
+import ripple.common.Item;
 
 /**
  * Public interface for a state based conflict resolver.

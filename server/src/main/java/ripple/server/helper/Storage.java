@@ -2,7 +2,7 @@ package ripple.server.helper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ripple.server.core.Item;
+import ripple.common.Item;
 
 import java.io.File;
 import java.io.IOException;

@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
-import ripple.client.core.ItemKey;
+import ripple.common.ItemKey;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
