@@ -1,9 +1,9 @@
 package ripple.server.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ripple.common.Endpoint;
 import ripple.common.Item;
 import ripple.server.core.ClientMetadata;
-import ripple.server.core.Endpoint;
 import ripple.server.core.NodeMetadata;
 import ripple.server.core.NotifyType;
 import ripple.server.core.SyncType;

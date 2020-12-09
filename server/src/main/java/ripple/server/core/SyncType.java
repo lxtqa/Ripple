@@ -6,6 +6,7 @@ package ripple.server.core;
 public class SyncType {
     public static final String UPDATE = "update";
     public static final String DELETE = "delete";
+
     private SyncType() {
 
     }
