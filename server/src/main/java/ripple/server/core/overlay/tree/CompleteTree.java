@@ -15,6 +15,12 @@ public class CompleteTree {
     private List<TreeNode> nodeList;
     private TreeNode root;
 
+    public CompleteTree(int branch, List<NodeMetadata> nodeList) {
+        this.setBranch(branch);
+        this.setNodeList(new ArrayList<>());
+        this.buildCompleteTree(nodeList);
+    }
+
     public int getBranch() {
         return branch;
     }
@@ -37,12 +43,6 @@ public class CompleteTree {
 
     public void setRoot(TreeNode root) {
         this.root = root;
-    }
-
-    public CompleteTree(int branch, List<NodeMetadata> nodeList) {
-        this.setBranch(branch);
-        this.setNodeList(new ArrayList<>());
-        this.buildCompleteTree(nodeList);
     }
 
     private void buildCompleteTree(List<NodeMetadata> nodeList) {

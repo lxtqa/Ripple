@@ -39,6 +39,14 @@ public class RippleClient {
     private boolean running;
     private Set<ItemKey> subscription;
 
+    public RippleClient(String serverAddress, int serverPort, String storageLocation) {
+        this.setServerAddress(serverAddress);
+        this.setServerPort(serverPort);
+        this.setStorage(new Storage(storageLocation));
+        this.setRunning(false);
+        this.setSubscription(new HashSet<>());
+    }
+
     public String getAddress() {
         return address;
     }
@@ -101,14 +109,6 @@ public class RippleClient {
 
     public void setSubscription(Set<ItemKey> subscription) {
         this.subscription = subscription;
-    }
-
-    public RippleClient(String serverAddress, int serverPort, String storageLocation) {
-        this.setServerAddress(serverAddress);
-        this.setServerPort(serverPort);
-        this.setStorage(new Storage(storageLocation));
-        this.setRunning(false);
-        this.setSubscription(new HashSet<>());
     }
 
     public Item get(String applicationName, String key) {

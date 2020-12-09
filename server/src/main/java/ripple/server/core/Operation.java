@@ -14,6 +14,10 @@ public class Operation {
     private String targetValue;
     private Date timestamp;
 
+    public Operation() {
+        this.setUuid(UUID.randomUUID());
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -44,10 +48,6 @@ public class Operation {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public Operation() {
-        this.setUuid(UUID.randomUUID());
     }
 
 }

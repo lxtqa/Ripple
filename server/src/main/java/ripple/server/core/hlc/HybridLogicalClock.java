@@ -8,6 +8,16 @@ public class HybridLogicalClock {
     private long wallTime;
     private long logicalClock;
 
+    public HybridLogicalClock(String processName, long wallTime, long logicalClock) {
+        this.setProcessName(processName);
+        this.setWallTime(wallTime);
+        this.setLogicalClock(logicalClock);
+    }
+
+    public HybridLogicalClock(String processName) {
+        this(processName, 0, 0);
+    }
+
     public String getProcessName() {
         return processName;
     }
@@ -30,16 +40,6 @@ public class HybridLogicalClock {
 
     private void setLogicalClock(long logicalClock) {
         this.logicalClock = logicalClock;
-    }
-
-    public HybridLogicalClock(String processName, long wallTime, long logicalClock) {
-        this.setProcessName(processName);
-        this.setWallTime(wallTime);
-        this.setLogicalClock(logicalClock);
-    }
-
-    public HybridLogicalClock(String processName) {
-        this(processName, 0, 0);
     }
 
     public void set(long wallTime, long logicalClock) {

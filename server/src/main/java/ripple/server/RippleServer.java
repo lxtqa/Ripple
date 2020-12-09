@@ -15,14 +15,6 @@ import java.util.List;
 public class RippleServer {
     private Node node;
 
-    private Node getNode() {
-        return node;
-    }
-
-    private void setNode(Node node) {
-        this.node = node;
-    }
-
     private RippleServer(Node node) {
         this.setNode(node);
     }
@@ -57,6 +49,14 @@ public class RippleServer {
 
     public static RippleServer gossipProtocol(int id, String storageLocation, int port, int fanout) {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, port));
+    }
+
+    private Node getNode() {
+        return node;
+    }
+
+    private void setNode(Node node) {
+        this.node = node;
     }
 
     public boolean start() {

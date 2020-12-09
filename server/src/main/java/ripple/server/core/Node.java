@@ -58,6 +58,20 @@ public class Node {
     private Server server;
     private boolean running;
 
+    public Node(int id, Overlay overlay, String storageLocation) {
+        this(id, overlay, storageLocation, 0);
+    }
+
+    public Node(int id, Overlay overlay, String storageLocation, int port) {
+        this.setId(id);
+        this.setOverlay(overlay);
+        this.setNodeList(new ArrayList<>());
+        this.setStorage(new Storage(storageLocation));
+        this.setSubscription(new ConcurrentHashMap<>());
+        this.setPort(port);
+        this.setConnectedClients(new HashSet<>());
+    }
+
     public int getId() {
         return id;
     }
@@ -317,20 +331,6 @@ public class Node {
                 Api.notifyDeleteToClient(metadata, applicationName, key);
             }
         }
-    }
-
-    public Node(int id, Overlay overlay, String storageLocation) {
-        this(id, overlay, storageLocation, 0);
-    }
-
-    public Node(int id, Overlay overlay, String storageLocation, int port) {
-        this.setId(id);
-        this.setOverlay(overlay);
-        this.setNodeList(new ArrayList<>());
-        this.setStorage(new Storage(storageLocation));
-        this.setSubscription(new ConcurrentHashMap<>());
-        this.setPort(port);
-        this.setConnectedClients(new HashSet<>());
     }
 
     public synchronized boolean start() {

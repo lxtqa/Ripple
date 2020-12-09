@@ -9,6 +9,11 @@ public class ItemKey {
     private String applicationName;
     private String key;
 
+    public ItemKey(String applicationName, String key) {
+        this.setApplicationName(applicationName);
+        this.setKey(key);
+    }
+
     public String getApplicationName() {
         return applicationName;
     }
@@ -23,11 +28,6 @@ public class ItemKey {
 
     private void setKey(String key) {
         this.key = key;
-    }
-
-    public ItemKey(String applicationName, String key) {
-        this.setApplicationName(applicationName);
-        this.setKey(key);
     }
 
     @Override

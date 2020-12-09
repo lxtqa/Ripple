@@ -11,16 +11,16 @@ import ripple.common.Item;
 public class GrowOnlyConflictResolver implements StateBasedConflictResolver {
     private long maxTimeDifference;
 
+    public GrowOnlyConflictResolver(long maxTimeDifference) {
+        this.setMaxTimeDifference(maxTimeDifference);
+    }
+
     public long getMaxTimeDifference() {
         return maxTimeDifference;
     }
 
     private void setMaxTimeDifference(long maxTimeDifference) {
         this.maxTimeDifference = maxTimeDifference;
-    }
-
-    public GrowOnlyConflictResolver(long maxTimeDifference) {
-        this.setMaxTimeDifference(maxTimeDifference);
     }
 
     @Override

@@ -19,6 +19,11 @@ public class TreeOverlay implements Overlay {
     private int branch;
     private ConcurrentHashMap<NodeMetadata, CompleteTree> trees;
 
+    public TreeOverlay(int branch) {
+        this.setBranch(branch);
+        this.setTrees(new ConcurrentHashMap<>());
+    }
+
     public int getBranch() {
         return branch;
     }
@@ -33,11 +38,6 @@ public class TreeOverlay implements Overlay {
 
     public void setTrees(ConcurrentHashMap<NodeMetadata, CompleteTree> trees) {
         this.trees = trees;
-    }
-
-    public TreeOverlay(int branch) {
-        this.setBranch(branch);
-        this.setTrees(new ConcurrentHashMap<>());
     }
 
     @Override

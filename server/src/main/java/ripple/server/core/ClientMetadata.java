@@ -9,6 +9,11 @@ public class ClientMetadata {
     private String address;
     private int port;
 
+    public ClientMetadata(String address, int port) {
+        this.setAddress(address);
+        this.setPort(port);
+    }
+
     public String getAddress() {
         return address;
     }
@@ -23,11 +28,6 @@ public class ClientMetadata {
 
     public void setPort(int port) {
         this.port = port;
-    }
-
-    public ClientMetadata(String address, int port) {
-        this.setAddress(address);
-        this.setPort(port);
     }
 
     @Override

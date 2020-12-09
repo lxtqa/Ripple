@@ -10,16 +10,16 @@ import java.util.List;
 public class ExpanderOverlay implements Overlay {
     private int scale;
 
+    public ExpanderOverlay(int scale) {
+        this.setScale(scale);
+    }
+
     public int getScale() {
         return scale;
     }
 
     public void setScale(int scale) {
         this.scale = scale;
-    }
-
-    public ExpanderOverlay(int scale) {
-        this.setScale(scale);
     }
 
     @Override

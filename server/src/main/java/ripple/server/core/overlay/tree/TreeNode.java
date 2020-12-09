@@ -12,6 +12,11 @@ public class TreeNode {
     private NodeMetadata nodeMetadata;
     private List<TreeNode> children;
 
+    public TreeNode(NodeMetadata nodeMetadata) {
+        this.setNodeMetadata(nodeMetadata);
+        this.setChildren(new ArrayList<>());
+    }
+
     public NodeMetadata getNodeMetadata() {
         return nodeMetadata;
     }
@@ -26,10 +31,5 @@ public class TreeNode {
 
     private void setChildren(List<TreeNode> children) {
         this.children = children;
-    }
-
-    public TreeNode(NodeMetadata nodeMetadata) {
-        this.setNodeMetadata(nodeMetadata);
-        this.setChildren(new ArrayList<>());
     }
 }

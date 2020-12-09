@@ -14,16 +14,16 @@ import ripple.server.core.OperationType;
 public class AddWinConflictResolver implements OperationBasedConflictResolver {
     private long maxTimeDifference;
 
+    public AddWinConflictResolver(long maxTimeDifference) {
+        this.setMaxTimeDifference(maxTimeDifference);
+    }
+
     public long getMaxTimeDifference() {
         return maxTimeDifference;
     }
 
     private void setMaxTimeDifference(long maxTimeDifference) {
         this.maxTimeDifference = maxTimeDifference;
-    }
-
-    public AddWinConflictResolver(long maxTimeDifference) {
-        this.setMaxTimeDifference(maxTimeDifference);
     }
 
     @Override

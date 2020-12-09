@@ -18,16 +18,16 @@ public class Storage {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private String fileName;
 
+    public Storage(String fileName) {
+        this.setFileName(fileName);
+    }
+
     public String getFileName() {
         return fileName;
     }
 
     private void setFileName(String fileName) {
         this.fileName = fileName;
-    }
-
-    public Storage(String fileName) {
-        this.setFileName(fileName);
     }
 
     public Item get(String applicationName, String key) {

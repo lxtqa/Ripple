@@ -10,16 +10,16 @@ import java.util.List;
 public class GossipOverlay implements Overlay {
     private int fanout;
 
+    public GossipOverlay(int fanout) {
+        this.setFanout(fanout);
+    }
+
     public int getFanout() {
         return fanout;
     }
 
     public void setFanout(int fanout) {
         this.fanout = fanout;
-    }
-
-    public GossipOverlay(int fanout) {
-        this.setFanout(fanout);
     }
 
     @Override

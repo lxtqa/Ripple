@@ -10,6 +10,11 @@ public class HybridLogicalClockCoordinator {
     private HybridLogicalClock current;
     private long maxOffset;
 
+    public HybridLogicalClockCoordinator(long maxOffset) {
+        this.setCurrent(new HybridLogicalClock(UUID.randomUUID().toString()));
+        this.setMaxOffset(maxOffset);
+    }
+
     public HybridLogicalClock getCurrent() {
         return current;
     }
@@ -24,11 +29,6 @@ public class HybridLogicalClockCoordinator {
 
     private void setMaxOffset(long maxOffset) {
         this.maxOffset = maxOffset;
-    }
-
-    public HybridLogicalClockCoordinator(long maxOffset) {
-        this.setCurrent(new HybridLogicalClock(UUID.randomUUID().toString()));
-        this.setMaxOffset(maxOffset);
     }
 
     private long getPhysicalTime() {

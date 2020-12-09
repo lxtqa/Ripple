@@ -10,6 +10,12 @@ public final class NodeMetadata {
     private String address;
     private int port;
 
+    public NodeMetadata(int id, String address, int port) {
+        this.setId(id);
+        this.setAddress(address);
+        this.setPort(port);
+    }
+
     public int getId() {
         return id;
     }
@@ -32,12 +38,6 @@ public final class NodeMetadata {
 
     private void setPort(int port) {
         this.port = port;
-    }
-
-    public NodeMetadata(int id, String address, int port) {
-        this.setId(id);
-        this.setAddress(address);
-        this.setPort(port);
     }
 
     @Override
