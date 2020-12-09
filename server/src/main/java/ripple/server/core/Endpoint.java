@@ -15,6 +15,7 @@ public final class Endpoint {
     public static final String SERVER_PUT = "/Api/Put";
     public static final String SERVER_DELETE = "/Api/Delete";
     public static final String SERVER_SYNC = "/Api/Sync";
+    public static final String SERVER_HEARTBEAT = "/Api/Heartbeat";
 
     // Client
     public static final String CLIENT_NOTIFY = "/Api/Notify";

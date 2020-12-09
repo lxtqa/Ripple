@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.server.core.api.DeleteServlet;
 import ripple.server.core.api.GetServlet;
+import ripple.server.core.api.HeartbeatServlet;
 import ripple.server.core.api.PutServlet;
 import ripple.server.core.api.SubscribeServlet;
 import ripple.server.core.api.SyncServlet;
@@ -27,6 +28,7 @@ import ripple.server.core.ui.StyleServlet;
 import ripple.server.helper.Api;
 import ripple.server.helper.Storage;
 
+import javax.servlet.Servlet;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Date;
@@ -138,68 +140,30 @@ public class Node {
         return MAPPER;
     }
 
+    private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint){
+        servletContextHandler.addServlet(new ServletHolder(servlet), endpoint);
+    }
+
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // UI
-        HomeServlet homeServlet = new HomeServlet(this);
-        ServletHolder homeServletHolder = new ServletHolder(homeServlet);
-        servletContextHandler.addServlet(homeServletHolder, Endpoint.UI_HOME);
-
-        StyleServlet styleServlet = new StyleServlet(this);
-        ServletHolder styleServletHolder = new ServletHolder(styleServlet);
-        servletContextHandler.addServlet(styleServletHolder, Endpoint.UI_STYLE);
-
-        GetConfigServlet getConfigServlet = new GetConfigServlet(this);
-        ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);
-        servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG);
-
-        AddConfigServlet addConfigServlet = new AddConfigServlet(this);
-        ServletHolder addConfigServletHolder = new ServletHolder(addConfigServlet);
-        servletContextHandler.addServlet(addConfigServletHolder, Endpoint.UI_ADD_CONFIG);
-
-        ModifyConfigServlet modifyConfigServlet = new ModifyConfigServlet(this);
-        ServletHolder modifyConfigServletHolder = new ServletHolder(modifyConfigServlet);
-        servletContextHandler.addServlet(modifyConfigServletHolder, Endpoint.UI_MODIFY_CONFIG);
-
-        RemoveConfigServlet removeConfigServlet = new RemoveConfigServlet(this);
-        ServletHolder removeConfigServletHolder = new ServletHolder(removeConfigServlet);
-        servletContextHandler.addServlet(removeConfigServletHolder, Endpoint.UI_REMOVE_CONFIG);
-
-        GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
-        ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);
-        servletContextHandler.addServlet(getSubscriptionServletHolder, Endpoint.UI_GET_SUBSCRIPTION);
-
-        ServerClusterServlet serverClusterServlet = new ServerClusterServlet(this);
-        ServletHolder serverClusterServletHolder = new ServletHolder(serverClusterServlet);
-        servletContextHandler.addServlet(serverClusterServletHolder, Endpoint.UI_SERVER_CLUSTER);
-
-        ClientClusterServlet clientClusterServlet = new ClientClusterServlet(this);
-        ServletHolder clientClusterServletHolder = new ServletHolder(clientClusterServlet);
-        servletContextHandler.addServlet(clientClusterServletHolder, Endpoint.UI_CLIENT_CLUSTER);
+        this.registerServlet(servletContextHandler,new HomeServlet(this),Endpoint.UI_HOME);
+        this.registerServlet(servletContextHandler,new StyleServlet(this),Endpoint.UI_STYLE);
+        this.registerServlet(servletContextHandler,new GetConfigServlet(this),Endpoint.UI_GET_CONFIG);
+        this.registerServlet(servletContextHandler,new AddConfigServlet(this),Endpoint.UI_ADD_CONFIG);
+        this.registerServlet(servletContextHandler,new ModifyConfigServlet(this),Endpoint.UI_MODIFY_CONFIG);
+        this.registerServlet(servletContextHandler,new RemoveConfigServlet(this),Endpoint.UI_REMOVE_CONFIG);
+        this.registerServlet(servletContextHandler,new GetSubscriptionServlet(this),Endpoint.UI_GET_SUBSCRIPTION);
+        this.registerServlet(servletContextHandler,new ServerClusterServlet(this),Endpoint.UI_SERVER_CLUSTER);
+        this.registerServlet(servletContextHandler,new ClientClusterServlet(this),Endpoint.UI_CLIENT_CLUSTER);
 
         // API
-        SubscribeServlet subscribeServlet = new SubscribeServlet(this);
-        ServletHolder subscribeServletHolder = new ServletHolder(subscribeServlet);
-        servletContextHandler.addServlet(subscribeServletHolder, Endpoint.SERVER_SUBSCRIBE);
-
-        UnsubscribeServlet unsubscribeServlet = new UnsubscribeServlet(this);
-        ServletHolder unsubscribeServletHolder = new ServletHolder(unsubscribeServlet);
-        servletContextHandler.addServlet(unsubscribeServletHolder, Endpoint.SERVER_UNSUBSCRIBE);
-
-        GetServlet getServlet = new GetServlet(this);
-        ServletHolder getServletHolder = new ServletHolder(getServlet);
-        servletContextHandler.addServlet(getServletHolder, Endpoint.SERVER_GET);
-
-        PutServlet putServlet = new PutServlet(this);
-        ServletHolder putServletHolder = new ServletHolder(putServlet);
-        servletContextHandler.addServlet(putServletHolder, Endpoint.SERVER_PUT);
-
-        DeleteServlet deleteServlet = new DeleteServlet(this);
-        ServletHolder deleteServletHolder = new ServletHolder(deleteServlet);
-        servletContextHandler.addServlet(deleteServletHolder, Endpoint.SERVER_DELETE);
-
-        SyncServlet syncServlet = new SyncServlet(this);
-        ServletHolder syncServletHolder = new ServletHolder(syncServlet);
-        servletContextHandler.addServlet(syncServletHolder, Endpoint.SERVER_SYNC);
+        this.registerServlet(servletContextHandler,new SubscribeServlet(this),Endpoint.SERVER_SUBSCRIBE);
+        this.registerServlet(servletContextHandler,new UnsubscribeServlet(this),Endpoint.SERVER_UNSUBSCRIBE);
+        this.registerServlet(servletContextHandler,new GetServlet(this),Endpoint.SERVER_GET);
+        this.registerServlet(servletContextHandler,new PutServlet(this),Endpoint.SERVER_PUT);
+        this.registerServlet(servletContextHandler,new DeleteServlet(this),Endpoint.SERVER_DELETE);
+        this.registerServlet(servletContextHandler,new SyncServlet(this),Endpoint.SERVER_SYNC);
+        this.registerServlet(servletContextHandler,new HeartbeatServlet(this),Endpoint.SERVER_HEARTBEAT);
     }
 
     public Item get(String applicationName, String key) {
