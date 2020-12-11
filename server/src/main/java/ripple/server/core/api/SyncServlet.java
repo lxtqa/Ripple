@@ -4,10 +4,10 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.DeleteMessage;
+import ripple.common.MessageType;
 import ripple.common.UpdateMessage;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Node;
-import ripple.server.core.SyncType;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,13 +37,13 @@ public class SyncServlet extends BaseServlet {
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
 
-        if (type.equals(SyncType.UPDATE)) {
+        if (type.equals(MessageType.UPDATE)) {
             String value = request.getHeader("x-ripple-value");
             LOGGER.info("[SyncServlet] Receive POST request. UUID = {}, Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
             UpdateMessage updateMessage = new UpdateMessage(uuid, applicationName, key, value, lastUpdate, lastUpdateServerId);
             result = this.getNode().onSyncUpdateReceived(updateMessage);
-        } else if (type.equals(SyncType.DELETE)) {
+        } else if (type.equals(MessageType.DELETE)) {
             LOGGER.info("[SyncServlet] Receive POST request. UUID = {}, Type = {}, Application Name = {}, Key = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
             DeleteMessage deleteMessage = new DeleteMessage(uuid, applicationName, key, lastUpdate, lastUpdateServerId);

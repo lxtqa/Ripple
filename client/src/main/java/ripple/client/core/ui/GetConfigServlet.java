@@ -6,6 +6,9 @@ import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
 import ripple.common.Item;
+import ripple.common.Message;
+import ripple.common.MessageType;
+import ripple.common.UpdateMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,9 +48,7 @@ public class GetConfigServlet extends BaseServlet {
             stringBuilder.append("                        <th>序号</th>\n");
             stringBuilder.append("                        <th>应用名称</th>\n");
             stringBuilder.append("                        <th>键</th>\n");
-            stringBuilder.append("                        <th>值</th>\n");
-            stringBuilder.append("                        <th>最后修改时间</th>\n");
-            stringBuilder.append("                        <th>服务器ID</th>\n");
+            stringBuilder.append("                        <th>历史记录</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -55,6 +56,17 @@ public class GetConfigServlet extends BaseServlet {
             int i = 0;
             for (i = 0; i < allConfigs.size(); i++) {
                 Item item = allConfigs.get(i);
+                String history = "";
+                for (Message message : item.getMessages()) {
+                    history += "                            <span>UUID: " + message.getUuid() + "; </span>";
+                    history += "                            <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span>";
+                    if (message instanceof UpdateMessage) {
+                        history += "                            <span>值: " + ((UpdateMessage) message).getValue() + "; </span>";
+                    }
+                    history += "                            <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span>";
+                    history += "                            <span>服务器ID: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdateServerId()) + "; </span>";
+                }
+
                 stringBuilder.append("                    <tr>\n");
                 stringBuilder.append("                        <td>")
                         .append(i + 1)
@@ -66,13 +78,7 @@ public class GetConfigServlet extends BaseServlet {
                         .append(item.getKey())
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
-                        .append(item.getValue())
-                        .append("</td>\n");
-                stringBuilder.append("                        <td>")
-                        .append(SimpleDateFormat.getDateTimeInstance().format(item.getLastUpdate()))
-                        .append("</td>\n");
-                stringBuilder.append("                        <td>")
-                        .append(item.getLastUpdateServerId())
+                        .append(history)
                         .append("</td>\n");
                 stringBuilder.append("                    </tr>\n");
             }

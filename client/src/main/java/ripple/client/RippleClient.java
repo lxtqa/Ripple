@@ -17,10 +17,10 @@ import ripple.client.core.ui.RemoveSubscriptionServlet;
 import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
-import ripple.client.helper.Storage;
 import ripple.common.Endpoint;
 import ripple.common.Item;
 import ripple.common.ItemKey;
+import ripple.common.helper.Storage;
 
 import java.net.InetAddress;
 import java.util.HashSet;

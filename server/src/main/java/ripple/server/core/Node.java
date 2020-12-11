@@ -14,6 +14,7 @@ import ripple.common.Item;
 import ripple.common.ItemKey;
 import ripple.common.Message;
 import ripple.common.UpdateMessage;
+import ripple.common.helper.Storage;
 import ripple.server.core.api.DeleteServlet;
 import ripple.server.core.api.GetServlet;
 import ripple.server.core.api.HeartbeatServlet;
@@ -32,7 +33,6 @@ import ripple.server.core.ui.RemoveConfigServlet;
 import ripple.server.core.ui.ServerClusterServlet;
 import ripple.server.core.ui.StyleServlet;
 import ripple.server.helper.Api;
-import ripple.server.helper.Storage;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
@@ -334,12 +334,12 @@ public class Node {
     }
 
     private void doNotifyDeleteToClients(DeleteMessage deleteMessage) {
-        ItemKey itemKey = new ItemKey(deleteMessage.getApplicationName(),deleteMessage.getKey());
+        ItemKey itemKey = new ItemKey(deleteMessage.getApplicationName(), deleteMessage.getKey());
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[Node] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyDeleteToClient(metadata,deleteMessage);
+                Api.notifyDeleteToClient(metadata, deleteMessage);
             }
         }
     }

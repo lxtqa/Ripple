@@ -1,4 +1,4 @@
-package ripple.client.helper;
+package ripple.common.helper;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -75,21 +75,18 @@ public class Storage {
             } else {
                 items = new ArrayList<>();
             }
-            Item toModify = null;
+            Item toReplace = null;
             for (Item elem : items) {
                 if (elem.getApplicationName().equals(item.getApplicationName())
                         && elem.getKey().equals(item.getKey())) {
-                    toModify = elem;
+                    toReplace = elem;
                 }
             }
-            if (toModify != null) {
-                toModify.setKey(item.getKey());
-                toModify.setLastUpdate(item.getLastUpdate());
-                toModify.setLastUpdateServerId(item.getLastUpdateServerId());
-                toModify.setValue(item.getValue());
-            } else {
-                items.add(item);
+            if (toReplace != null) {
+                items.remove(toReplace);
             }
+            items.add(item);
+
             MAPPER.writeValue(new File(this.getFileName()), items);
             return true;
         } catch (Exception exception) {

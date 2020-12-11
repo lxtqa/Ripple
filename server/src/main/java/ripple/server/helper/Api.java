@@ -3,12 +3,10 @@ package ripple.server.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.DeleteMessage;
 import ripple.common.Endpoint;
-import ripple.common.MessageType;
 import ripple.common.UpdateMessage;
 import ripple.common.helper.Http;
 import ripple.server.core.ClientMetadata;
 import ripple.server.core.NodeMetadata;
-import ripple.server.core.SyncType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +23,9 @@ public final class Api {
 
     public static boolean notifyUpdateToClient(ClientMetadata metadata, UpdateMessage updateMessage) {
         try {
-            Map<String, String> headers = new HashMap<>(6);
-            headers.put("x-ripple-type", MessageType.UPDATE);
+            Map<String, String> headers = new HashMap<>(7);
+            headers.put("x-ripple-uuid", updateMessage.getUuid().toString());
+            headers.put("x-ripple-type", updateMessage.getType());
             headers.put("x-ripple-application-name", updateMessage.getApplicationName());
             headers.put("x-ripple-key", updateMessage.getKey());
             headers.put("x-ripple-value", updateMessage.getValue());
@@ -43,8 +42,9 @@ public final class Api {
 
     public static boolean notifyDeleteToClient(ClientMetadata metadata, DeleteMessage deleteMessage) {
         try {
-            Map<String, String> headers = new HashMap<>(5);
-            headers.put("x-ripple-type", MessageType.DELETE);
+            Map<String, String> headers = new HashMap<>(6);
+            headers.put("x-ripple-uuid", deleteMessage.getUuid().toString());
+            headers.put("x-ripple-type", deleteMessage.getType());
             headers.put("x-ripple-application-name", deleteMessage.getApplicationName());
             headers.put("x-ripple-key", deleteMessage.getKey());
             headers.put("x-ripple-last-update", String.valueOf(deleteMessage.getLastUpdate().getTime()));
@@ -60,8 +60,9 @@ public final class Api {
 
     public static boolean syncUpdateToServer(NodeMetadata metadata, UpdateMessage updateMessage) {
         try {
-            Map<String, String> headers = new HashMap<>(6);
-            headers.put("x-ripple-type", SyncType.UPDATE);
+            Map<String, String> headers = new HashMap<>(7);
+            headers.put("x-ripple-uuid", updateMessage.getUuid().toString());
+            headers.put("x-ripple-type", updateMessage.getType());
             headers.put("x-ripple-application-name", updateMessage.getApplicationName());
             headers.put("x-ripple-key", updateMessage.getKey());
             headers.put("x-ripple-value", updateMessage.getValue());
@@ -78,8 +79,9 @@ public final class Api {
 
     public static boolean syncDeleteToServer(NodeMetadata metadata, DeleteMessage deleteMessage) {
         try {
-            Map<String, String> headers = new HashMap<>(5);
-            headers.put("x-ripple-type", SyncType.DELETE);
+            Map<String, String> headers = new HashMap<>(6);
+            headers.put("x-ripple-uuid", deleteMessage.getUuid().toString());
+            headers.put("x-ripple-type", deleteMessage.getType());
             headers.put("x-ripple-application-name", deleteMessage.getApplicationName());
             headers.put("x-ripple-key", deleteMessage.getKey());
             headers.put("x-ripple-last-update", String.valueOf(deleteMessage.getLastUpdate().getTime()));
