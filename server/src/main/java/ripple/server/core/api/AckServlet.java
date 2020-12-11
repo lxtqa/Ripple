@@ -9,20 +9,26 @@ import ripple.server.core.Node;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 /**
  * @author Zhen Tang
  */
-public class HeartbeatServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(HeartbeatServlet.class);
+public class AckServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AckServlet.class);
 
-    public HeartbeatServlet(Node node) {
+    public AckServlet(Node node) {
         super(node);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[HeartbeatServlet] Receive request.");
+        UUID messageUuid = UUID.fromString(request.getHeader("x-ripple-uuid"));
+        int sourceId = Integer.parseInt(request.getHeader("x-ripple-source-id"));
+        int nodeId = Integer.parseInt(request.getHeader("x-ripple-node-id"));
+
+        LOGGER.info("[AckServlet] Receive ACK of {} from server {}.", messageUuid.toString(), nodeId);
+        this.getNode().getTracker().recordAck(messageUuid, sourceId, nodeId);
 
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

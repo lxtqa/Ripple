@@ -15,6 +15,7 @@ import ripple.common.ItemKey;
 import ripple.common.Message;
 import ripple.common.UpdateMessage;
 import ripple.common.helper.Storage;
+import ripple.server.core.api.AckServlet;
 import ripple.server.core.api.DeleteServlet;
 import ripple.server.core.api.GetServlet;
 import ripple.server.core.api.HeartbeatServlet;
@@ -56,6 +57,7 @@ public class Node {
     private List<NodeMetadata> nodeList;
     private ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
+    private Tracker tracker;
 
     private String address;
     private int port;
@@ -69,11 +71,20 @@ public class Node {
     public Node(int id, Overlay overlay, String storageLocation, int port) {
         this.setId(id);
         this.setOverlay(overlay);
+        this.setTracker(new Tracker(this));
         this.setNodeList(new ArrayList<>());
         this.setStorage(new Storage(storageLocation));
         this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);
         this.setConnectedClients(new HashSet<>());
+    }
+
+    public Tracker getTracker() {
+        return tracker;
+    }
+
+    private void setTracker(Tracker tracker) {
+        this.tracker = tracker;
     }
 
     public int getId() {
@@ -92,11 +103,11 @@ public class Node {
         this.overlay = overlay;
     }
 
-    protected Storage getStorage() {
+    public Storage getStorage() {
         return storage;
     }
 
-    protected void setStorage(Storage storage) {
+    private void setStorage(Storage storage) {
         this.storage = storage;
     }
 
@@ -183,6 +194,7 @@ public class Node {
         this.registerServlet(servletContextHandler, new PutServlet(this), Endpoint.API_PUT);
         this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.API_DELETE);
         this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
+        this.registerServlet(servletContextHandler, new AckServlet(this), Endpoint.API_ACK);
         this.registerServlet(servletContextHandler, new HeartbeatServlet(this), Endpoint.API_HEARTBEAT);
     }
 
@@ -198,8 +210,9 @@ public class Node {
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
-        UpdateMessage updateMessage = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
-        this.handleMessage(updateMessage);
+        UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
+        this.getTracker().initProgress(message);
+        this.handleMessage(message);
 
         return true;
     }
@@ -208,13 +221,14 @@ public class Node {
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
-        DeleteMessage deleteMessage = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-        this.handleMessage(deleteMessage);
+        DeleteMessage message = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
+        this.getTracker().initProgress(message);
+        this.handleMessage(message);
 
         return true;
     }
 
-    public boolean handleMessage(Message message){
+    public boolean handleMessage(Message message) {
         // Update local storage
         this.applyMessageToStorage(message);
 
@@ -229,7 +243,7 @@ public class Node {
         return true;
     }
 
-    private NodeMetadata findServerById(int serverId) {
+    public NodeMetadata findServerById(int serverId) {
         for (NodeMetadata nodeMetadata : this.getNodeList()) {
             if (nodeMetadata.getId() == serverId) {
                 return nodeMetadata;
@@ -246,7 +260,11 @@ public class Node {
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {
             LOGGER.info("[Node] Sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
-            Api.syncWithServer(metadata, message);
+            boolean success = Api.sync(metadata.getAddress(), metadata.getPort(), message);
+            if (success) {
+                LOGGER.info("[Node] Record ACK of message {} from server {}.", message.getUuid(), metadata.getId());
+                this.getTracker().recordAck(message.getUuid(),message.getLastUpdateServerId(), metadata.getId());
+            }
         }
     }
 
@@ -256,7 +274,7 @@ public class Node {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[Node] Notify {} to client {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
-                Api.notifyClient(metadata, message);
+                Api.sync(metadata.getAddress(), metadata.getPort(), message);
             }
         }
     }

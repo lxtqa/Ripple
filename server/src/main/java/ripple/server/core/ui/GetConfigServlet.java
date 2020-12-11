@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Zhen Tang
@@ -59,13 +60,23 @@ public class GetConfigServlet extends BaseServlet {
                 String history = "";
                 for (Message message : item.getMessages()) {
                     history += "                            <p>";
-                    history += "                                <span>UUID: " + message.getUuid() + "; </span>";
-                    history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span>";
+                    history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
+                    history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span> <br />";
                     if (message instanceof UpdateMessage) {
-                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span>";
+                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span> <br />";
                     }
-                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span>";
-                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span>";
+                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
+                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
+                    if (message.getLastUpdateServerId() == this.getNode().getId()) {
+                        Set<Integer> set = this.getNode().getTracker().getProgress(message.getUuid());
+                        if (set != null) {
+                            history += "                                <span>已推送到的服务器ID: ";
+                            for (Integer id : set) {
+                                history += id + " ";
+                            }
+                            history += " </span> <br />";
+                        }
+                    }
                     history += "                            </p>";
                 }
 
