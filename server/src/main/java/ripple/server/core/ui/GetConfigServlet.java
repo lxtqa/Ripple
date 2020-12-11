@@ -58,13 +58,15 @@ public class GetConfigServlet extends BaseServlet {
 
                 String history = "";
                 for (Message message : item.getMessages()) {
-                    history += "                            <span>UUID: " + message.getUuid() + "; </span>";
-                    history += "                            <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span>";
+                    history += "                            <p>";
+                    history += "                                <span>UUID: " + message.getUuid() + "; </span>";
+                    history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span>";
                     if (message instanceof UpdateMessage) {
-                        history += "                            <span>值: " + ((UpdateMessage) message).getValue() + "; </span>";
+                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span>";
                     }
-                    history += "                            <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span>";
-                    history += "                            <span>服务器ID: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdateServerId()) + "; </span>";
+                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span>";
+                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span>";
+                    history += "                            </p>";
                 }
 
                 stringBuilder.append("                    <tr>\n");

@@ -16,4 +16,8 @@ public class DeleteMessage extends Message {
         this(UUID.randomUUID(), applicationName, key, lastUpdate, lastUpdateServerId);
     }
 
+    public DeleteMessage() {
+
+    }
+
 }

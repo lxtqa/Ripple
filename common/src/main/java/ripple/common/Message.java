@@ -1,12 +1,20 @@
 package ripple.common;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import java.util.Date;
 import java.util.UUID;
 
 /**
  * @author Zhen Tang
  */
-public class Message {
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
+@JsonSubTypes(value = {
+        @JsonSubTypes.Type(value = UpdateMessage.class, name = MessageType.UPDATE),
+        @JsonSubTypes.Type(value = DeleteMessage.class, name = MessageType.DELETE)
+})
+public abstract class Message {
     private UUID uuid;
     private String type;
     private String applicationName;
@@ -18,7 +26,7 @@ public class Message {
         return uuid;
     }
 
-    private void setUuid(UUID uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 
@@ -26,7 +34,7 @@ public class Message {
         return type;
     }
 
-    private void setType(String type) {
+    public void setType(String type) {
         this.type = type;
     }
 
@@ -34,7 +42,7 @@ public class Message {
         return applicationName;
     }
 
-    private void setApplicationName(String applicationName) {
+    public void setApplicationName(String applicationName) {
         this.applicationName = applicationName;
     }
 
@@ -42,7 +50,7 @@ public class Message {
         return key;
     }
 
-    private void setKey(String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
@@ -50,7 +58,7 @@ public class Message {
         return lastUpdateServerId;
     }
 
-    private void setLastUpdateServerId(int lastUpdateServerId) {
+    public void setLastUpdateServerId(int lastUpdateServerId) {
         this.lastUpdateServerId = lastUpdateServerId;
     }
 
@@ -58,8 +66,12 @@ public class Message {
         return lastUpdate;
     }
 
-    private void setLastUpdate(Date lastUpdate) {
+    public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public Message() {
+
     }
 
     public Message(UUID uuid, String type, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
@@ -69,9 +81,5 @@ public class Message {
         this.setKey(key);
         this.setLastUpdate(lastUpdate);
         this.setLastUpdateServerId(lastUpdateServerId);
-    }
-
-    public Message(String type, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
-        this(UUID.randomUUID(), type, applicationName, key, lastUpdate, lastUpdateServerId);
     }
 }

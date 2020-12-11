@@ -70,13 +70,13 @@ public class Main {
                 rippleClient.unsubscribe(applicationName, key);
             }
 
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.stop();
-            }
-
-            for (RippleServer rippleServer : serverList) {
-                rippleServer.stop();
-            }
+//            for (RippleClient rippleClient : clientList) {
+//                rippleClient.stop();
+//            }
+//
+//            for (RippleServer rippleServer : serverList) {
+//                rippleServer.stop();
+//            }
         } catch (Exception exception) {
             exception.printStackTrace();
         }

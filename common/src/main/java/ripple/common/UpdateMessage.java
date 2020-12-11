@@ -24,7 +24,11 @@ public class UpdateMessage extends Message {
         return value;
     }
 
-    private void setValue(String value) {
+    public void setValue(String value) {
         this.value = value;
+    }
+
+    public UpdateMessage() {
+
     }
 }
