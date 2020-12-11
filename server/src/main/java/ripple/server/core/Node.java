@@ -8,9 +8,12 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.DeleteMessage;
 import ripple.common.Endpoint;
 import ripple.common.Item;
 import ripple.common.ItemKey;
+import ripple.common.Message;
+import ripple.common.UpdateMessage;
 import ripple.server.core.api.DeleteServlet;
 import ripple.server.core.api.GetServlet;
 import ripple.server.core.api.HeartbeatServlet;
@@ -195,15 +198,17 @@ public class Node {
         // Update local storage
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
-        Item item = this.doUpdateItem(applicationName, key, value, lastUpdate, lastUpdateServerId);
+
+        UpdateMessage updateMessage = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
+        this.applyMessage(updateMessage);
 
         // Notify clients
-        this.doNotifyUpdateToClients(item);
+        this.doNotifyUpdateToClients(updateMessage);
 
         int sourceId = lastUpdateServerId;
         int currentId = this.getId();
 
-        this.doSyncUpdate(applicationName, key, value, lastUpdate, lastUpdateServerId, sourceId, currentId);
+        this.doSyncUpdate(updateMessage, sourceId, currentId);
 
         return true;
     }
@@ -212,25 +217,20 @@ public class Node {
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
+        DeleteMessage deleteMessage = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
+
         // Update local storage
-        this.doDeleteItem(applicationName, key);
+        this.applyMessage(deleteMessage);
 
         // Notify clients
-        this.doNotifyDeleteToClients(applicationName, key);
+        this.doNotifyDeleteToClients(deleteMessage);
 
         int sourceId = lastUpdateServerId;
         int currentId = this.getId();
 
-        this.doSyncDelete(applicationName, key, lastUpdate, lastUpdateServerId, sourceId, currentId);
+        this.doSyncDelete(deleteMessage, sourceId, currentId);
 
         return true;
-    }
-
-    private void doDeleteItem(String applicationName, String key) {
-        Item item = this.getStorage().get(applicationName, key);
-        if (item != null) {
-            this.getStorage().delete(item);
-        }
     }
 
     private NodeMetadata findServerById(int serverId) {
@@ -242,22 +242,22 @@ public class Node {
         return null;
     }
 
-    public boolean onSyncUpdateReceived(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
+    public boolean onSyncUpdateReceived(UpdateMessage updateMessage) {
         // Update local storage
-        Item item = this.doUpdateItem(applicationName, key, value, lastUpdate, lastUpdateServerId);
+        this.applyMessage(updateMessage);
 
         // Notify clients
-        this.doNotifyUpdateToClients(item);
+        this.doNotifyUpdateToClients(updateMessage);
 
-        int sourceId = lastUpdateServerId;
+        int sourceId = updateMessage.getLastUpdateServerId();
         int currentId = this.getId();
 
-        this.doSyncUpdate(applicationName, key, value, lastUpdate, lastUpdateServerId, sourceId, currentId);
+        this.doSyncUpdate(updateMessage, sourceId, currentId);
 
         return true;
     }
 
-    private void doSyncUpdate(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
+    private void doSyncUpdate(UpdateMessage updateMessage, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
         List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
@@ -265,26 +265,26 @@ public class Node {
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {
             LOGGER.info("[Node] Sync update to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncUpdateToServer(metadata, applicationName, key, value, lastUpdate, lastUpdateServerId);
+            Api.syncUpdateToServer(metadata, updateMessage);
         }
     }
 
-    public boolean onSyncDeleteReceived(String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
+    public boolean onSyncDeleteReceived(DeleteMessage deleteMessage) {
         // Update local storage
-        this.doDeleteItem(applicationName, key);
+        this.applyMessage(deleteMessage);
 
         // Notify clients
-        this.doNotifyDeleteToClients(applicationName, key);
+        this.doNotifyDeleteToClients(deleteMessage);
 
-        int sourceId = lastUpdateServerId;
+        int sourceId = deleteMessage.getLastUpdateServerId();
         int currentId = this.getId();
 
-        this.doSyncDelete(applicationName, key, lastUpdate, lastUpdateServerId, sourceId, currentId);
+        this.doSyncDelete(deleteMessage, sourceId, currentId);
 
         return true;
     }
 
-    private void doSyncDelete(String applicationName, String key, Date lastUpdate, int lastUpdateServerId, int sourceId, int currentId) {
+    private void doSyncDelete(DeleteMessage deleteMessage, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
         List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
@@ -292,44 +292,54 @@ public class Node {
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {
             LOGGER.info("[Node] Sync delete to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncDeleteToServer(metadata, applicationName, key, lastUpdate, lastUpdateServerId);
+            Api.syncDeleteToServer(metadata, deleteMessage);
         }
     }
 
-    private void doNotifyUpdateToClients(Item item) {
-        ItemKey itemKey = new ItemKey(item.getApplicationName(), item.getKey());
+    private void doNotifyUpdateToClients(UpdateMessage updateMessage) {
+        ItemKey itemKey = new ItemKey(updateMessage.getApplicationName(), updateMessage.getKey());
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[Node] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyUpdateToClient(metadata, item);
+                Api.notifyUpdateToClient(metadata, updateMessage);
             }
         }
     }
 
-    private Item doUpdateItem(String applicationName, String key, String value, Date lastUpdate, int lastUpdateServerId) {
-        Item item = this.getStorage().get(applicationName, key);
+    private void applyMessage(Message message) {
+        Item item = this.getStorage().get(message.getApplicationName(), message.getKey());
+        boolean newItem = false;
         if (item == null) {
             item = new Item();
+            newItem = true;
         }
         synchronized (this) {
-            item.setApplicationName(applicationName);
-            item.setKey(key);
-            item.setValue(value);
-            item.setLastUpdate(lastUpdate);
-            item.setLastUpdateServerId(lastUpdateServerId);
+            if (newItem) {
+                item.setApplicationName(message.getApplicationName());
+                item.setKey(message.getKey());
+            }
+            boolean exist = false;
+            for (Message elem : item.getMessages()) {
+                if (elem.getUuid().equals(message.getUuid())) {
+                    exist = true;
+                    break;
+                }
+            }
+            if (!exist) {
+                item.getMessages().add(message);
+            }
         }
         this.getStorage().put(item);
-        return item;
     }
 
-    private void doNotifyDeleteToClients(String applicationName, String key) {
-        ItemKey itemKey = new ItemKey(applicationName, key);
+    private void doNotifyDeleteToClients(DeleteMessage deleteMessage) {
+        ItemKey itemKey = new ItemKey(deleteMessage.getApplicationName(),deleteMessage.getKey());
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[Node] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyDeleteToClient(metadata, applicationName, key);
+                Api.notifyDeleteToClient(metadata,deleteMessage);
             }
         }
     }

@@ -2,7 +2,6 @@ package ripple.server.core.resolver;
 
 import ripple.common.Item;
 import ripple.server.core.Operation;
-import ripple.server.core.OperationType;
 
 /**
  * An Add-win resolver which guarantee the "Add win" semantics.
@@ -28,35 +27,36 @@ public class AddWinConflictResolver implements OperationBasedConflictResolver {
 
     @Override
     public void merge(Item current, Operation toApply) {
-        if (!(current.getValue() instanceof String)) {
-            // Only merge String now
-            return;
-        }
-        long timeDifference = toApply.getTimestamp().getTime() - current.getLastUpdate().getTime();
-        if (timeDifference < 0 && (-timeDifference) > this.getMaxTimeDifference()) {
-            // Received obsoleted data, discard
-            return;
-        }
-        if (timeDifference > 0 && timeDifference > this.getMaxTimeDifference()) {
-            // Accept operation
-            String value = current.getValue();
-            if (toApply.getOperationType() == OperationType.ADD_ENTRY) {
-                this.doAddEntry(value, toApply);
-            } else if (toApply.getOperationType() == OperationType.REMOVE_ENTRY) {
-                this.doRemoveEntry(value, toApply);
-            }
-        } else {
-            // Resolve conflict
-            String value = current.getValue();
-            if (toApply.getOperationType() == OperationType.ADD_ENTRY) {
-                this.doAddEntry(value, toApply);
-            }
-            // Discard conflict removal operation
-
-        }
-        if (timeDifference > 0) {
-            current.getLastUpdate().setTime(toApply.getTimestamp().getTime());
-        }
+        // TODO
+//        if (!(current.getValue() instanceof String)) {
+//            // Only merge String now
+//            return;
+//        }
+//        long timeDifference = toApply.getTimestamp().getTime() - current.getLastUpdate().getTime();
+//        if (timeDifference < 0 && (-timeDifference) > this.getMaxTimeDifference()) {
+//            // Received obsoleted data, discard
+//            return;
+//        }
+//        if (timeDifference > 0 && timeDifference > this.getMaxTimeDifference()) {
+//            // Accept operation
+//            String value = current.getValue();
+//            if (toApply.getOperationType() == OperationType.ADD_ENTRY) {
+//                this.doAddEntry(value, toApply);
+//            } else if (toApply.getOperationType() == OperationType.REMOVE_ENTRY) {
+//                this.doRemoveEntry(value, toApply);
+//            }
+//        } else {
+//            // Resolve conflict
+//            String value = current.getValue();
+//            if (toApply.getOperationType() == OperationType.ADD_ENTRY) {
+//                this.doAddEntry(value, toApply);
+//            }
+//            // Discard conflict removal operation
+//
+//        }
+//        if (timeDifference > 0) {
+//            current.getLastUpdate().setTime(toApply.getTimestamp().getTime());
+//        }
     }
 
     private void doAddEntry(String value, Operation toApply) {
