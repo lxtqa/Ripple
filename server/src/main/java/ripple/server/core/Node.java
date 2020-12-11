@@ -195,39 +195,36 @@ public class Node {
     }
 
     public boolean put(String applicationName, String key, String value) {
-        // Update local storage
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
         UpdateMessage updateMessage = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
-        this.applyMessage(updateMessage);
-
-        // Notify clients
-        this.doNotifyClients(updateMessage);
-
-        int sourceId = lastUpdateServerId;
-        int currentId = this.getId();
-
-        this.doSyncUpdate(updateMessage, sourceId, currentId);
+        this.handleMessage(updateMessage);
 
         return true;
     }
 
     public boolean delete(String applicationName, String key) {
-        // Update local storage
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
         DeleteMessage deleteMessage = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-        this.applyMessage(deleteMessage);
+        this.handleMessage(deleteMessage);
+
+        return true;
+    }
+
+    public boolean handleMessage(Message message){
+        // Update local storage
+        this.applyMessageToStorage(message);
 
         // Notify clients
-        this.doNotifyClients(deleteMessage);
+        this.doNotifyClients(message);
 
-        int sourceId = lastUpdateServerId;
+        int sourceId = message.getLastUpdateServerId();
         int currentId = this.getId();
 
-        this.doSyncDelete(deleteMessage, sourceId, currentId);
+        this.doSyncWithServer(message, sourceId, currentId);
 
         return true;
     }
@@ -241,57 +238,15 @@ public class Node {
         return null;
     }
 
-    public boolean onSyncUpdateReceived(UpdateMessage updateMessage) {
-        // Update local storage
-        this.applyMessage(updateMessage);
-
-        // Notify clients
-        this.doNotifyClients(updateMessage);
-
-        int sourceId = updateMessage.getLastUpdateServerId();
-        int currentId = this.getId();
-
-        this.doSyncUpdate(updateMessage, sourceId, currentId);
-
-        return true;
-    }
-
-    public boolean onSyncDeleteReceived(DeleteMessage deleteMessage) {
-        // Update local storage
-        this.applyMessage(deleteMessage);
-
-        // Notify clients
-        this.doNotifyClients(deleteMessage);
-
-        int sourceId = deleteMessage.getLastUpdateServerId();
-        int currentId = this.getId();
-
-        this.doSyncDelete(deleteMessage, sourceId, currentId);
-
-        return true;
-    }
-
-    private void doSyncUpdate(UpdateMessage updateMessage, int sourceId, int currentId) {
+    private void doSyncWithServer(Message message, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
         List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
 
         // Sync to servers following the overlay
         for (NodeMetadata metadata : toSend) {
-            LOGGER.info("[Node] Sync update to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncUpdateToServer(metadata, updateMessage);
-        }
-    }
-
-    private void doSyncDelete(DeleteMessage deleteMessage, int sourceId, int currentId) {
-        NodeMetadata source = this.findServerById(sourceId);
-        NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
-
-        // Sync to servers following the overlay
-        for (NodeMetadata metadata : toSend) {
-            LOGGER.info("[Node] Sync delete to server {}:{}.", metadata.getAddress(), metadata.getPort());
-            Api.syncDeleteToServer(metadata, deleteMessage);
+            LOGGER.info("[Node] Sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
+            Api.syncWithServer(metadata, message);
         }
     }
 
@@ -306,7 +261,7 @@ public class Node {
         }
     }
 
-    private void applyMessage(Message message) {
+    private void applyMessageToStorage(Message message) {
         Item item = this.getStorage().get(message.getApplicationName(), message.getKey());
         boolean newItem = false;
         if (item == null) {
