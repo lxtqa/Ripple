@@ -5,7 +5,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import ripple.client.core.api.NotifyServlet;
+import ripple.client.core.api.SyncServlet;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
 import ripple.client.core.ui.GetConfigServlet;
@@ -22,6 +22,7 @@ import ripple.common.Item;
 import ripple.common.ItemKey;
 import ripple.common.helper.Storage;
 
+import javax.servlet.Servlet;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
@@ -156,52 +157,25 @@ public class RippleClient {
                 , this.getAddress(), this.getPort(), applicationName, key);
     }
 
+    private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
+        servletContextHandler.addServlet(new ServletHolder(servlet), endpoint);
+    }
+
     public void registerHandlers(ServletContextHandler servletContextHandler) {
         // UI
-        HomeServlet homeServlet = new HomeServlet(this);
-        ServletHolder homeServletHolder = new ServletHolder(homeServlet);
-        servletContextHandler.addServlet(homeServletHolder, Endpoint.UI_HOME);
+        this.registerServlet(servletContextHandler, new HomeServlet(this), Endpoint.UI_HOME);
+        this.registerServlet(servletContextHandler, new StyleServlet(this), Endpoint.UI_STYLE);
+        this.registerServlet(servletContextHandler, new GetConfigServlet(this), Endpoint.UI_GET_CONFIG);
+        this.registerServlet(servletContextHandler, new AddConfigServlet(this), Endpoint.UI_ADD_CONFIG);
+        this.registerServlet(servletContextHandler, new ModifyConfigServlet(this), Endpoint.UI_MODIFY_CONFIG);
+        this.registerServlet(servletContextHandler, new RemoveConfigServlet(this), Endpoint.UI_REMOVE_CONFIG);
+        this.registerServlet(servletContextHandler, new GetSubscriptionServlet(this), Endpoint.UI_GET_SUBSCRIPTION);
+        this.registerServlet(servletContextHandler, new AddSubscriptionServlet(this), Endpoint.UI_ADD_SUBSCRIPTION);
+        this.registerServlet(servletContextHandler, new RemoveSubscriptionServlet(this), Endpoint.UI_REMOVE_SUBSCRIPTION);
+        this.registerServlet(servletContextHandler, new ServerInfoServlet(this), Endpoint.UI_SERVER_INFO);
 
-        StyleServlet styleServlet = new StyleServlet(this);
-        ServletHolder styleServletHolder = new ServletHolder(styleServlet);
-        servletContextHandler.addServlet(styleServletHolder, Endpoint.UI_STYLE);
-
-        GetConfigServlet getConfigServlet = new GetConfigServlet(this);
-        ServletHolder getConfigServletHolder = new ServletHolder(getConfigServlet);
-        servletContextHandler.addServlet(getConfigServletHolder, Endpoint.UI_GET_CONFIG);
-
-        AddConfigServlet addConfigServlet = new AddConfigServlet(this);
-        ServletHolder addConfigServletHolder = new ServletHolder(addConfigServlet);
-        servletContextHandler.addServlet(addConfigServletHolder, Endpoint.UI_ADD_CONFIG);
-
-        ModifyConfigServlet modifyConfigServlet = new ModifyConfigServlet(this);
-        ServletHolder modifyConfigServletHolder = new ServletHolder(modifyConfigServlet);
-        servletContextHandler.addServlet(modifyConfigServletHolder, Endpoint.UI_MODIFY_CONFIG);
-
-        RemoveConfigServlet removeConfigServlet = new RemoveConfigServlet(this);
-        ServletHolder removeConfigServletHolder = new ServletHolder(removeConfigServlet);
-        servletContextHandler.addServlet(removeConfigServletHolder, Endpoint.UI_REMOVE_CONFIG);
-
-        GetSubscriptionServlet getSubscriptionServlet = new GetSubscriptionServlet(this);
-        ServletHolder getSubscriptionServletHolder = new ServletHolder(getSubscriptionServlet);
-        servletContextHandler.addServlet(getSubscriptionServletHolder, Endpoint.UI_GET_SUBSCRIPTION);
-
-        AddSubscriptionServlet addSubscriptionServlet = new AddSubscriptionServlet(this);
-        ServletHolder addSubscriptionServletHolder = new ServletHolder(addSubscriptionServlet);
-        servletContextHandler.addServlet(addSubscriptionServletHolder, Endpoint.UI_ADD_SUBSCRIPTION);
-
-        RemoveSubscriptionServlet removeSubscriptionServlet = new RemoveSubscriptionServlet(this);
-        ServletHolder removeSubscriptionServletHolder = new ServletHolder(removeSubscriptionServlet);
-        servletContextHandler.addServlet(removeSubscriptionServletHolder, Endpoint.UI_REMOVE_SUBSCRIPTION);
-
-        ServerInfoServlet serverInfoServlet = new ServerInfoServlet(this);
-        ServletHolder serverInfoServletHolder = new ServletHolder(serverInfoServlet);
-        servletContextHandler.addServlet(serverInfoServletHolder, Endpoint.UI_SERVER_INFO);
-
-        // Business
-        NotifyServlet notifyServlet = new NotifyServlet(this);
-        ServletHolder notifyServletHolder = new ServletHolder(notifyServlet);
-        servletContextHandler.addServlet(notifyServletHolder, Endpoint.CLIENT_NOTIFY);
+        // API
+        this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
     }
 
     public synchronized boolean start() {

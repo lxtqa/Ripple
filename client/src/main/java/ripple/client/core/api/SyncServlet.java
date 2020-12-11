@@ -22,11 +22,11 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class NotifyServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NotifyServlet.class);
+public class SyncServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SyncServlet.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    public NotifyServlet(RippleClient client) {
+    public SyncServlet(RippleClient client) {
         super(client);
     }
 
@@ -71,12 +71,12 @@ public class NotifyServlet extends BaseServlet {
 
         if (type.equals(MessageType.UPDATE)) {
             String value = request.getHeader("x-ripple-value");
-            LOGGER.info("[NotifyServlet] Receive request: UUID = {}, Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
+            LOGGER.info("[SyncServlet] Receive request: UUID = {}, Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 
             message = new UpdateMessage(uuid, applicationName, key, value, lastUpdate, lastUpdateServerId);
         } else if (type.equals(MessageType.DELETE)) {
-            LOGGER.info("[NotifyServlet] Receive request: UUID = {}, Type = {}, Application Name = {}, Key = {}, Last Update = {}, Last Update Server Id = {}."
+            LOGGER.info("[SyncServlet] Receive request: UUID = {}, Type = {}, Application Name = {}, Key = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
             message = new DeleteMessage(uuid, applicationName, key, lastUpdate, lastUpdateServerId);
         }

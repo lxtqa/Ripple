@@ -4,17 +4,14 @@ package ripple.common;
  * @author Zhen Tang
  */
 public final class Endpoint {
-    // Server API
-    public static final String SERVER_SUBSCRIBE = "/Api/Subscribe";
-    public static final String SERVER_UNSUBSCRIBE = "/Api/Unsubscribe";
-    public static final String SERVER_GET = "/Api/Get";
-    public static final String SERVER_PUT = "/Api/Put";
-    public static final String SERVER_DELETE = "/Api/Delete";
-    public static final String SERVER_SYNC = "/Api/Sync";
-    public static final String SERVER_HEARTBEAT = "/Api/Heartbeat";
-
-    // Client API
-    public static final String CLIENT_NOTIFY = "/Api/Notify";
+    // API
+    public static final String API_SUBSCRIBE = "/Api/Subscribe";
+    public static final String API_UNSUBSCRIBE = "/Api/Unsubscribe";
+    public static final String API_GET = "/Api/Get";
+    public static final String API_PUT = "/Api/Put";
+    public static final String API_DELETE = "/Api/Delete";
+    public static final String API_SYNC = "/Api/Sync";
+    public static final String API_HEARTBEAT = "/Api/Heartbeat";
 
     // Common UI
     public static final String UI_STYLE = "/Style";

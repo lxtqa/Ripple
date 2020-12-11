@@ -177,13 +177,13 @@ public class Node {
         this.registerServlet(servletContextHandler, new ClientClusterServlet(this), Endpoint.UI_CLIENT_CLUSTER);
 
         // API
-        this.registerServlet(servletContextHandler, new SubscribeServlet(this), Endpoint.SERVER_SUBSCRIBE);
-        this.registerServlet(servletContextHandler, new UnsubscribeServlet(this), Endpoint.SERVER_UNSUBSCRIBE);
-        this.registerServlet(servletContextHandler, new GetServlet(this), Endpoint.SERVER_GET);
-        this.registerServlet(servletContextHandler, new PutServlet(this), Endpoint.SERVER_PUT);
-        this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.SERVER_DELETE);
-        this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.SERVER_SYNC);
-        this.registerServlet(servletContextHandler, new HeartbeatServlet(this), Endpoint.SERVER_HEARTBEAT);
+        this.registerServlet(servletContextHandler, new SubscribeServlet(this), Endpoint.API_SUBSCRIBE);
+        this.registerServlet(servletContextHandler, new UnsubscribeServlet(this), Endpoint.API_UNSUBSCRIBE);
+        this.registerServlet(servletContextHandler, new GetServlet(this), Endpoint.API_GET);
+        this.registerServlet(servletContextHandler, new PutServlet(this), Endpoint.API_PUT);
+        this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.API_DELETE);
+        this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
+        this.registerServlet(servletContextHandler, new HeartbeatServlet(this), Endpoint.API_HEARTBEAT);
     }
 
     public Item get(String applicationName, String key) {

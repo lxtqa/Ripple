@@ -1,7 +1,6 @@
 package ripple.server.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ripple.common.DeleteMessage;
 import ripple.common.Endpoint;
 import ripple.common.Message;
 import ripple.common.MessageType;
@@ -35,7 +34,7 @@ public final class Api {
             }
             headers.put("x-ripple-last-update", String.valueOf(message.getLastUpdate().getTime()));
             headers.put("x-ripple-last-update-server-id", String.valueOf(message.getLastUpdateServerId()));
-            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.CLIENT_NOTIFY;
+            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.API_SYNC;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
@@ -56,7 +55,7 @@ public final class Api {
             }
             headers.put("x-ripple-last-update", String.valueOf(message.getLastUpdate().getTime()));
             headers.put("x-ripple-last-update-server-id", String.valueOf(message.getLastUpdateServerId()));
-            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.SERVER_SYNC;
+            String url = "http://" + metadata.getAddress() + ":" + metadata.getPort() + Endpoint.API_SYNC;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
