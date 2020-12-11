@@ -3,49 +3,17 @@ package ripple.common;
 import java.util.Date;
 import java.util.UUID;
 
+/**
+ * @author Zhen Tang
+ */
 public class DeleteMessage extends Message {
-    private String applicationName;
-    private String key;
-    private int lastUpdateServerId;
-    private Date lastUpdate;
 
-    public String getApplicationName() {
-        return applicationName;
+    public DeleteMessage(UUID uuid, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
+        super(uuid, MessageType.DELETE, applicationName, key, lastUpdate, lastUpdateServerId);
     }
 
-    public void setApplicationName(String applicationName) {
-        this.applicationName = applicationName;
+    public DeleteMessage(String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
+        this(UUID.randomUUID(), applicationName, key, lastUpdate, lastUpdateServerId);
     }
 
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public int getLastUpdateServerId() {
-        return lastUpdateServerId;
-    }
-
-    public void setLastUpdateServerId(int lastUpdateServerId) {
-        this.lastUpdateServerId = lastUpdateServerId;
-    }
-
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
-
-    public DeleteMessage(UUID uuid, String type) {
-        super(uuid, type);
-    }
-
-    public DeleteMessage(String type) {
-        super(type);
-    }
 }
