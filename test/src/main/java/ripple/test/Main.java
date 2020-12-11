@@ -65,18 +65,19 @@ public class Main {
 
             clientList.get(0).put(applicationName, key, value);
             clientList.get((SERVER_COUNT - 1) * CLIENTS_PER_SERVER).put(applicationName, key, value);
+            clientList.get(0).delete(applicationName, key);
 
             for (RippleClient rippleClient : clientList) {
                 rippleClient.unsubscribe(applicationName, key);
             }
 
-//            for (RippleClient rippleClient : clientList) {
-//                rippleClient.stop();
-//            }
-//
-//            for (RippleServer rippleServer : serverList) {
-//                rippleServer.stop();
-//            }
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.stop();
+            }
+
+            for (RippleServer rippleServer : serverList) {
+                rippleServer.stop();
+            }
         } catch (Exception exception) {
             exception.printStackTrace();
         }

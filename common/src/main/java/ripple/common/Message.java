@@ -1,6 +1,5 @@
 package ripple.common;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import java.util.Date;
@@ -9,11 +8,7 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
-@JsonSubTypes(value = {
-        @JsonSubTypes.Type(value = UpdateMessage.class, name = MessageType.UPDATE),
-        @JsonSubTypes.Type(value = DeleteMessage.class, name = MessageType.DELETE)
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public abstract class Message {
     private UUID uuid;
     private String type;

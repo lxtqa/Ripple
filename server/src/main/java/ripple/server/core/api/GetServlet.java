@@ -27,12 +27,9 @@ public class GetServlet extends BaseServlet {
         String key = request.getHeader("x-ripple-key");
         LOGGER.info("[GetServlet] Receive request: Application Name = {}, Key = {}.", applicationName, key);
         Item item = this.getNode().get(applicationName, key);
-        if (item != null) {
-            response.setContentType("application/json;charset=UTF-8");
-            response.setStatus(HttpStatus.OK_200);
-            response.getWriter().println(this.getNode().getObjectMapper().writeValueAsString(item));
-        } else {
-            response.sendError(HttpStatus.NOT_FOUND_404);
-        }
+
+        response.setContentType("application/json;charset=UTF-8");
+        response.setStatus(HttpStatus.OK_200);
+        response.getWriter().println(this.getNode().getObjectMapper().writeValueAsString(item));
     }
 }

@@ -203,7 +203,7 @@ public class Node {
         this.applyMessage(updateMessage);
 
         // Notify clients
-        this.doNotifyUpdateToClients(updateMessage);
+        this.doNotifyClients(updateMessage);
 
         int sourceId = lastUpdateServerId;
         int currentId = this.getId();
@@ -214,16 +214,15 @@ public class Node {
     }
 
     public boolean delete(String applicationName, String key) {
+        // Update local storage
         Date lastUpdate = new Date(System.currentTimeMillis());
         int lastUpdateServerId = this.getId();
 
         DeleteMessage deleteMessage = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-
-        // Update local storage
         this.applyMessage(deleteMessage);
 
         // Notify clients
-        this.doNotifyDeleteToClients(deleteMessage);
+        this.doNotifyClients(deleteMessage);
 
         int sourceId = lastUpdateServerId;
         int currentId = this.getId();
@@ -247,12 +246,27 @@ public class Node {
         this.applyMessage(updateMessage);
 
         // Notify clients
-        this.doNotifyUpdateToClients(updateMessage);
+        this.doNotifyClients(updateMessage);
 
         int sourceId = updateMessage.getLastUpdateServerId();
         int currentId = this.getId();
 
         this.doSyncUpdate(updateMessage, sourceId, currentId);
+
+        return true;
+    }
+
+    public boolean onSyncDeleteReceived(DeleteMessage deleteMessage) {
+        // Update local storage
+        this.applyMessage(deleteMessage);
+
+        // Notify clients
+        this.doNotifyClients(deleteMessage);
+
+        int sourceId = deleteMessage.getLastUpdateServerId();
+        int currentId = this.getId();
+
+        this.doSyncDelete(deleteMessage, sourceId, currentId);
 
         return true;
     }
@@ -269,21 +283,6 @@ public class Node {
         }
     }
 
-    public boolean onSyncDeleteReceived(DeleteMessage deleteMessage) {
-        // Update local storage
-        this.applyMessage(deleteMessage);
-
-        // Notify clients
-        this.doNotifyDeleteToClients(deleteMessage);
-
-        int sourceId = deleteMessage.getLastUpdateServerId();
-        int currentId = this.getId();
-
-        this.doSyncDelete(deleteMessage, sourceId, currentId);
-
-        return true;
-    }
-
     private void doSyncDelete(DeleteMessage deleteMessage, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
@@ -296,13 +295,13 @@ public class Node {
         }
     }
 
-    private void doNotifyUpdateToClients(UpdateMessage updateMessage) {
-        ItemKey itemKey = new ItemKey(updateMessage.getApplicationName(), updateMessage.getKey());
+    private void doNotifyClients(Message message) {
+        ItemKey itemKey = new ItemKey(message.getApplicationName(), message.getKey());
         if (this.getSubscription().containsKey(itemKey)) {
             Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[Node] Notify update to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyUpdateToClient(metadata, updateMessage);
+                LOGGER.info("[Node] Notify {} to client {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
+                Api.notifyClient(metadata, message);
             }
         }
     }
@@ -333,16 +332,6 @@ public class Node {
         this.getStorage().put(item);
     }
 
-    private void doNotifyDeleteToClients(DeleteMessage deleteMessage) {
-        ItemKey itemKey = new ItemKey(deleteMessage.getApplicationName(), deleteMessage.getKey());
-        if (this.getSubscription().containsKey(itemKey)) {
-            Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
-            for (ClientMetadata metadata : clients) {
-                LOGGER.info("[Node] Notify delete to client {}:{}.", metadata.getAddress(), metadata.getPort());
-                Api.notifyDeleteToClient(metadata, deleteMessage);
-            }
-        }
-    }
 
     public synchronized boolean start() {
         if (this.isRunning()) {
