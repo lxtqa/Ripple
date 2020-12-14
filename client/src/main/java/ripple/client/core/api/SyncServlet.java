@@ -62,16 +62,16 @@ public class SyncServlet extends BaseServlet {
         boolean result = false;
 
         UUID uuid = UUID.fromString(request.getHeader("x-ripple-uuid"));
-        String type = request.getHeader("x-ripple-type");
+        String type = request.getHeader(Parameter.TYPE);
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
-        String key = request.getHeader("x-ripple-key");
+        String key = request.getHeader(Parameter.KEY);
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
 
         Message message = null;
 
         if (type.equals(MessageType.UPDATE)) {
-            String value = request.getHeader("x-ripple-value");
+            String value = request.getHeader(Parameter.VALUE);
             LOGGER.info("[SyncServlet] Receive request: UUID = {}, Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
 

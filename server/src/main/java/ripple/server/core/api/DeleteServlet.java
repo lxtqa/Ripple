@@ -24,7 +24,8 @@ public class DeleteServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
-        String key = request.getHeader("x-ripple-key");
+        String key = request.getHeader(Parameter.KEY);
+
         LOGGER.info("[DeleteServlet] Receive POST request. Application Name = {}, Key = {}.", applicationName, key);
 
         boolean result = this.getNode().delete(applicationName, key);

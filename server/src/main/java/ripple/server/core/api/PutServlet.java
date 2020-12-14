@@ -24,8 +24,9 @@ public class PutServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
-        String key = request.getHeader("x-ripple-key");
-        String value = request.getHeader("x-ripple-value");
+        String key = request.getHeader(Parameter.KEY);
+        String value = request.getHeader(Parameter.VALUE);
+
         LOGGER.info("[PutServlet] Receive POST request. Application Name = {}, Key = {}, Value = {}."
                 , applicationName, key, value);
 

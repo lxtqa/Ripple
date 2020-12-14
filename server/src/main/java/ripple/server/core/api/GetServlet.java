@@ -25,7 +25,8 @@ public class GetServlet extends BaseServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
-        String key = request.getHeader("x-ripple-key");
+        String key = request.getHeader(Parameter.KEY);
+        
         LOGGER.info("[GetServlet] Receive request: Application Name = {}, Key = {}.", applicationName, key);
         Item item = this.getNode().get(applicationName, key);
 

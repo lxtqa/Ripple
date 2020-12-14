@@ -23,7 +23,7 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(2);
             headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put("x-ripple-key", key);
+            headers.put(Parameter.KEY, key);
             String url = "http://" + address + ":" + port + Endpoint.API_GET;
             String returnValue = Http.get(url, headers);
             return MAPPER.readValue(returnValue, Item.class);
@@ -37,8 +37,8 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(3);
             headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put("x-ripple-key", key);
-            headers.put("x-ripple-value", value);
+            headers.put(Parameter.KEY, key);
+            headers.put(Parameter.VALUE, value);
             String url = "http://" + address + ":" + port + Endpoint.API_PUT;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
@@ -52,7 +52,7 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(2);
             headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put("x-ripple-key", key);
+            headers.put(Parameter.KEY, key);
             String url = "http://" + address + ":" + port + Endpoint.API_DELETE;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
@@ -67,9 +67,9 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(4);
             headers.put(Parameter.APPLICATION_NAME, applicationName);
+            headers.put(Parameter.KEY, key);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
-            headers.put("x-ripple-key", key);
             String url = "http://" + serverAddress + ":" + serverPort + Endpoint.API_SUBSCRIBE;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
@@ -84,9 +84,9 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(4);
             headers.put(Parameter.APPLICATION_NAME, applicationName);
+            headers.put(Parameter.KEY, key);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
-            headers.put("x-ripple-key", key);
             String url = "http://" + serverAddress + ":" + serverPort + Endpoint.API_UNSUBSCRIBE;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);

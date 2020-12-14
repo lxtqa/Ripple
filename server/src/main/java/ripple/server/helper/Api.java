@@ -26,11 +26,11 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(message.getType().equals(MessageType.UPDATE) ? 7 : 6);
             headers.put("x-ripple-uuid", message.getUuid().toString());
-            headers.put("x-ripple-type", message.getType());
+            headers.put(Parameter.TYPE, message.getType());
             headers.put(Parameter.APPLICATION_NAME, message.getApplicationName());
-            headers.put("x-ripple-key", message.getKey());
+            headers.put(Parameter.KEY, message.getKey());
             if (message instanceof UpdateMessage) {
-                headers.put("x-ripple-value", ((UpdateMessage) message).getValue());
+                headers.put(Parameter.VALUE, ((UpdateMessage) message).getValue());
             }
             headers.put("x-ripple-last-update", String.valueOf(message.getLastUpdate().getTime()));
             headers.put("x-ripple-last-update-server-id", String.valueOf(message.getLastUpdateServerId()));
