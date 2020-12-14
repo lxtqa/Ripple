@@ -10,6 +10,7 @@ import ripple.common.DeleteMessage;
 import ripple.common.Item;
 import ripple.common.Message;
 import ripple.common.MessageType;
+import ripple.common.Parameter;
 import ripple.common.UpdateMessage;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,7 +63,7 @@ public class SyncServlet extends BaseServlet {
 
         UUID uuid = UUID.fromString(request.getHeader("x-ripple-uuid"));
         String type = request.getHeader("x-ripple-type");
-        String applicationName = request.getHeader("x-ripple-application-name");
+        String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader("x-ripple-key");
         Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));

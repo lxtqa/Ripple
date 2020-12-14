@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.Endpoint;
 import ripple.common.Message;
 import ripple.common.MessageType;
+import ripple.common.Parameter;
 import ripple.common.UpdateMessage;
 import ripple.common.helper.Http;
 
@@ -26,7 +27,7 @@ public final class Api {
             Map<String, String> headers = new HashMap<>(message.getType().equals(MessageType.UPDATE) ? 7 : 6);
             headers.put("x-ripple-uuid", message.getUuid().toString());
             headers.put("x-ripple-type", message.getType());
-            headers.put("x-ripple-application-name", message.getApplicationName());
+            headers.put(Parameter.APPLICATION_NAME, message.getApplicationName());
             headers.put("x-ripple-key", message.getKey());
             if (message instanceof UpdateMessage) {
                 headers.put("x-ripple-value", ((UpdateMessage) message).getValue());

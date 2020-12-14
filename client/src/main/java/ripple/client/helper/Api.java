@@ -3,6 +3,7 @@ package ripple.client.helper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.Endpoint;
 import ripple.common.Item;
+import ripple.common.Parameter;
 import ripple.common.helper.Http;
 
 import java.util.HashMap;
@@ -21,7 +22,7 @@ public final class Api {
     public static Item get(String address, int port, String applicationName, String key) {
         try {
             Map<String, String> headers = new HashMap<>(2);
-            headers.put("x-ripple-application-name", applicationName);
+            headers.put(Parameter.APPLICATION_NAME, applicationName);
             headers.put("x-ripple-key", key);
             String url = "http://" + address + ":" + port + Endpoint.API_GET;
             String returnValue = Http.get(url, headers);
@@ -35,7 +36,7 @@ public final class Api {
     public static boolean put(String address, int port, String applicationName, String key, String value) {
         try {
             Map<String, String> headers = new HashMap<>(3);
-            headers.put("x-ripple-application-name", applicationName);
+            headers.put(Parameter.APPLICATION_NAME, applicationName);
             headers.put("x-ripple-key", key);
             headers.put("x-ripple-value", value);
             String url = "http://" + address + ":" + port + Endpoint.API_PUT;
@@ -50,7 +51,7 @@ public final class Api {
     public static boolean delete(String address, int port, String applicationName, String key) {
         try {
             Map<String, String> headers = new HashMap<>(2);
-            headers.put("x-ripple-application-name", applicationName);
+            headers.put(Parameter.APPLICATION_NAME, applicationName);
             headers.put("x-ripple-key", key);
             String url = "http://" + address + ":" + port + Endpoint.API_DELETE;
             String returnValue = Http.post(url, headers);
@@ -65,7 +66,7 @@ public final class Api {
             , String callbackAddress, int callbackPort, String applicationName, String key) {
         try {
             Map<String, String> headers = new HashMap<>(4);
-            headers.put("x-ripple-application-name", applicationName);
+            headers.put(Parameter.APPLICATION_NAME, applicationName);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);
@@ -82,7 +83,7 @@ public final class Api {
             , String callbackAddress, int callbackPort, String applicationName, String key) {
         try {
             Map<String, String> headers = new HashMap<>(4);
-            headers.put("x-ripple-application-name", applicationName);
+            headers.put(Parameter.APPLICATION_NAME, applicationName);
             headers.put("x-ripple-callback-address", callbackAddress);
             headers.put("x-ripple-callback-port", String.valueOf(callbackPort));
             headers.put("x-ripple-key", key);

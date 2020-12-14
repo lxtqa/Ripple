@@ -3,6 +3,7 @@ package ripple.server.core.api;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.Parameter;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Node;
 
@@ -22,7 +23,7 @@ public class DeleteServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String applicationName = request.getHeader("x-ripple-application-name");
+        String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader("x-ripple-key");
         LOGGER.info("[DeleteServlet] Receive POST request. Application Name = {}, Key = {}.", applicationName, key);
 
