@@ -31,11 +31,11 @@ public class SyncServlet extends BaseServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         boolean result = false;
 
-        UUID uuid = UUID.fromString(request.getHeader("x-ripple-uuid"));
+        UUID uuid = UUID.fromString(request.getHeader(Parameter.UUID));
         String type = request.getHeader(Parameter.TYPE);
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader(Parameter.KEY);
-        Date lastUpdate = new Date(Long.parseLong(request.getHeader("x-ripple-last-update")));
+        Date lastUpdate = new Date(Long.parseLong(request.getHeader(Parameter.LAST_UPDATE)));
         int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
 
         if (type.equals(MessageType.UPDATE)) {

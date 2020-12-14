@@ -25,14 +25,14 @@ public final class Api {
     public static boolean sync(String address, int port, Message message) {
         try {
             Map<String, String> headers = new HashMap<>(message.getType().equals(MessageType.UPDATE) ? 7 : 6);
-            headers.put("x-ripple-uuid", message.getUuid().toString());
+            headers.put(Parameter.UUID, message.getUuid().toString());
             headers.put(Parameter.TYPE, message.getType());
             headers.put(Parameter.APPLICATION_NAME, message.getApplicationName());
             headers.put(Parameter.KEY, message.getKey());
             if (message instanceof UpdateMessage) {
                 headers.put(Parameter.VALUE, ((UpdateMessage) message).getValue());
             }
-            headers.put("x-ripple-last-update", String.valueOf(message.getLastUpdate().getTime()));
+            headers.put(Parameter.LAST_UPDATE, String.valueOf(message.getLastUpdate().getTime()));
             headers.put("x-ripple-last-update-server-id", String.valueOf(message.getLastUpdateServerId()));
             String url = "http://" + address + ":" + port + Endpoint.API_SYNC;
             String returnValue = Http.post(url, headers);
@@ -46,7 +46,7 @@ public final class Api {
     public static boolean ack(String address, int port, UUID messageUuid, int sourceId, int nodeId) {
         try {
             Map<String, String> headers = new HashMap<>(3);
-            headers.put("x-ripple-uuid", messageUuid.toString());
+            headers.put(Parameter.UUID, messageUuid.toString());
             headers.put("x-ripple-source-id", String.valueOf(sourceId));
             headers.put("x-ripple-node-id", String.valueOf(nodeId));
             String url = "http://" + address + ":" + port + Endpoint.API_ACK;

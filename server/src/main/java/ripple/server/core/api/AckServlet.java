@@ -3,6 +3,7 @@ package ripple.server.core.api;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.Parameter;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Node;
 
@@ -23,7 +24,7 @@ public class AckServlet extends BaseServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UUID messageUuid = UUID.fromString(request.getHeader("x-ripple-uuid"));
+        UUID messageUuid = UUID.fromString(request.getHeader(Parameter.UUID));
         int sourceId = Integer.parseInt(request.getHeader("x-ripple-source-id"));
         int nodeId = Integer.parseInt(request.getHeader("x-ripple-node-id"));
 
