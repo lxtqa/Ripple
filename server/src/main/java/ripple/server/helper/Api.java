@@ -33,7 +33,7 @@ public final class Api {
                 headers.put(Parameter.VALUE, ((UpdateMessage) message).getValue());
             }
             headers.put(Parameter.LAST_UPDATE, String.valueOf(message.getLastUpdate().getTime()));
-            headers.put("x-ripple-last-update-server-id", String.valueOf(message.getLastUpdateServerId()));
+            headers.put(Parameter.LAST_UPDATE_SERVER_ID, String.valueOf(message.getLastUpdateServerId()));
             String url = "http://" + address + ":" + port + Endpoint.API_SYNC;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
@@ -47,8 +47,8 @@ public final class Api {
         try {
             Map<String, String> headers = new HashMap<>(3);
             headers.put(Parameter.UUID, messageUuid.toString());
-            headers.put("x-ripple-source-id", String.valueOf(sourceId));
-            headers.put("x-ripple-node-id", String.valueOf(nodeId));
+            headers.put(Parameter.SOURCE_ID, String.valueOf(sourceId));
+            headers.put(Parameter.NODE_ID, String.valueOf(nodeId));
             String url = "http://" + address + ":" + port + Endpoint.API_ACK;
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);

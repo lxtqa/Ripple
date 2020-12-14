@@ -25,8 +25,8 @@ public class SubscribeServlet extends BaseServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader(Parameter.KEY);
-        String callbackAddress = request.getHeader("x-ripple-callback-address");
-        int callbackPort = Integer.parseInt(request.getHeader("x-ripple-callback-port"));
+        String callbackAddress = request.getHeader(Parameter.CALLBACK_ADDRESS);
+        int callbackPort = Integer.parseInt(request.getHeader(Parameter.CALLBACK_PORT));
 
         LOGGER.info("[SubscribeServlet] Receive POST request. Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
                 , callbackAddress, callbackPort, applicationName, key);

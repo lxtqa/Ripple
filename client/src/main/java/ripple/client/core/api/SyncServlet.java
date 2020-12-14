@@ -66,7 +66,7 @@ public class SyncServlet extends BaseServlet {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader(Parameter.KEY);
         Date lastUpdate = new Date(Long.parseLong(request.getHeader(Parameter.LAST_UPDATE)));
-        int lastUpdateServerId = Integer.parseInt(request.getHeader("x-ripple-last-update-server-id"));
+        int lastUpdateServerId = Integer.parseInt(request.getHeader(Parameter.LAST_UPDATE_SERVER_ID));
 
         Message message = null;
 

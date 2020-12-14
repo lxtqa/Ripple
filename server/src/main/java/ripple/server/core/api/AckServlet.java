@@ -25,8 +25,8 @@ public class AckServlet extends BaseServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         UUID messageUuid = UUID.fromString(request.getHeader(Parameter.UUID));
-        int sourceId = Integer.parseInt(request.getHeader("x-ripple-source-id"));
-        int nodeId = Integer.parseInt(request.getHeader("x-ripple-node-id"));
+        int sourceId = Integer.parseInt(request.getHeader(Parameter.SOURCE_ID));
+        int nodeId = Integer.parseInt(request.getHeader(Parameter.NODE_ID));
 
         LOGGER.info("[AckServlet] Receive ACK of {} from server {}.", messageUuid.toString(), nodeId);
         this.getNode().getTracker().recordAck(messageUuid, sourceId, nodeId);
