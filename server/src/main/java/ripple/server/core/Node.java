@@ -41,8 +41,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * @author Zhen Tang
@@ -58,6 +60,9 @@ public class Node {
     private ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
     private Tracker tracker;
+    private HealthManager healthManager;
+    private Worker worker;
+    private Thread workingThread;
 
     private String address;
     private int port;
@@ -72,8 +77,11 @@ public class Node {
         this.setId(id);
         this.setOverlay(overlay);
         this.setTracker(new Tracker(this));
-        this.setNodeList(new ArrayList<>());
         this.setStorage(new Storage(storageLocation));
+        this.setHealthManager(new HealthManager(this));
+        this.setWorker(new Worker(this));
+
+        this.setNodeList(new ArrayList<>());
         this.setSubscription(new ConcurrentHashMap<>());
         this.setPort(port);
         this.setConnectedClients(new HashSet<>());
@@ -85,6 +93,30 @@ public class Node {
 
     private void setTracker(Tracker tracker) {
         this.tracker = tracker;
+    }
+
+    public HealthManager getHealthManager() {
+        return healthManager;
+    }
+
+    private void setHealthManager(HealthManager healthManager) {
+        this.healthManager = healthManager;
+    }
+
+    public Worker getWorker() {
+        return worker;
+    }
+
+    private void setWorker(Worker worker) {
+        this.worker = worker;
+    }
+
+    public Thread getWorkingThread() {
+        return workingThread;
+    }
+
+    private void setWorkingThread(Thread workingThread) {
+        this.workingThread = workingThread;
     }
 
     public int getId() {
@@ -255,15 +287,25 @@ public class Node {
     private void doSyncWithServer(Message message, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> toSend = this.getOverlay().calculateNodesToSync(source, current);
+        List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(source, current);
+        Queue<NodeMetadata> sendQueue = new LinkedBlockingDeque<>(initialList);
 
         // Sync to servers following the overlay
-        for (NodeMetadata metadata : toSend) {
-            LOGGER.info("[Node] Sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
-            boolean success = Api.sync(metadata.getAddress(), metadata.getPort(), message);
-            if (success) {
-                LOGGER.info("[Node] Record ACK of message {} from server {}.", message.getUuid(), metadata.getId());
-                this.getTracker().recordAck(message.getUuid(),message.getLastUpdateServerId(), metadata.getId());
+        while (!sendQueue.isEmpty()) {
+            // Fault tolerant
+            NodeMetadata nodeMetadata = sendQueue.poll();
+            if (this.getHealthManager().isAlive(nodeMetadata)) {
+                LOGGER.info("[Node] Sync {} with server {}:{}.", message.getType(), nodeMetadata.getAddress(), nodeMetadata.getPort());
+                boolean success = Api.sync(nodeMetadata.getAddress(), nodeMetadata.getPort(), message);
+                if (success) {
+                    LOGGER.info("[Node] Record ACK of message {} from server {}.", message.getUuid(), nodeMetadata.getId());
+                    this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
+                }
+            } else {
+                LOGGER.info("[Node] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
+                        , nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
+                List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(source, nodeMetadata);
+                sendQueue.addAll(list);
             }
         }
     }
@@ -324,6 +366,7 @@ public class Node {
             this.getServer().start();
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setPort(serverConnector.getLocalPort());
+
             this.setRunning(true);
             return true;
         } catch (Exception exception) {
@@ -338,6 +381,7 @@ public class Node {
         }
         try {
             this.getServer().stop();
+            this.getWorkingThread().interrupt();
             this.setRunning(false);
             return true;
         } catch (Exception exception) {
@@ -393,5 +437,8 @@ public class Node {
     public void initCluster(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
         this.getOverlay().buildOverlay(this.getNodeList());
+        this.setWorkingThread(new Thread(this.getWorker()));
+
+        this.getWorkingThread().start();
     }
 }

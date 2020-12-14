@@ -52,7 +52,19 @@ public final class Api {
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
-            exception.printStackTrace();
+            // Suppress exception
+            return false;
+        }
+    }
+
+    public static boolean heartbeat(String address, int port) {
+        try {
+            Map<String, String> headers = new HashMap<>(0);
+            String url = "http://" + address + ":" + port + Endpoint.API_HEARTBEAT;
+            String returnValue = Http.post(url, headers);
+            return MAPPER.readValue(returnValue, Boolean.class);
+        } catch (Exception exception) {
+            // Suppress exception
             return false;
         }
     }

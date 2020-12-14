@@ -85,5 +85,6 @@ public class RippleServer {
 
     public void initCluster(List<NodeMetadata> nodeList) {
         this.getNode().initCluster(nodeList);
+        this.getNode().getHealthManager().init();
     }
 }

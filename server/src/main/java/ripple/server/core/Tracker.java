@@ -51,17 +51,28 @@ public class Tracker {
         this.setPendingMessages(new ConcurrentHashMap<>());
     }
 
+    public void retry() {
+        Set<UUID> keys = this.getPendingMessages().keySet();
+        for (UUID uuid : keys) {
+            this.retrySending(uuid);
+        }
+    }
+
     public void retrySending(UUID messageUuid) {
-        Set<Integer> nodeList = this.getNodesToRetry(messageUuid);
-        Message message = this.getPendingMessages().get(messageUuid);
-        for (Integer id : nodeList) {
-            NodeMetadata metadata = this.getNode().findServerById(id);
-            LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
-            boolean success = Api.sync(metadata.getAddress(), metadata.getPort(), message);
-            if (success) {
-                LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
-                this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
+        try {
+            Set<Integer> nodeList = this.getNodesToRetry(messageUuid);
+            Message message = this.getPendingMessages().get(messageUuid);
+            for (Integer id : nodeList) {
+                NodeMetadata metadata = this.getNode().findServerById(id);
+                LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
+                boolean success = Api.sync(metadata.getAddress(), metadata.getPort(), message);
+                if (success) {
+                    LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
+                    this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
+                }
             }
+        } catch (Exception exception) {
+            exception.printStackTrace();
         }
     }
 
