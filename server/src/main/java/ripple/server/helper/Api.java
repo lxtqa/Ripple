@@ -2,10 +2,10 @@ package ripple.server.helper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.Endpoint;
-import ripple.common.Message;
-import ripple.common.MessageType;
 import ripple.common.Parameter;
-import ripple.common.UpdateMessage;
+import ripple.common.entity.Message;
+import ripple.common.entity.MessageType;
+import ripple.common.entity.UpdateMessage;
 import ripple.common.helper.Http;
 
 import java.util.HashMap;

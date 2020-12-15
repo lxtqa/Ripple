@@ -1,6 +1,6 @@
 package ripple.server.core.resolver;
 
-import ripple.common.Item;
+import ripple.common.entity.Item;
 import ripple.server.core.Operation;
 
 /**

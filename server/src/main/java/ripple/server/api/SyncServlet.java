@@ -3,10 +3,10 @@ package ripple.server.api;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.DeleteMessage;
-import ripple.common.MessageType;
 import ripple.common.Parameter;
-import ripple.common.UpdateMessage;
+import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.MessageType;
+import ripple.common.entity.UpdateMessage;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.Node;
 

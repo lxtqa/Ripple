@@ -1,4 +1,4 @@
-package ripple.common;
+package ripple.common.entity;
 
 /**
  * @author Zhen Tang

@@ -18,7 +18,7 @@ import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.common.Endpoint;
-import ripple.common.Item;
+import ripple.common.entity.Item;
 import ripple.common.storage.Storage;
 
 import javax.servlet.Servlet;

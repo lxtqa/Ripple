@@ -5,10 +5,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
-import ripple.common.Item;
-import ripple.common.Message;
-import ripple.common.MessageType;
-import ripple.common.UpdateMessage;
+import ripple.common.entity.Item;
+import ripple.common.entity.Message;
+import ripple.common.entity.MessageType;
+import ripple.common.entity.UpdateMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

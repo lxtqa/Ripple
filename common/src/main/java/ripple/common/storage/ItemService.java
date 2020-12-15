@@ -1,6 +1,6 @@
 package ripple.common.storage;
 
-import ripple.common.Item;
+import ripple.common.entity.Item;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

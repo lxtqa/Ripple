@@ -13,6 +13,7 @@ public class Storage {
     private Connection connection;
     private ItemService itemService;
     private MessageService messageService;
+    private AckService ackService;
 
     public String getFileName() {
         return fileName;
@@ -46,10 +47,19 @@ public class Storage {
         this.messageService = messageService;
     }
 
+    public AckService getAckService() {
+        return ackService;
+    }
+
+    private void setAckService(AckService ackService) {
+        this.ackService = ackService;
+    }
+
     public Storage(String fileName) {
         this.setFileName(fileName);
         this.setItemService(new ItemService(this));
         this.setMessageService(new MessageService(this));
+        this.setAckService(new AckService(this));
         this.init();
     }
 

@@ -2,7 +2,7 @@ package ripple.server.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.Message;
+import ripple.common.entity.Message;
 import ripple.server.helper.Api;
 
 import java.util.HashSet;

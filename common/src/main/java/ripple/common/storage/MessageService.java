@@ -1,9 +1,9 @@
 package ripple.common.storage;
 
-import ripple.common.DeleteMessage;
-import ripple.common.Message;
-import ripple.common.MessageType;
-import ripple.common.UpdateMessage;
+import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.Message;
+import ripple.common.entity.MessageType;
+import ripple.common.entity.UpdateMessage;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
