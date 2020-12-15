@@ -11,29 +11,28 @@ import org.slf4j.LoggerFactory;
 import ripple.common.DeleteMessage;
 import ripple.common.Endpoint;
 import ripple.common.Item;
-import ripple.common.ItemKey;
 import ripple.common.Message;
 import ripple.common.UpdateMessage;
-import ripple.common.helper.Storage;
-import ripple.server.core.api.AckServlet;
-import ripple.server.core.api.DeleteServlet;
-import ripple.server.core.api.GetServlet;
-import ripple.server.core.api.HeartbeatServlet;
-import ripple.server.core.api.PutServlet;
-import ripple.server.core.api.SubscribeServlet;
-import ripple.server.core.api.SyncServlet;
-import ripple.server.core.api.UnsubscribeServlet;
+import ripple.common.storage.Storage;
+import ripple.server.api.AckServlet;
+import ripple.server.api.DeleteServlet;
+import ripple.server.api.GetServlet;
+import ripple.server.api.HeartbeatServlet;
+import ripple.server.api.PutServlet;
+import ripple.server.api.SubscribeServlet;
+import ripple.server.api.SyncServlet;
+import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
-import ripple.server.core.ui.AddConfigServlet;
-import ripple.server.core.ui.ClientClusterServlet;
-import ripple.server.core.ui.GetConfigServlet;
-import ripple.server.core.ui.GetSubscriptionServlet;
-import ripple.server.core.ui.HomeServlet;
-import ripple.server.core.ui.ModifyConfigServlet;
-import ripple.server.core.ui.RemoveConfigServlet;
-import ripple.server.core.ui.ServerClusterServlet;
-import ripple.server.core.ui.StyleServlet;
 import ripple.server.helper.Api;
+import ripple.server.ui.AddConfigServlet;
+import ripple.server.ui.ClientClusterServlet;
+import ripple.server.ui.GetConfigServlet;
+import ripple.server.ui.GetSubscriptionServlet;
+import ripple.server.ui.HomeServlet;
+import ripple.server.ui.ModifyConfigServlet;
+import ripple.server.ui.RemoveConfigServlet;
+import ripple.server.ui.ServerClusterServlet;
+import ripple.server.ui.StyleServlet;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
@@ -57,7 +56,7 @@ public class Node {
     private Overlay overlay;
     private Storage storage;
     private List<NodeMetadata> nodeList;
-    private ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription;
+    private ConcurrentHashMap<Item, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
     private Tracker tracker;
     private HealthManager healthManager;
@@ -151,11 +150,11 @@ public class Node {
         this.nodeList = nodeList;
     }
 
-    public ConcurrentHashMap<ItemKey, Set<ClientMetadata>> getSubscription() {
+    public ConcurrentHashMap<Item, Set<ClientMetadata>> getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(ConcurrentHashMap<ItemKey, Set<ClientMetadata>> subscription) {
+    public void setSubscription(ConcurrentHashMap<Item, Set<ClientMetadata>> subscription) {
         this.subscription = subscription;
     }
 
@@ -231,11 +230,11 @@ public class Node {
     }
 
     public Item get(String applicationName, String key) {
-        return this.getStorage().get(applicationName, key);
+        return this.getStorage().getItemService().getItem(applicationName, key);
     }
 
     public List<Item> getAll() {
-        return this.getStorage().getAll();
+        return this.getStorage().getItemService().getAllItems();
     }
 
     public boolean put(String applicationName, String key, String value) {
@@ -311,9 +310,9 @@ public class Node {
     }
 
     private void doNotifyClients(Message message) {
-        ItemKey itemKey = new ItemKey(message.getApplicationName(), message.getKey());
-        if (this.getSubscription().containsKey(itemKey)) {
-            Set<ClientMetadata> clients = this.getSubscription().get(itemKey);
+        Item item = new Item(message.getApplicationName(), message.getKey());
+        if (this.getSubscription().containsKey(item)) {
+            Set<ClientMetadata> clients = this.getSubscription().get(item);
             for (ClientMetadata metadata : clients) {
                 LOGGER.info("[Node] Notify {} to client {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
                 Api.sync(metadata.getAddress(), metadata.getPort(), message);
@@ -322,29 +321,13 @@ public class Node {
     }
 
     private void applyMessageToStorage(Message message) {
-        Item item = this.getStorage().get(message.getApplicationName(), message.getKey());
-        boolean newItem = false;
+        String applicationName = message.getApplicationName();
+        String key = message.getKey();
+        Item item = this.getStorage().getItemService().getItem(applicationName, key);
         if (item == null) {
-            item = new Item();
-            newItem = true;
+            this.getStorage().getItemService().newItem(applicationName, key);
         }
-        synchronized (this) {
-            if (newItem) {
-                item.setApplicationName(message.getApplicationName());
-                item.setKey(message.getKey());
-            }
-            boolean exist = false;
-            for (Message elem : item.getMessages()) {
-                if (elem.getUuid().equals(message.getUuid())) {
-                    exist = true;
-                    break;
-                }
-            }
-            if (!exist) {
-                item.getMessages().add(message);
-            }
-        }
-        this.getStorage().put(item);
+        this.getStorage().getMessageService().newMessage(message);
     }
 
 
@@ -393,11 +376,11 @@ public class Node {
     public synchronized void subscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
         LOGGER.info("[Node] subscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
                 , callbackAddress, callbackPort, applicationName, key);
-        ItemKey itemKey = new ItemKey(applicationName, key);
-        if (this.getSubscription().get(itemKey) == null) {
-            this.getSubscription().put(itemKey, new HashSet<>());
+        Item item = new Item(applicationName, key);
+        if (this.getSubscription().get(item) == null) {
+            this.getSubscription().put(item, new HashSet<>());
         }
-        Set<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
+        Set<ClientMetadata> subscribers = this.getSubscription().get(item);
         ClientMetadata clientMetadata = new ClientMetadata(callbackAddress, callbackPort);
         if (!subscribers.contains(clientMetadata)) {
             subscribers.add(clientMetadata);
@@ -408,11 +391,11 @@ public class Node {
     public synchronized void unsubscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
         LOGGER.info("[Node] unsubscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
                 , callbackAddress, callbackPort, applicationName, key);
-        ItemKey itemKey = new ItemKey(applicationName, key);
-        if (this.getSubscription().get(itemKey) == null) {
+        Item item = new Item(applicationName, key);
+        if (this.getSubscription().get(item) == null) {
             return;
         }
-        Set<ClientMetadata> subscribers = this.getSubscription().get(itemKey);
+        Set<ClientMetadata> subscribers = this.getSubscription().get(item);
         ClientMetadata clientMetadata = new ClientMetadata(callbackAddress, callbackPort);
         if (subscribers.contains(clientMetadata)) {
             subscribers.remove(clientMetadata);

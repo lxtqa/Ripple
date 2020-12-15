@@ -1,4 +1,4 @@
-package ripple.server.core.ui;
+package ripple.server.ui;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -56,9 +56,11 @@ public class GetConfigServlet extends BaseServlet {
             int i = 0;
             for (i = 0; i < allConfigs.size(); i++) {
                 Item item = allConfigs.get(i);
+                List<Message> messageList = this.getNode().getStorage().getMessageService()
+                        .getMessages(item.getApplicationName(), item.getKey());
 
                 String history = "";
-                for (Message message : item.getMessages()) {
+                for (Message message : messageList) {
                     history += "                            <p>";
                     history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
                     history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span> <br />";

@@ -1,9 +1,9 @@
-package ripple.server.core.ui;
+package ripple.server.ui;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.ItemKey;
+import ripple.common.Item;
 import ripple.server.core.BaseServlet;
 import ripple.server.core.ClientMetadata;
 import ripple.server.core.Node;
@@ -54,8 +54,8 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
             int i = 0;
-            for (ItemKey itemKey : this.getNode().getSubscription().keySet()) {
-                Set<ClientMetadata> clients = this.getNode().getSubscription().get(itemKey);
+            for (Item item : this.getNode().getSubscription().keySet()) {
+                Set<ClientMetadata> clients = this.getNode().getSubscription().get(item);
                 if (clients.size() > 0) {
                     for (ClientMetadata metadata : clients) {
                         stringBuilder.append("                    <tr>\n");
@@ -63,10 +63,10 @@ public class GetSubscriptionServlet extends BaseServlet {
                                 .append(i + 1)
                                 .append("</td>\n");
                         stringBuilder.append("                        <td>")
-                                .append(itemKey.getApplicationName())
+                                .append(item.getApplicationName())
                                 .append("</td>\n");
                         stringBuilder.append("                        <td>")
-                                .append(itemKey.getKey())
+                                .append(item.getKey())
                                 .append("</td>\n");
                         stringBuilder.append("                        <td>")
                                 .append(metadata.getAddress())

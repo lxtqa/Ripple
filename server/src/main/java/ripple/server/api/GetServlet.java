@@ -1,4 +1,4 @@
-package ripple.server.core.api;
+package ripple.server.api;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class GetServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String applicationName = request.getHeader(Parameter.APPLICATION_NAME);
         String key = request.getHeader(Parameter.KEY);
-        
+
         LOGGER.info("[GetServlet] Receive request: Application Name = {}, Key = {}.", applicationName, key);
         Item item = this.getNode().get(applicationName, key);
 

@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Worker implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tracker.class);
-    private static final int INTERVAL = 1000;
+    private static final int INTERVAL = 10000;
 
     private Node node;
 

@@ -1,4 +1,4 @@
-package ripple.server.core.ui;
+package ripple.server.ui;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
@@ -15,19 +15,19 @@ import java.io.IOException;
 /**
  * @author Zhen Tang
  */
-public class ModifyConfigServlet extends BaseServlet {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModifyConfigServlet.class);
+public class AddConfigServlet extends BaseServlet {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AddConfigServlet.class);
 
-    public ModifyConfigServlet(Node node) {
+    public AddConfigServlet(Node node) {
         super(node);
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        LOGGER.info("[ModifyConfigServlet] Receive GET request.");
+        LOGGER.info("[AddConfigServlet] Receive GET request.");
 
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("                <form action=\"").append(Endpoint.UI_MODIFY_CONFIG).append("\" method=\"post\">\n");
+        stringBuilder.append("                <form action=\"").append(Endpoint.UI_ADD_CONFIG).append("\" method=\"post\">\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
         stringBuilder.append("                        <label for=\"applicationName\">应用名称</label>\n");
         stringBuilder.append("                        <input id=\"applicationName\" name=\"applicationName\" class=\"form-control\" type=\"text\" />\n");
@@ -41,12 +41,12 @@ public class ModifyConfigServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"value\" name=\"value\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">修改配置</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">添加配置</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 修改配置", "修改配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 添加配置", "添加配置", content);
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -58,7 +58,7 @@ public class ModifyConfigServlet extends BaseServlet {
         String applicationName = request.getParameter("applicationName");
         String key = request.getParameter("key");
         String value = request.getParameter("value");
-        LOGGER.info("[ModifyConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
+        LOGGER.info("[AddConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
                 , applicationName, key, value);
 
         boolean success = this.getNode().put(applicationName, key, value);
@@ -75,7 +75,7 @@ public class ModifyConfigServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 修改配置", "修改配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 添加配置", "添加配置", content);
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

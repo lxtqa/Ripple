@@ -1,4 +1,4 @@
-package ripple.server.core.ui;
+package ripple.server.ui;
 
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
