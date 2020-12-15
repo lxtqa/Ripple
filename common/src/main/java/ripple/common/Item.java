@@ -1,7 +1,6 @@
 package ripple.common;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Zhen Tang
@@ -9,7 +8,6 @@ import java.util.List;
 public class Item {
     private String applicationName;
     private String key;
-    private List<Message> messages;
 
     public String getApplicationName() {
         return applicationName;
@@ -27,15 +25,33 @@ public class Item {
         this.key = key;
     }
 
-    public List<Message> getMessages() {
-        return messages;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(applicationName, item.applicationName) && Objects.equals(key, item.key);
     }
 
-    public void setMessages(List<Message> messages) {
-        this.messages = messages;
+    @Override
+    public int hashCode() {
+        return Objects.hash(applicationName, key);
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "applicationName='" + applicationName + '\'' +
+                ", key='" + key + '\'' +
+                '}';
+    }
+
+    public Item(String applicationName, String key) {
+        this.setApplicationName(applicationName);
+        this.setKey(key);
     }
 
     public Item() {
-        this.setMessages(new ArrayList<>());
+
     }
 }

@@ -1,17 +1,18 @@
-package ripple.server.helper;
+package ripple.common.storage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.UUID;
 
 /**
  * @author Zhen Tang
  */
-public class SqliteStorage {
+public class Storage {
     private String fileName;
     private Connection connection;
+    private ItemService itemService;
+    private MessageService messageService;
 
     public String getFileName() {
         return fileName;
@@ -29,11 +30,30 @@ public class SqliteStorage {
         this.connection = connection;
     }
 
-    public SqliteStorage(String fileName) {
-        this.setFileName(fileName);
+    public ItemService getItemService() {
+        return itemService;
     }
 
-    public void init() {
+    private void setItemService(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
+    public MessageService getMessageService() {
+        return messageService;
+    }
+
+    private void setMessageService(MessageService messageService) {
+        this.messageService = messageService;
+    }
+
+    public Storage(String fileName) {
+        this.setFileName(fileName);
+        this.setItemService(new ItemService(this));
+        this.setMessageService(new MessageService(this));
+        this.init();
+    }
+
+    private void init() {
         try {
             this.setConnection(DriverManager.getConnection("jdbc:sqlite:" + this.getFileName()));
             this.initTables();
@@ -70,6 +90,7 @@ public class SqliteStorage {
                     " [node_list] TEXT NOT NULL, [ack_nodes] TEXT, " +
                     "PRIMARY KEY([message_uuid]), " +
                     "FOREIGN KEY ([message_uuid]) REFERENCES [message]([uuid]) ON DELETE CASCADE ON UPDATE CASCADE);");
+
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -77,7 +98,9 @@ public class SqliteStorage {
 
     public void close() {
         try {
-            this.getConnection().close();
+            if (this.getConnection() != null) {
+                this.getConnection().close();
+            }
         } catch (SQLException exception) {
             exception.printStackTrace();
         }
