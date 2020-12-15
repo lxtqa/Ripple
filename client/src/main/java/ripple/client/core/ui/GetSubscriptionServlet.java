@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
-import ripple.common.ItemKey;
+import ripple.common.Item;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -45,16 +45,16 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                    <tbody>\n");
 
             int i = 0;
-            for (ItemKey itemKey : this.getClient().getSubscription()) {
+            for (Item item : this.getClient().getSubscription()) {
                 stringBuilder.append("                    <tr>\n");
                 stringBuilder.append("                        <td>")
                         .append(i + 1)
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
-                        .append(itemKey.getApplicationName())
+                        .append(item.getApplicationName())
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
-                        .append(itemKey.getKey())
+                        .append(item.getKey())
                         .append("</td>\n");
                 stringBuilder.append("                    </tr>\n");
                 i++;

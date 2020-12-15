@@ -29,7 +29,7 @@ public class Main {
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
-                String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".txt";
+                String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".db";
                 RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
                 rippleServer.start();
                 serverList.add(rippleServer);
@@ -50,7 +50,7 @@ public class Main {
                     RippleServer rippleServer = serverList.get(i);
                     String serverAddress = rippleServer.getAddress();
                     int serverPort = rippleServer.getPort();
-                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".txt";
+                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
                     RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
                     rippleClient.start();
                     clientList.add(rippleClient);

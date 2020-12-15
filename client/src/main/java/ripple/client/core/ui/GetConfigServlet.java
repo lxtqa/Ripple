@@ -31,7 +31,7 @@ public class GetConfigServlet extends BaseServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[GetConfigServlet] Receive GET request.");
 
-        List<Item> allConfigs = this.getClient().getStorage().getAll();
+        List<Item> allConfigs = this.getClient().getStorage().getItemService().getAllItems();
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
@@ -56,16 +56,19 @@ public class GetConfigServlet extends BaseServlet {
             int i = 0;
             for (i = 0; i < allConfigs.size(); i++) {
                 Item item = allConfigs.get(i);
+                List<Message> messageList = this.getClient().getStorage().getMessageService()
+                        .getMessages(item.getApplicationName(), item.getKey());
+
                 String history = "";
-                for (Message message : item.getMessages()) {
+                for (Message message : messageList) {
                     history += "                            <p>";
-                    history += "                                <span>UUID: " + message.getUuid() + "; </span>";
-                    history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span>";
+                    history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
+                    history += "                                <span>类型: " + (message.getType().equals(MessageType.UPDATE) ? "更新" : "删除") + "; </span> <br />";
                     if (message instanceof UpdateMessage) {
-                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span>";
+                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span> <br />";
                     }
-                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span>";
-                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span>";
+                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
+                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
                     history += "                            </p>";
                 }
 

@@ -32,29 +32,13 @@ public class SyncServlet extends BaseServlet {
     }
 
     private void applyMessage(Message message) {
-        Item item = this.getClient().getStorage().get(message.getApplicationName(), message.getKey());
-        boolean newItem = false;
+        String applicationName = message.getApplicationName();
+        String key = message.getKey();
+        Item item = this.getClient().getStorage().getItemService().getItem(applicationName, key);
         if (item == null) {
-            item = new Item();
-            newItem = true;
+            this.getClient().getStorage().getItemService().newItem(applicationName, key);
         }
-        synchronized (this) {
-            if (newItem) {
-                item.setApplicationName(message.getApplicationName());
-                item.setKey(message.getKey());
-            }
-            boolean exist = false;
-            for (Message elem : item.getMessages()) {
-                if (elem.getUuid().equals(message.getUuid())) {
-                    exist = true;
-                    break;
-                }
-            }
-            if (!exist) {
-                item.getMessages().add(message);
-            }
-        }
-        this.getClient().getStorage().put(item);
+        this.getClient().getStorage().getMessageService().newMessage(message);
     }
 
     @Override

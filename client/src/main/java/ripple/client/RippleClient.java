@@ -19,8 +19,7 @@ import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.common.Endpoint;
 import ripple.common.Item;
-import ripple.common.ItemKey;
-import ripple.common.helper.Storage;
+import ripple.common.storage.Storage;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
@@ -38,7 +37,7 @@ public class RippleClient {
     private int port;
     private Server server;
     private boolean running;
-    private Set<ItemKey> subscription;
+    private Set<Item> subscription;
 
     public RippleClient(String serverAddress, int serverPort, String storageLocation) {
         this.setServerAddress(serverAddress);
@@ -104,11 +103,11 @@ public class RippleClient {
         this.storage = storage;
     }
 
-    public Set<ItemKey> getSubscription() {
+    public Set<Item> getSubscription() {
         return subscription;
     }
 
-    public void setSubscription(Set<ItemKey> subscription) {
+    public void setSubscription(Set<Item> subscription) {
         this.subscription = subscription;
     }
 
@@ -117,11 +116,11 @@ public class RippleClient {
     }
 
     private Item refreshItem(String applicationName, String key) {
-        Item item = this.getStorage().get(applicationName, key);
+        Item item = this.getStorage().getItemService().getItem(applicationName, key);
         if (item == null) {
             item = Api.get(this.getServerAddress(), this.getServerPort(), applicationName, key);
             if (item != null) {
-                this.getStorage().put(item);
+                this.getStorage().getItemService().newItem(item.getApplicationName(), item.getKey());
             }
         }
         return item;
@@ -143,7 +142,7 @@ public class RippleClient {
         if (!this.isRunning()) {
             this.start();
         }
-        this.getSubscription().add(new ItemKey(applicationName, key));
+        this.getSubscription().add(new Item(applicationName, key));
         return Api.subscribe(this.getServerAddress(), this.getServerPort()
                 , this.getAddress(), this.getPort(), applicationName, key);
     }
@@ -152,7 +151,7 @@ public class RippleClient {
         if (!this.isRunning()) {
             this.start();
         }
-        this.getSubscription().remove(new ItemKey(applicationName, key));
+        this.getSubscription().remove(new Item(applicationName, key));
         return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
                 , this.getAddress(), this.getPort(), applicationName, key);
     }
