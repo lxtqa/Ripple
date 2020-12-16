@@ -81,24 +81,26 @@ public class Storage {
             statement.execute("CREATE TABLE IF NOT EXISTS [item] " +
                     "([application_name] TEXT NOT NULL," +
                     " [key] TEXT NOT NULL, " +
-                    "PRIMARY KEY([application_name], [key]));");
+                    "PRIMARY KEY ([application_name], [key]));");
 
             // Message: uuid, item_application_name, item_key, message_type, new_value, last_update, last_update_id
             statement.execute("CREATE TABLE IF NOT EXISTS [message] " +
-                    "([uuid] TEXT PRIMARY KEY, " +
+                    "([uuid] TEXT NOT NULL, " +
                     "[item_application_name] TEXT NOT NULL, " +
                     "[item_key] TEXT NOT NULL, " +
                     "[message_type] TEXT NOT NULL, " +
                     "[new_value] TEXT, " +
                     "[last_update] INTEGER NOT NULL, " +
                     "[last_update_id] INTEGER NOT NULL, " +
+                    "PRIMARY KEY ([uuid]), " +
                     "FOREIGN KEY ([item_application_name], [item_key]) REFERENCES [item]([application_name], [key]) ON DELETE CASCADE ON UPDATE CASCADE);");
 
             // Ack: message_uuid, node_list, ack_nodes
             statement.execute("CREATE TABLE IF NOT EXISTS [ack] " +
-                    "([message_uuid] TEXT NOT NULL," +
-                    " [node_list] TEXT NOT NULL, [ack_nodes] TEXT, " +
-                    "PRIMARY KEY([message_uuid]), " +
+                    "([message_uuid] TEXT NOT NULL, " +
+                    "[node_list] TEXT NOT NULL, " +
+                    "[ack_nodes] TEXT, " +
+                    "PRIMARY KEY ([message_uuid]), " +
                     "FOREIGN KEY ([message_uuid]) REFERENCES [message]([uuid]) ON DELETE CASCADE ON UPDATE CASCADE);");
 
         } catch (Exception exception) {

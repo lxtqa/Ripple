@@ -8,7 +8,6 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
 public abstract class Message {
     private UUID uuid;
     private String type;
