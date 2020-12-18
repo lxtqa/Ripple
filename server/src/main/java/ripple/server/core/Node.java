@@ -317,7 +317,8 @@ public class Node {
         if (this.getSubscription().containsKey(item)) {
             Set<ClientMetadata> clients = this.getSubscription().get(item);
             for (ClientMetadata metadata : clients) {
-                LOGGER.info("[Node] Notify {} to client {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
+                LOGGER.info("[Node-{}] Notify {} to client {}:{}."
+                        , this.getId(), message.getType(), metadata.getAddress(), metadata.getPort());
                 Api.sync(metadata.getAddress(), metadata.getPort(), message);
             }
         }
@@ -377,8 +378,8 @@ public class Node {
     }
 
     public synchronized void subscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
-        LOGGER.info("[Node] subscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
-                , callbackAddress, callbackPort, applicationName, key);
+        LOGGER.info("[Node-{}] subscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
+                , this.getId(), callbackAddress, callbackPort, applicationName, key);
         Item item = new Item(applicationName, key);
         if (this.getSubscription().get(item) == null) {
             this.getSubscription().put(item, new HashSet<>());
@@ -392,8 +393,8 @@ public class Node {
     }
 
     public synchronized void unsubscribe(String callbackAddress, int callbackPort, String applicationName, String key) {
-        LOGGER.info("[Node] unsubscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
-                , callbackAddress, callbackPort, applicationName, key);
+        LOGGER.info("[Node-{}] unsubscribe() called: Callback Address = {}, Callback Port = {}, Application Name = {}, Key = {}."
+                , this.getId(), callbackAddress, callbackPort, applicationName, key);
         Item item = new Item(applicationName, key);
         if (this.getSubscription().get(item) == null) {
             return;
