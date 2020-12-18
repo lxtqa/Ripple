@@ -70,7 +70,7 @@ public class GetConfigServlet extends BaseServlet {
                     history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
                     history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
                     if (message.getLastUpdateServerId() == this.getNode().getId()) {
-                        Set<Integer> set = this.getNode().getTracker().getProgress(message.getUuid());
+                        Set<Integer> set = this.getNode().getStorage().getAckService().getAck(message.getUuid()).getAckNodes();
                         if (set != null) {
                             history += "                                <span>已推送到的服务器ID: ";
                             for (Integer id : set) {

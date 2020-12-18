@@ -2,10 +2,13 @@ package ripple.server.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.Ack;
 import ripple.common.entity.Message;
 import ripple.server.helper.Api;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -18,7 +21,6 @@ public class Tracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tracker.class);
 
     private Node node;
-    private Map<UUID, Set<Integer>> ackMap;
     private Map<UUID, Message> pendingMessages;
 
     public Node getNode() {
@@ -27,14 +29,6 @@ public class Tracker {
 
     public void setNode(Node node) {
         this.node = node;
-    }
-
-    public Map<UUID, Set<Integer>> getAckMap() {
-        return ackMap;
-    }
-
-    public void setAckMap(Map<UUID, Set<Integer>> ackMap) {
-        this.ackMap = ackMap;
     }
 
     public Map<UUID, Message> getPendingMessages() {
@@ -47,7 +41,6 @@ public class Tracker {
 
     public Tracker(Node node) {
         this.setNode(node);
-        this.setAckMap(new ConcurrentHashMap<>());
         this.setPendingMessages(new ConcurrentHashMap<>());
     }
 
@@ -78,15 +71,19 @@ public class Tracker {
 
     public void initProgress(Message message) {
         this.getPendingMessages().put(message.getUuid(), message);
-        this.getAckMap().put(message.getUuid(), new HashSet<>());
-        this.getAckMap().get(message.getUuid()).add(this.getNode().getId());
+        List<Integer> nodeList = new ArrayList<>();
+        for (NodeMetadata metadata : this.getNode().getNodeList()) {
+            nodeList.add(metadata.getId());
+        }
+        this.getNode().getStorage().getAckService().initAck(message.getUuid(), nodeList);
+        this.getNode().getStorage().getAckService().recordAck(message.getUuid(), this.getNode().getId());
     }
 
     public void recordAck(UUID messageUuid, int sourceId, int nodeId) {
-        if (this.getAckMap().containsKey(messageUuid)) {
+        if (this.getNode().getStorage().getAckService().getAck(messageUuid) != null) {
             // Update local progress
             LOGGER.info("[Tracker] Update local ACK progress of message {} from server {}.", messageUuid, nodeId);
-            this.getAckMap().get(messageUuid).add(nodeId);
+            this.getNode().getStorage().getAckService().recordAck(messageUuid, nodeId);
         } else {
             // Send ACK to sender
             LOGGER.info("[Tracker] Resend ACK of message {} from server {} to message source {}.", messageUuid, nodeId, sourceId);
@@ -95,22 +92,16 @@ public class Tracker {
         }
     }
 
-    public Set<Integer> getProgress(UUID messageUuid) {
-        if (this.getAckMap().containsKey(messageUuid)) {
-            return this.getAckMap().get(messageUuid);
-        }
-        return null;
-    }
-
     public Set<Integer> getNodesToRetry(UUID messageUuid) {
         if (!this.getPendingMessages().containsKey(messageUuid)) {
             return null;
         }
-        Set<Integer> progress = this.getProgress(messageUuid);
+        Ack ack = this.getNode().getStorage().getAckService().getAck(messageUuid);
+
         Set<Integer> ret = new HashSet<>();
-        for (NodeMetadata metadata : this.getNode().getNodeList()) {
-            if (!progress.contains(metadata.getId())) {
-                ret.add(metadata.getId());
+        for (Integer id : ack.getNodeList()) {
+            if (!ack.getAckNodes().contains(id)) {
+                ret.add(id);
             }
         }
         return ret;

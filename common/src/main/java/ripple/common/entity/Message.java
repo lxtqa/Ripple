@@ -1,7 +1,5 @@
 package ripple.common.entity;
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import java.util.Date;
 import java.util.UUID;
 

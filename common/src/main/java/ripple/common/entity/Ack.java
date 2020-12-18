@@ -1,6 +1,6 @@
 package ripple.common.entity;
 
-import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -8,8 +8,8 @@ import java.util.UUID;
  */
 public class Ack {
     private UUID messageUuid;
-    private List<Integer> nodeList;
-    private List<Integer> ackNodes;
+    private Set<Integer> nodeList;
+    private Set<Integer> ackNodes;
 
     public UUID getMessageUuid() {
         return messageUuid;
@@ -19,19 +19,19 @@ public class Ack {
         this.messageUuid = messageUuid;
     }
 
-    public List<Integer> getNodeList() {
+    public Set<Integer> getNodeList() {
         return nodeList;
     }
 
-    public void setNodeList(List<Integer> nodeList) {
+    public void setNodeList(Set<Integer> nodeList) {
         this.nodeList = nodeList;
     }
 
-    public List<Integer> getAckNodes() {
+    public Set<Integer> getAckNodes() {
         return ackNodes;
     }
 
-    public void setAckNodes(List<Integer> ackNodes) {
+    public void setAckNodes(Set<Integer> ackNodes) {
         this.ackNodes = ackNodes;
     }
 }

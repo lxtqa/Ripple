@@ -79,7 +79,7 @@ public class ItemService {
 
         try {
             Connection connection = this.getStorage().getConnection();
-            String sql = "INSERT OR IGNORE INTO [item] ([application_name], [key]) VALUES (?,?);";
+            String sql = "INSERT INTO [item] ([application_name], [key]) VALUES (?,?);";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, applicationName);
             statement.setString(2, key);

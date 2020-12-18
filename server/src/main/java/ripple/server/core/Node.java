@@ -242,8 +242,8 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
-        this.getTracker().initProgress(message);
         this.handleMessage(message);
+        this.getTracker().initProgress(message);
 
         return true;
     }
@@ -253,8 +253,8 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         DeleteMessage message = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-        this.getTracker().initProgress(message);
         this.handleMessage(message);
+        this.getTracker().initProgress(message);
 
         return true;
     }

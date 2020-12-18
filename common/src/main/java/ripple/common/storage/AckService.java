@@ -7,6 +7,7 @@ import ripple.common.entity.Ack;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -50,12 +51,14 @@ public class AckService {
     public boolean initAck(UUID messageUuid, List<Integer> nodeList) {
         synchronized (this.getLock(messageUuid)) {
             try {
-                String nodeListString = MAPPER.writeValueAsString(nodeList);
+                String nodeListString = MAPPER.writeValueAsString(new HashSet<>(nodeList));
+                String ackNodesString = MAPPER.writeValueAsString(new HashSet<>());
                 Connection connection = this.getStorage().getConnection();
-                String sql = "INSERT OR IGNORE INTO [ack] ([message_uuid], [node_list]) VALUES (?,?);";
+                String sql = "INSERT INTO [ack] ([message_uuid], [node_list], [ack_nodes]) VALUES (?,?,?);";
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setString(1, messageUuid.toString());
                 statement.setString(2, nodeListString);
+                statement.setString(3, ackNodesString);
                 int count = statement.executeUpdate();
                 return count == 1;
             } catch (Exception exception) {
@@ -74,7 +77,7 @@ public class AckService {
                 statement.setString(1, messageUuid.toString());
                 ResultSet resultSet = statement.executeQuery();
 
-                JavaType listType = MAPPER.getTypeFactory().constructCollectionType(List.class, Integer.class);
+                JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, Integer.class);
                 Ack ack = null;
                 if (resultSet.next()) {
                     ack = new Ack();
