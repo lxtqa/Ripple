@@ -43,12 +43,12 @@ public class SyncServlet extends BaseServlet {
             LOGGER.info("[SyncServlet] Receive POST request. UUID = {}, Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, value, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
             UpdateMessage updateMessage = new UpdateMessage(uuid, applicationName, key, value, lastUpdate, lastUpdateServerId);
-            result = this.getNode().handleMessage(updateMessage);
+            result = this.getNode().propagateMessage(updateMessage);
         } else if (type.equals(MessageType.DELETE)) {
             LOGGER.info("[SyncServlet] Receive POST request. UUID = {}, Type = {}, Application Name = {}, Key = {}, Last Update = {}, Last Update Server Id = {}."
                     , uuid, type, applicationName, key, SimpleDateFormat.getDateTimeInstance().format(lastUpdate), lastUpdateServerId);
             DeleteMessage deleteMessage = new DeleteMessage(uuid, applicationName, key, lastUpdate, lastUpdateServerId);
-            result = this.getNode().handleMessage(deleteMessage);
+            result = this.getNode().propagateMessage(deleteMessage);
         }
 
         response.setContentType("application/json;charset=UTF-8");

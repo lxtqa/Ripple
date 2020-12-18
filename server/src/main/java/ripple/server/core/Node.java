@@ -242,8 +242,7 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
-        this.handleMessage(message);
-        this.getTracker().initProgress(message);
+        this.propagateMessage(message);
 
         return true;
     }
@@ -253,15 +252,19 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         DeleteMessage message = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-        this.handleMessage(message);
-        this.getTracker().initProgress(message);
+        this.propagateMessage(message);
 
         return true;
     }
 
-    public boolean handleMessage(Message message) {
+    public boolean propagateMessage(Message message) {
         // Update local storage
         this.applyMessageToStorage(message);
+
+        // Init ACK if it is the message source
+        if (message.getLastUpdateServerId() == this.getId()) {
+            this.getTracker().initProgress(message);
+        }
 
         // Notify clients
         this.doNotifyClients(message);
@@ -294,15 +297,15 @@ public class Node {
             // Fault tolerant
             NodeMetadata nodeMetadata = sendQueue.poll();
             if (this.getHealthManager().isAlive(nodeMetadata)) {
-                LOGGER.info("[Node] Sync {} with server {}:{}.", message.getType(), nodeMetadata.getAddress(), nodeMetadata.getPort());
+                LOGGER.info("[Node-{}] Sync {} with server {}:{}.", this.getId(), message.getType(), nodeMetadata.getAddress(), nodeMetadata.getPort());
                 boolean success = Api.sync(nodeMetadata.getAddress(), nodeMetadata.getPort(), message);
                 if (success) {
-                    LOGGER.info("[Node] Record ACK of message {} from server {}.", message.getUuid(), nodeMetadata.getId());
+                    LOGGER.info("[Node-{}] Record ACK of message {} from server {}.", this.getId(), message.getUuid(), nodeMetadata.getId());
                     this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
                 }
             } else {
-                LOGGER.info("[Node] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
-                        , nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
+                LOGGER.info("[Node-{}] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
+                        , this.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
                 List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(source, nodeMetadata);
                 sendQueue.addAll(list);
             }

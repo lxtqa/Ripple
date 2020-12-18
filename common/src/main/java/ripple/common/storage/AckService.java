@@ -1,5 +1,6 @@
 package ripple.common.storage;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.entity.Ack;
@@ -7,6 +8,8 @@ import ripple.common.entity.Ack;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
@@ -69,28 +72,51 @@ public class AckService {
     }
 
     public Ack getAck(UUID messageUuid) {
-        synchronized (this.getLock(messageUuid)) {
-            try {
-                Connection connection = this.getStorage().getConnection();
-                String sql = "SELECT * FROM [ack] WHERE [message_uuid] = ?;";
-                PreparedStatement statement = connection.prepareStatement(sql);
-                statement.setString(1, messageUuid.toString());
-                ResultSet resultSet = statement.executeQuery();
+        try {
+            Connection connection = this.getStorage().getConnection();
+            String sql = "SELECT * FROM [ack] WHERE [message_uuid] = ?;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, messageUuid.toString());
+            ResultSet resultSet = statement.executeQuery();
 
-                JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, Integer.class);
-                Ack ack = null;
-                if (resultSet.next()) {
-                    ack = new Ack();
-                    ack.setMessageUuid(UUID.fromString(resultSet.getString("message_uuid")));
-                    ack.setNodeList(MAPPER.readValue(resultSet.getString("node_list"), listType));
-                    ack.setAckNodes(MAPPER.readValue(resultSet.getString("ack_nodes"), listType));
-                }
-                resultSet.close();
-                return ack;
-            } catch (Exception exception) {
-                exception.printStackTrace();
-                return null;
+            JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, Integer.class);
+            Ack ack = null;
+
+            if (resultSet.next()) {
+                ack = parseAck(resultSet);
             }
+            resultSet.close();
+            return ack;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    private Ack parseAck(ResultSet resultSet) throws SQLException, JsonProcessingException {
+        JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, Integer.class);
+        Ack ack = new Ack();
+        ack.setMessageUuid(UUID.fromString(resultSet.getString("message_uuid")));
+        ack.setNodeList(MAPPER.readValue(resultSet.getString("node_list"), listType));
+        ack.setAckNodes(MAPPER.readValue(resultSet.getString("ack_nodes"), listType));
+        return ack;
+    }
+
+    public List<Ack> getAllAcks() {
+        try {
+            Connection connection = this.getStorage().getConnection();
+            String sql = "SELECT * FROM [ack];";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            List<Ack> ret = new ArrayList<>();
+            while (resultSet.next()) {
+                ret.add(this.parseAck(resultSet));
+            }
+            resultSet.close();
+            return ret;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
         }
     }
 

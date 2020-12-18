@@ -112,7 +112,26 @@ public class MessageService {
         }
     }
 
-    public List<Message> getMessages(String applicationName, String key) {
+    public Message getMessageByUuid(UUID messageUuid) {
+        try {
+            Connection connection = this.getStorage().getConnection();
+            String sql = "SELECT * FROM [message] WHERE [uuid] = ?;";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, messageUuid.toString());
+            ResultSet resultSet = statement.executeQuery();
+            Message message = null;
+            if (resultSet.next()) {
+                message = (this.parseMessage(resultSet));
+            }
+            resultSet.close();
+            return message;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Message> findMessages(String applicationName, String key) {
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ?;";
@@ -122,33 +141,7 @@ public class MessageService {
             ResultSet resultSet = statement.executeQuery();
             List<Message> ret = new ArrayList<>();
             while (resultSet.next()) {
-                UUID uuid = UUID.fromString(resultSet.getString("uuid"));
-                String type = resultSet.getString("message_type");
-                String itemApplicationName = resultSet.getString("item_application_name");
-                String itemKey = resultSet.getString("item_key");
-                Date lastUpdate = new Date(resultSet.getLong("last_update"));
-                int lastUpdateServerId = resultSet.getInt("last_update_id");
-                if (type.equals(MessageType.UPDATE)) {
-                    String value = resultSet.getString("new_value");
-                    UpdateMessage message = new UpdateMessage();
-                    message.setUuid(uuid);
-                    message.setType(type);
-                    message.setApplicationName(itemApplicationName);
-                    message.setKey(itemKey);
-                    message.setValue(value);
-                    message.setLastUpdate(lastUpdate);
-                    message.setLastUpdateServerId(lastUpdateServerId);
-                    ret.add(message);
-                } else if (type.equals(MessageType.DELETE)) {
-                    DeleteMessage message = new DeleteMessage();
-                    message.setUuid(uuid);
-                    message.setType(type);
-                    message.setApplicationName(itemApplicationName);
-                    message.setKey(itemKey);
-                    message.setLastUpdate(lastUpdate);
-                    message.setLastUpdateServerId(lastUpdateServerId);
-                    ret.add(message);
-                }
+                ret.add(this.parseMessage(resultSet));
             }
             resultSet.close();
             return ret;
@@ -156,5 +149,35 @@ public class MessageService {
             exception.printStackTrace();
             return null;
         }
+    }
+
+    private Message parseMessage(ResultSet resultSet) throws SQLException {
+        Message message = null;
+        UUID uuid = UUID.fromString(resultSet.getString("uuid"));
+        String type = resultSet.getString("message_type");
+        String itemApplicationName = resultSet.getString("item_application_name");
+        String itemKey = resultSet.getString("item_key");
+        Date lastUpdate = new Date(resultSet.getLong("last_update"));
+        int lastUpdateServerId = resultSet.getInt("last_update_id");
+        if (type.equals(MessageType.UPDATE)) {
+            String value = resultSet.getString("new_value");
+            message = new UpdateMessage();
+            message.setUuid(uuid);
+            message.setType(type);
+            message.setApplicationName(itemApplicationName);
+            message.setKey(itemKey);
+            ((UpdateMessage) message).setValue(value);
+            message.setLastUpdate(lastUpdate);
+            message.setLastUpdateServerId(lastUpdateServerId);
+        } else if (type.equals(MessageType.DELETE)) {
+            message = new DeleteMessage();
+            message.setUuid(uuid);
+            message.setType(type);
+            message.setApplicationName(itemApplicationName);
+            message.setKey(itemKey);
+            message.setLastUpdate(lastUpdate);
+            message.setLastUpdateServerId(lastUpdateServerId);
+        }
+        return message;
     }
 }

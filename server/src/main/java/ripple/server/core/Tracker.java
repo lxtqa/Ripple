@@ -21,7 +21,6 @@ public class Tracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tracker.class);
 
     private Node node;
-    private Map<UUID, Message> pendingMessages;
 
     public Node getNode() {
         return node;
@@ -31,17 +30,18 @@ public class Tracker {
         this.node = node;
     }
 
-    public Map<UUID, Message> getPendingMessages() {
-        return pendingMessages;
-    }
-
-    public void setPendingMessages(Map<UUID, Message> pendingMessages) {
-        this.pendingMessages = pendingMessages;
-    }
-
     public Tracker(Node node) {
         this.setNode(node);
-        this.setPendingMessages(new ConcurrentHashMap<>());
+    }
+
+    private Map<UUID, Message> getPendingMessages() {
+        Map<UUID, Message> map = new ConcurrentHashMap<>();
+        List<Ack> ackList = this.getNode().getStorage().getAckService().getAllAcks();
+        for (Ack ack : ackList) {
+            Message message = this.getNode().getStorage().getMessageService().getMessageByUuid(ack.getMessageUuid());
+            map.put(message.getUuid(), message);
+        }
+        return map;
     }
 
     public void retry() {
@@ -85,7 +85,7 @@ public class Tracker {
             LOGGER.info("[Tracker] Update local ACK progress of message {} from server {}.", messageUuid, nodeId);
             this.getNode().getStorage().getAckService().recordAck(messageUuid, nodeId);
         } else {
-            // Send ACK to sender
+            // Transfer ACK to the original sender
             LOGGER.info("[Tracker] Resend ACK of message {} from server {} to message source {}.", messageUuid, nodeId, sourceId);
             NodeMetadata metadata = this.getNode().findServerById(sourceId);
             Api.ack(metadata.getAddress(), metadata.getPort(), messageUuid, sourceId, nodeId);

@@ -57,7 +57,7 @@ public class GetConfigServlet extends BaseServlet {
             for (i = 0; i < allConfigs.size(); i++) {
                 Item item = allConfigs.get(i);
                 List<Message> messageList = this.getNode().getStorage().getMessageService()
-                        .getMessages(item.getApplicationName(), item.getKey());
+                        .findMessages(item.getApplicationName(), item.getKey());
 
                 String history = "";
                 for (Message message : messageList) {
