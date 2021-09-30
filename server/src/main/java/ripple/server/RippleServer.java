@@ -51,7 +51,7 @@ public class RippleServer {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, port));
     }
 
-    private Node getNode() {
+    public Node getNode() {
         return node;
     }
 
