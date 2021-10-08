@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestClientConnection {
+public class TestGuaranteeConsistency {
     private static final int SERVER_COUNT = 10;
     private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
@@ -55,6 +55,29 @@ public class TestClientConnection {
                 }
             }
 
+            String applicationName = "testApp";
+            String key = "test";
+            String value = "test";
+
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.subscribe(applicationName, key);
+            }
+
+            serverList.get(0).getNode().put(applicationName, key, value);
+
+            System.out.println("Press any key to shutdown nodes.");
+            System.in.read();
+
+            serverList.get(SERVER_COUNT - 1).stop();
+
+            String newValue = "newTest";
+            serverList.get(0).getNode().put(applicationName, key, newValue);
+
+            System.out.println("Press any key to restart nodes.");
+            System.in.read();
+
+            serverList.get(SERVER_COUNT - 1).start();
+
             System.out.println("Press any key to stop.");
             System.in.read();
 
@@ -65,7 +88,6 @@ public class TestClientConnection {
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
             }
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }

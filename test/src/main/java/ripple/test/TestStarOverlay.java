@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestClientConnection {
+public class TestStarOverlay {
     private static final int SERVER_COUNT = 10;
     private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
@@ -25,12 +25,11 @@ public class TestClientConnection {
             List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
-            int branch = 2;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
                 String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".db";
-                RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
+                RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
                 rippleServer.start();
                 serverList.add(rippleServer);
                 System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
@@ -55,6 +54,16 @@ public class TestClientConnection {
                 }
             }
 
+            String applicationName = "testApp";
+            String key = "test";
+            String value = "test";
+
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.subscribe(applicationName, key);
+            }
+
+            clientList.get(0).put(applicationName, key, value);
+
             System.out.println("Press any key to stop.");
             System.in.read();
 
@@ -65,7 +74,6 @@ public class TestClientConnection {
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
             }
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }

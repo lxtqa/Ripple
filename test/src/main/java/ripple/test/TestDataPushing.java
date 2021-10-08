@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestClientConnection {
+public class TestDataPushing {
     private static final int SERVER_COUNT = 10;
     private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
@@ -40,6 +40,10 @@ public class TestClientConnection {
                 serverList.get(i).initCluster(nodeList);
             }
 
+            String applicationName = "testApp";
+            String key = "test";
+            String value = "test";
+
             int j = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 for (j = 0; j < CLIENTS_PER_SERVER; j++) {
@@ -55,6 +59,18 @@ public class TestClientConnection {
                 }
             }
 
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.subscribe(applicationName, key);
+            }
+
+            clientList.get(0).put(applicationName, key, value);
+
+            System.out.println("Press any key to update value.");
+            System.in.read();
+
+            String newValue = "newTest";
+            clientList.get(1).put(applicationName, key, newValue);
+
             System.out.println("Press any key to stop.");
             System.in.read();
 
@@ -65,7 +81,6 @@ public class TestClientConnection {
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
             }
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }
