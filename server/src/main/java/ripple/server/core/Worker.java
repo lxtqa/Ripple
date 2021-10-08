@@ -30,7 +30,7 @@ public class Worker implements Runnable {
             while (!Thread.currentThread().isInterrupted()) {
                 LOGGER.info("[Worker] Check health.");
                 this.getNode().getHealthManager().checkHealth();
-                LOGGER.info("[Worker] Retry sending messages.");
+                LOGGER.info("[Worker] Sending pending messages.");
                 this.getNode().getTracker().retry();
                 Thread.sleep(INTERVAL);
             }
