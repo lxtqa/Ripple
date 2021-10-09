@@ -21,8 +21,6 @@ public class TestSmallCluster {
 
     public static void main(String[] args) {
         try {
-            System.setProperty("ripple.debug", "true");
-            System.setProperty("ripple.networkLatency", "20");
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
 
             Files.createDirectories(Paths.get(DATABASE_PATH));
