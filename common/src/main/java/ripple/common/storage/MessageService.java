@@ -57,7 +57,7 @@ public class MessageService {
         }
     }
 
-    private boolean newUpdateMessage(UpdateMessage updateMessage) {
+    private synchronized boolean newUpdateMessage(UpdateMessage updateMessage) {
         if (this.exist(updateMessage.getUuid())) {
             return false;
         }
@@ -85,7 +85,7 @@ public class MessageService {
         }
     }
 
-    private boolean newDeleteMessage(DeleteMessage deleteMessage) {
+    private synchronized boolean newDeleteMessage(DeleteMessage deleteMessage) {
         if (this.exist(deleteMessage.getUuid())) {
             return false;
         }
