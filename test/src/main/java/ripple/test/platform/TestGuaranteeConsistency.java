@@ -1,4 +1,4 @@
-package ripple.test;
+package ripple.test.platform;
 
 import ripple.client.RippleClient;
 import ripple.server.RippleServer;

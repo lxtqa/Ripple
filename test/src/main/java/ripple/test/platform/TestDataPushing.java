@@ -1,4 +1,4 @@
-package ripple.test;
+package ripple.test.platform;
 
 import ripple.client.RippleClient;
 import ripple.server.RippleServer;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestTreeOverlay {
+public class TestDataPushing {
     private static final int SERVER_COUNT = 10;
     private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
@@ -25,7 +25,7 @@ public class TestTreeOverlay {
             List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
-            int branch = 3;
+            int branch = 2;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
@@ -39,6 +39,10 @@ public class TestTreeOverlay {
             for (i = 0; i < SERVER_COUNT; i++) {
                 serverList.get(i).initCluster(nodeList);
             }
+
+            String applicationName = "testApp";
+            String key = "test";
+            String value = "test";
 
             int j = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
@@ -55,15 +59,17 @@ public class TestTreeOverlay {
                 }
             }
 
-            String applicationName = "testApp";
-            String key = "test";
-            String value = "test";
-
             for (RippleClient rippleClient : clientList) {
                 rippleClient.subscribe(applicationName, key);
             }
 
             clientList.get(0).put(applicationName, key, value);
+
+            System.out.println("Press any key to update value.");
+            System.in.read();
+
+            String newValue = "newTest";
+            clientList.get(1).put(applicationName, key, newValue);
 
             System.out.println("Press any key to stop.");
             System.in.read();

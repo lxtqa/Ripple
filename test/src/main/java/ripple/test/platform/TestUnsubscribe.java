@@ -1,35 +1,31 @@
-package ripple.test;
+package ripple.test.platform;
 
 import ripple.client.RippleClient;
-import ripple.common.entity.Message;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
  * @author Zhen Tang
  */
-public class TestSmallCluster {
+public class TestUnsubscribe {
     private static final int SERVER_COUNT = 10;
     private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
         try {
-            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
-
             Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
             List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
-            int branch = 3;
+            int branch = 2;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
@@ -67,21 +63,21 @@ public class TestSmallCluster {
                 rippleClient.subscribe(applicationName, key);
             }
 
-            Date startDate = new Date(System.currentTimeMillis());
-            System.out.println("Start update delivery");
-            clientList.get(0).put(applicationName, key, value);
-            Message message = serverList.get(0).getNode().getStorage().getMessageService()
-                    .findMessages(applicationName, key).get(0);
-            long count = serverList.get(0).getNode().getStorage().getAckService()
-                    .getAck(message.getUuid()).getAckNodes().stream().count();
-            while (count != SERVER_COUNT) {
-                System.out.println("Update sent to " + count + " nodes. Wait for 100 ms.");
-                Thread.sleep(100);
-                count = serverList.get(0).getNode().getStorage().getAckService()
-                        .getAck(message.getUuid()).getAckNodes().stream().count();
+            serverList.get(0).getNode().put(applicationName, key, value);
+
+            System.out.println("Press any key to unsubscribe.");
+            System.in.read();
+
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.unsubscribe(applicationName, key);
             }
-            Date endDate = new Date(System.currentTimeMillis());
-            System.out.println("Delivery completed in " + (endDate.getTime() - startDate.getTime()) + " ms.");
+
+            String newValue = "newTest";
+
+            serverList.get(0).getNode().put(applicationName, key, newValue);
+
+            System.out.println("Press any key to stop.");
+            System.in.read();
 
             for (RippleClient rippleClient : clientList) {
                 rippleClient.stop();
