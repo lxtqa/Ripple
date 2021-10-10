@@ -1,4 +1,4 @@
-package ripple.test.platform;
+package ripple.test;
 
 import ripple.client.RippleClient;
 import ripple.common.entity.Message;
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestLargeClusterTree {
+public class TestLargeClusterStar {
     private static final int SERVER_COUNT = 100;
     private static final int CLIENTS_PER_SERVER = 1;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
@@ -31,12 +31,11 @@ public class TestLargeClusterTree {
             List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
-            int branch = 4;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
                 String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".db";
-                RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
+                RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
                 rippleServer.start();
                 serverList.add(rippleServer);
                 System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
