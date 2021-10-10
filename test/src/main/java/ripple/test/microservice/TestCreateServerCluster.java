@@ -1,6 +1,5 @@
-package ripple.test.platform;
+package ripple.test.microservice;
 
-import ripple.client.RippleClient;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
@@ -12,9 +11,8 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class TestTreeOverlay {
-    private static final int SERVER_COUNT = 11;
-    private static final int CLIENTS_PER_SERVER = 3;
+public class TestCreateServerCluster {
+    private static final int SERVER_COUNT = 10;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -22,7 +20,6 @@ public class TestTreeOverlay {
             Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
-            List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
             int branch = 3;
@@ -40,37 +37,8 @@ public class TestTreeOverlay {
                 serverList.get(i).initCluster(nodeList);
             }
 
-            int j = 0;
-            for (i = 0; i < SERVER_COUNT; i++) {
-                for (j = 0; j < CLIENTS_PER_SERVER; j++) {
-                    RippleServer rippleServer = serverList.get(i);
-                    String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getPort();
-                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
-                    RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
-                    rippleClient.start();
-                    clientList.add(rippleClient);
-                    System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
-                            + rippleClient.getAddress() + ":" + rippleClient.getPort());
-                }
-            }
-
-            String applicationName = "testApp";
-            String key = "test";
-            String value = "test";
-
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.subscribe(applicationName, key);
-            }
-
-            clientList.get(0).put(applicationName, key, value);
-
             System.out.println("Press any key to stop.");
             System.in.read();
-
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.stop();
-            }
 
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();

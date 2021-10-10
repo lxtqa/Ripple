@@ -1,6 +1,5 @@
-package ripple.test.platform;
+package ripple.test.microservice;
 
-import ripple.client.RippleClient;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
@@ -14,7 +13,6 @@ import java.util.List;
  */
 public class TestTreeOverlay {
     private static final int SERVER_COUNT = 11;
-    private static final int CLIENTS_PER_SERVER = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -22,7 +20,6 @@ public class TestTreeOverlay {
             Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
-            List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
             int branch = 3;
@@ -40,37 +37,38 @@ public class TestTreeOverlay {
                 serverList.get(i).initCluster(nodeList);
             }
 
-            int j = 0;
-            for (i = 0; i < SERVER_COUNT; i++) {
-                for (j = 0; j < CLIENTS_PER_SERVER; j++) {
-                    RippleServer rippleServer = serverList.get(i);
-                    String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getPort();
-                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
-                    RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
-                    rippleClient.start();
-                    clientList.add(rippleClient);
-                    System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
-                            + rippleClient.getAddress() + ":" + rippleClient.getPort());
-                }
-            }
+            int numberOne = 5;
+            int numberTwo = 7;
+            String oldFunction = "add";
 
-            String applicationName = "testApp";
-            String key = "test";
-            String value = "test";
+            NumberService one = new NumberService(numberOne, serverList.get(0).getAddress(), serverList.get(0).getPort()
+                    , DATABASE_PATH + "\\number-service-1.db");
+            one.start();
+            System.out.println("[Number Service 1] " + one.getAddress() + ":" + one.getPort()
+                    + ", Client = " + one.getClient().getAddress() + ":" + one.getClient().getPort());
 
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.subscribe(applicationName, key);
-            }
+            NumberService two = new NumberService(numberTwo, serverList.get(1).getAddress(), serverList.get(1).getPort()
+                    , DATABASE_PATH + "\\number-service-2.db");
+            two.start();
+            System.out.println("[Number Service 2] " + two.getAddress() + ":" + two.getPort()
+                    + ", Client = " + two.getClient().getAddress() + ":" + two.getClient().getPort());
 
-            clientList.get(0).put(applicationName, key, value);
+            OperatorService operator = new OperatorService(serverList.get(2).getAddress(), serverList.get(2).getPort()
+                    , DATABASE_PATH + "\\operator-service.db");
+            operator.start();
+            System.out.println("[Operator Service] " + operator.getAddress() + ":" + operator.getPort()
+                    + ", Client = " + operator.getClient().getAddress() + ":" + operator.getClient().getPort());
+
+            one.getClient().put("testApp", "oneAddress", one.getAddress() + ":" + one.getPort());
+            one.getClient().put("testApp", "twoAddress", two.getAddress() + ":" + two.getPort());
+            one.getClient().put("testApp", "function", oldFunction);
 
             System.out.println("Press any key to stop.");
             System.in.read();
 
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.stop();
-            }
+            one.stop();
+            two.stop();
+            operator.stop();
 
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
