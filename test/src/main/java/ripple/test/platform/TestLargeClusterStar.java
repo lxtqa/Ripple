@@ -15,7 +15,7 @@ import java.util.List;
  * @author Zhen Tang
  */
 public class TestLargeClusterStar {
-    private static final int SERVER_COUNT = 50;
+    private static final int SERVER_COUNT = 100;
     private static final int CLIENTS_PER_SERVER = 1;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
