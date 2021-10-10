@@ -42,8 +42,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.*;
 
 /**
  * @author Zhen Tang
@@ -51,6 +50,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 public class Node {
     private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
+
+    private ExecutorService executorService = Executors.newCachedThreadPool();
 
     private int id;
     private Overlay overlay;
@@ -257,7 +258,7 @@ public class Node {
         return true;
     }
 
-    public boolean propagateMessage(Message message) {
+    public boolean propagateMessage(final Message message) {
         // Update local storage
         this.applyMessageToStorage(message);
 
@@ -269,10 +270,18 @@ public class Node {
         // Notify clients
         this.doNotifyClients(message);
 
-        int sourceId = message.getLastUpdateServerId();
-        int currentId = this.getId();
+        final int sourceId = message.getLastUpdateServerId();
+        final int currentId = this.getId();
 
-        this.doSyncWithServer(message, sourceId, currentId);
+        // this.doSyncWithServer(message, sourceId, currentId);
+
+        executorService.submit(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                doSyncWithServer(message, sourceId, currentId);
+                return null;
+            }
+        });
 
         return true;
     }
@@ -369,6 +378,9 @@ public class Node {
         try {
             this.getServer().stop();
             this.getWorkingThread().interrupt();
+
+            this.executorService.shutdown();
+            
             this.setRunning(false);
             return true;
         } catch (Exception exception) {
