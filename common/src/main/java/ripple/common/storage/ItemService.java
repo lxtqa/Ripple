@@ -71,7 +71,7 @@ public class ItemService {
         }
     }
 
-    public boolean newItem(String applicationName, String key) {
+    public synchronized boolean newItem(String applicationName, String key) {
         Item item = this.getItem(applicationName, key);
         if (item != null) {
             return false;
