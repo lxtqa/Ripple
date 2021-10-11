@@ -51,7 +51,7 @@ public class Node {
     private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
-    private ExecutorService executorService = Executors.newCachedThreadPool();
+    private ExecutorService executorService;
 
     private int id;
     private Overlay overlay;
@@ -74,6 +74,7 @@ public class Node {
     }
 
     public Node(int id, Overlay overlay, String storageLocation, int port) {
+        this.setExecutorService(Executors.newCachedThreadPool());
         this.setId(id);
         this.setOverlay(overlay);
         this.setTracker(new Tracker(this));
@@ -203,6 +204,14 @@ public class Node {
         return MAPPER;
     }
 
+    public ExecutorService getExecutorService() {
+        return executorService;
+    }
+
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
+
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
         servletContextHandler.addServlet(new ServletHolder(servlet), endpoint);
     }
@@ -275,11 +284,16 @@ public class Node {
 
         // this.doSyncWithServer(message, sourceId, currentId);
 
-        executorService.submit(new Callable<Void>() {
+        this.getExecutorService().submit(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                doSyncWithServer(message, sourceId, currentId);
-                return null;
+                try {
+                    doSyncWithServer(message, sourceId, currentId);
+                    return null;
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                    return null;
+                }
             }
         });
 
@@ -362,6 +376,9 @@ public class Node {
             this.getServer().start();
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setPort(serverConnector.getLocalPort());
+            if (this.getExecutorService() == null || this.getExecutorService().isShutdown()) {
+                this.setExecutorService(Executors.newCachedThreadPool());
+            }
 
             this.setRunning(true);
             return true;
@@ -380,7 +397,7 @@ public class Node {
             this.getWorkingThread().interrupt();
 
             this.executorService.shutdown();
-            
+
             this.setRunning(false);
             return true;
         } catch (Exception exception) {
