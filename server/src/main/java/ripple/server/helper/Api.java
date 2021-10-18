@@ -58,6 +58,7 @@ public final class Api {
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
             // Suppress exception
+            // exception.printStackTrace();
             return false;
         }
     }
@@ -70,6 +71,7 @@ public final class Api {
             return MAPPER.readValue(returnValue, Boolean.class);
         } catch (Exception exception) {
             // Suppress exception
+            // exception.printStackTrace();
             return false;
         }
     }

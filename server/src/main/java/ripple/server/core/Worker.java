@@ -27,7 +27,7 @@ public class Worker implements Runnable {
     @Override
     public void run() {
         try {
-            while (!Thread.currentThread().isInterrupted()) {
+            while (this.getNode().isRunning() && !Thread.currentThread().isInterrupted()) {
                 LOGGER.info("[Worker] Check health.");
                 this.getNode().getHealthManager().checkHealth();
                 LOGGER.info("[Worker] Sending pending messages.");

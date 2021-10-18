@@ -41,6 +41,9 @@ public class OperatorServlet extends HttpServlet {
 
     private String getValue(String applicationName, String key) {
         Item item = this.getOperatorService().getClient().get(applicationName, key);
+        if (item == null) {
+            return null;
+        }
         List<Message> messageList = this.getOperatorService().getClient().getStorage().getMessageService()
                 .findMessages(item.getApplicationName(), item.getKey());
         if (messageList.size() == 0) {
