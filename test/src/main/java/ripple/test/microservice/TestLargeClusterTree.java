@@ -23,8 +23,6 @@ public class TestLargeClusterTree {
 
     public static void main(String[] args) {
         try {
-            System.setProperty("ripple.debug", "true");
-            System.setProperty("ripple.networkLatency", "50");
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
             List<Long> subscribeTime = new ArrayList<>();
             List<Long> unsubscribeTime = new ArrayList<>();

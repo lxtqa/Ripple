@@ -24,10 +24,6 @@ public final class Api {
 
     public static boolean sync(String address, int port, Message message) {
         try {
-            if (System.getProperty("ripple.debug") != null && System.getProperty("ripple.debug").equals("true")) {
-                Thread.sleep(Integer.parseInt(System.getProperty("ripple.networkLatency")));
-            }
-
             Map<String, String> headers = new HashMap<>(message.getType().equals(MessageType.UPDATE) ? 7 : 6);
             headers.put(Parameter.UUID, message.getUuid().toString());
             headers.put(Parameter.TYPE, message.getType());

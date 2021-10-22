@@ -22,8 +22,6 @@ public class TestLargeClusterStar {
 
     public static void main(String[] args) {
         try {
-            System.setProperty("ripple.debug", "true");
-            System.setProperty("ripple.networkLatency", "50");
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "warn");
             String suffix = UUID.randomUUID().toString();
             String databasePath = DATABASE_PATH + "\\" + suffix;

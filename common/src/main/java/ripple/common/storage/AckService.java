@@ -79,7 +79,6 @@ public class AckService {
             statement.setString(1, messageUuid.toString());
             ResultSet resultSet = statement.executeQuery();
 
-            JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, Integer.class);
             Ack ack = null;
 
             if (resultSet.next()) {
