@@ -1,5 +1,13 @@
 package ripple.common.tcp;
 
-public class AckResponse extends Response {
-    private boolean result;
+public class AckResponse extends Message {
+    private boolean success;
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public void setSuccess(boolean success) {
+        this.success = success;
+    }
 }

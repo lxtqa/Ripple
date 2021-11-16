@@ -1,11 +1,34 @@
 package ripple.common.tcp;
 
-public class MessageType {
-    public static final byte ACK_REQUEST = 0;
-    public static final byte ACK_RESPONSE = 1;
-    public static final byte HEARTBEAT_REQUEST = 2;
-    public static final byte HEARTBEAT_RESPONSE = 3;
-    public static final byte SYNC_REQUEST = 4;
-    public static final byte SYNC_RESPONSE = 5;
+public enum MessageType {
+    EMPTY((byte) 0),
+    ACK_REQUEST((byte) 1),
+    ACK_RESPONSE((byte) 2),
+    HEARTBEAT_REQUEST((byte) 3),
+    HEARTBEAT_RESPONSE((byte) 4),
+    SYNC_REQUEST((byte) 5),
+    SYNC_RESPONSE((byte) 6);
 
+    private byte value;
+
+    public byte getValue() {
+        return value;
+    }
+
+    private void setValue(byte value) {
+        this.value = value;
+    }
+
+    MessageType(byte value) {
+        this.setValue(value);
+    }
+
+    public static MessageType get(byte type) {
+        for (MessageType elem : values()) {
+            if (elem.getValue() == type) {
+                return elem;
+            }
+        }
+        throw new RuntimeException("Unsupported type: " + type);
+    }
 }

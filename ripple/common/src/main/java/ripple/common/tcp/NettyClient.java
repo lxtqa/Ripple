@@ -1,4 +1,4 @@
-package ripple.test.tcp;
+package ripple.common.tcp;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
@@ -33,7 +33,7 @@ public class NettyClient {
                         }
                     });
 
-            ChannelFuture future = bootstrap.connect("127.0.0.1", 13462).sync();
+            ChannelFuture future = bootstrap.connect("127.0.0.1", 8888).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

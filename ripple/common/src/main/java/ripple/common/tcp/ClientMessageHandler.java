@@ -1,10 +1,11 @@
-package ripple.test.tcp;
+package ripple.common.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -24,9 +25,13 @@ public class ClientMessageHandler extends ServerMessageHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                Message message = new Message();
-                message.setMessageType(MessageTypeEnum.PING);
-                ctx.writeAndFlush(message);
+                AckRequest request = new AckRequest();
+                request.setUuid(UUID.randomUUID());
+                request.setType(MessageType.ACK_REQUEST);
+                request.setMessageUuid(UUID.randomUUID());
+                request.setNodeId(1);
+                request.setSourceId(1);
+                ctx.writeAndFlush(request);
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 ctx.close();
             }
@@ -45,11 +50,15 @@ public class ClientMessageHandler extends ServerMessageHandler {
         public void run() {
             try {
                 while (true) {
+                    System.out.println("send request");
                     TimeUnit.SECONDS.sleep(1);
-                    Message message = new Message();
-                    message.setMessageType(MessageTypeEnum.REQUEST);
-                    message.setPayload(("This is my " + counter.getAndIncrement() + " message.").getBytes(StandardCharsets.UTF_8));
-                    ctx.writeAndFlush(message);
+                    AckRequest request = new AckRequest();
+                    request.setUuid(UUID.randomUUID());
+                    request.setType(MessageType.ACK_REQUEST);
+                    request.setMessageUuid(UUID.randomUUID());
+                    request.setNodeId(1);
+                    request.setSourceId(1);
+                    ctx.writeAndFlush(request);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
