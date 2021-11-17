@@ -14,11 +14,10 @@ public class ResponseMessageResolver implements Resolver {
 
     @Override
     public Message resolve(Message message) {
+        ResponseMessage responseMessage = (ResponseMessage) message;
         int index = counter.getAndIncrement();
-        System.out.println(index + ". receive response: " + new String(message.getPayload(), StandardCharsets.UTF_8));
-
-        Message empty = new Message();
-        empty.setType(MessageType.EMPTY);
-        return empty;
+        System.out.println(index + ". receive response: " + new String(responseMessage.getPayload(), StandardCharsets.UTF_8)
+                + ", uuid = " + responseMessage.getUuid().toString());
+        return null;
     }
 }

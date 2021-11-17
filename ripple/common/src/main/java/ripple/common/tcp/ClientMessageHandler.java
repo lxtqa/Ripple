@@ -25,10 +25,11 @@ public class ClientMessageHandler extends ServerMessageHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                Message message = new Message();
-                message.setType(MessageType.PING);
-                message.setUuid(UUID.randomUUID());
-                ctx.writeAndFlush(message);
+                RequestMessage requestMessage = new RequestMessage();
+                requestMessage.setType(MessageType.REQUEST);
+                requestMessage.setUuid(UUID.randomUUID());
+                requestMessage.setPayload("Request".getBytes(StandardCharsets.UTF_8));
+                ctx.writeAndFlush(requestMessage);
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 ctx.close();
             }
@@ -48,11 +49,11 @@ public class ClientMessageHandler extends ServerMessageHandler {
             try {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
-                    Message message = new Message();
-                    message.setType(MessageType.REQUEST);
-                    message.setUuid(UUID.randomUUID());
-                    message.setPayload(("This is my " + counter.getAndIncrement() + " message.").getBytes(StandardCharsets.UTF_8));
-                    ctx.writeAndFlush(message);
+                    RequestMessage requestMessage = new RequestMessage();
+                    requestMessage.setType(MessageType.REQUEST);
+                    requestMessage.setUuid(UUID.randomUUID());
+                    requestMessage.setPayload(("This is my " + counter.getAndIncrement() + " message.").getBytes(StandardCharsets.UTF_8));
+                    ctx.writeAndFlush(requestMessage);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

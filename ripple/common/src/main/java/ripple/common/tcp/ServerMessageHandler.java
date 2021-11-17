@@ -10,14 +10,14 @@ public class ServerMessageHandler extends SimpleChannelInboundHandler<Message> {
     protected void channelRead0(ChannelHandlerContext ctx, Message message) {
         Resolver resolver = resolverFactory.getMessageResolver(message);
         Message result = resolver.resolve(message);
-        ctx.writeAndFlush(result);
+        if (result != null) {
+            ctx.writeAndFlush(result);
+        }
     }
 
     @Override
     public void channelRegistered(ChannelHandlerContext ctx) {
         resolverFactory.registerResolver(new RequestMessageResolver());
         resolverFactory.registerResolver(new ResponseMessageResolver());
-        resolverFactory.registerResolver(new PingMessageResolver());
-        resolverFactory.registerResolver(new PongMessageResolver());
     }
 }

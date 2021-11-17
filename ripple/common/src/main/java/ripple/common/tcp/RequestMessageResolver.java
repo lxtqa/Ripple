@@ -15,13 +15,15 @@ public class RequestMessageResolver implements Resolver {
 
     @Override
     public Message resolve(Message message) {
+        RequestMessage requestMessage = (RequestMessage) message;
         int index = counter.getAndIncrement();
-        System.out.println(index + ". Receive request: " + new String(message.getPayload(), StandardCharsets.UTF_8));
+        System.out.println(index + ". Receive request: " + new String(requestMessage.getPayload(), StandardCharsets.UTF_8)
+                + ", uuid = " + requestMessage.getUuid().toString());
 
-        Message response = new Message();
-        response.setType(MessageType.RESPONSE);
-        response.setUuid(UUID.randomUUID());
-        response.setPayload("Response.".getBytes(StandardCharsets.UTF_8));
-        return response;
+        ResponseMessage responseMessage = new ResponseMessage();
+        responseMessage.setType(MessageType.RESPONSE);
+        responseMessage.setUuid(requestMessage.getUuid());
+        responseMessage.setPayload("Response.".getBytes(StandardCharsets.UTF_8));
+        return responseMessage;
     }
 }

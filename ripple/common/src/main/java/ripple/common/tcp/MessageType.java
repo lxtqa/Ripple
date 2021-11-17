@@ -11,7 +11,7 @@ public enum MessageType {
 //    SYNC_REQUEST((byte) 5),
 //    SYNC_RESPONSE((byte) 6);
 
-    REQUEST((byte) 1), RESPONSE((byte) 2), PING((byte) 3), PONG((byte) 4), EMPTY((byte) 5);
+    REQUEST((byte) 1), RESPONSE((byte) 2);
 
     private byte value;
 
