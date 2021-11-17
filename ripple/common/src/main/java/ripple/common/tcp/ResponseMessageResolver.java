@@ -9,7 +9,7 @@ public class ResponseMessageResolver implements Resolver {
 
     @Override
     public boolean support(Message message) {
-        return message.getMessageType() == MessageTypeEnum.RESPONSE;
+        return message.getType() == MessageType.RESPONSE;
     }
 
     @Override
@@ -18,7 +18,7 @@ public class ResponseMessageResolver implements Resolver {
         System.out.println(index + ". receive response: " + new String(message.getPayload(), StandardCharsets.UTF_8));
 
         Message empty = new Message();
-        empty.setMessageType(MessageTypeEnum.EMPTY);
+        empty.setType(MessageType.EMPTY);
         return empty;
     }
 }

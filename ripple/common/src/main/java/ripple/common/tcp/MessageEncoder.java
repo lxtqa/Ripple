@@ -9,11 +9,16 @@ import java.nio.charset.StandardCharsets;
 public class MessageEncoder extends MessageToByteEncoder<Message> {
     @Override
     protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) {
-        if (message.getMessageType() != MessageTypeEnum.EMPTY) {
-            out.writeInt(Constants.MAGIC_NUMBER);
-            out.writeInt(Constants.PROTOCOL_VERSION);
+        if (message.getType() != MessageType.EMPTY) {
+            if (message.getUuid() == null) {
+                System.out.println("null uuid");
+            }
 
-            out.writeByte(message.getMessageType().getType());
+            out.writeByte(message.getType().getValue());
+            byte[] uuidBytes = message.getUuid().toString().getBytes(StandardCharsets.UTF_8);
+            out.writeInt(uuidBytes.length);
+            out.writeBytes(uuidBytes);
+
             out.writeInt(message.getPayload().length);
             out.writeBytes(message.getPayload());
         }

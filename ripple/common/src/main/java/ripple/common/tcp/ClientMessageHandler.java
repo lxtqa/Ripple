@@ -5,6 +5,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -25,7 +26,8 @@ public class ClientMessageHandler extends ServerMessageHandler {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
                 Message message = new Message();
-                message.setMessageType(MessageTypeEnum.PING);
+                message.setType(MessageType.PING);
+                message.setUuid(UUID.randomUUID());
                 ctx.writeAndFlush(message);
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 ctx.close();
@@ -47,7 +49,8 @@ public class ClientMessageHandler extends ServerMessageHandler {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
                     Message message = new Message();
-                    message.setMessageType(MessageTypeEnum.REQUEST);
+                    message.setType(MessageType.REQUEST);
+                    message.setUuid(UUID.randomUUID());
                     message.setPayload(("This is my " + counter.getAndIncrement() + " message.").getBytes(StandardCharsets.UTF_8));
                     ctx.writeAndFlush(message);
                 }

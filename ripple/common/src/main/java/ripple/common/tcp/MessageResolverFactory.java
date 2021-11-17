@@ -25,7 +25,7 @@ public final class MessageResolverFactory {
             }
         }
 
-        throw new RuntimeException("cannot find resolver, message type: " + message.getMessageType());
+        throw new RuntimeException("cannot find resolver, message type: " + message.getType());
     }
 
 }

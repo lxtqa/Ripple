@@ -3,34 +3,24 @@ package ripple.common.tcp;
 import java.util.UUID;
 
 public class Message {
-    private int magicNumber;
-    private int protocolVersion;
-
-    private MessageTypeEnum messageType;
+    private MessageType type;
+    private UUID uuid;
     private byte[] payload;
 
-    public int getMagicNumber() {
-        return magicNumber;
+    public MessageType getType() {
+        return type;
     }
 
-    public void setMagicNumber(int magicNumber) {
-        this.magicNumber = magicNumber;
+    public void setType(MessageType type) {
+        this.type = type;
     }
 
-    public int getProtocolVersion() {
-        return protocolVersion;
+    public UUID getUuid() {
+        return uuid;
     }
 
-    public void setProtocolVersion(int protocolVersion) {
-        this.protocolVersion = protocolVersion;
-    }
-
-    public MessageTypeEnum getMessageType() {
-        return messageType;
-    }
-
-    public void setMessageType(MessageTypeEnum messageType) {
-        this.messageType = messageType;
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public byte[] getPayload() {

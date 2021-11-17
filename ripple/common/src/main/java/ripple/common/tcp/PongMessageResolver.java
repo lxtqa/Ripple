@@ -4,14 +4,14 @@ public class PongMessageResolver implements Resolver {
 
     @Override
     public boolean support(Message message) {
-        return message.getMessageType() == MessageTypeEnum.PONG;
+        return message.getType() == MessageType.PONG;
     }
 
     @Override
     public Message resolve(Message message) {
         System.out.println("Receive pong message: " + System.currentTimeMillis());
         Message empty = new Message();
-        empty.setMessageType(MessageTypeEnum.EMPTY);
+        empty.setType(MessageType.EMPTY);
         return empty;
     }
 }
