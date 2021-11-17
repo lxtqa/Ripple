@@ -12,22 +12,16 @@ public class MessageDecoder extends ByteToMessageDecoder {
 
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> out) {
-        System.out.println("decode");
-
         Message message = new Message();
-        int uuidSize = byteBuf.readInt();
-        byte[] uuidBytes = new byte[uuidSize];
-        byteBuf.readBytes(uuidBytes);
-        String uuidString = new String(uuidBytes, StandardCharsets.UTF_8);
-        message.setUuid(UUID.fromString(uuidString));
+        message.setMagicNumber(byteBuf.readInt());
+        message.setProtocolVersion(byteBuf.readInt());
 
-        message.setType(MessageType.get(byteBuf.readByte()));
-
+        message.setMessageType(MessageTypeEnum.get(byteBuf.readByte()));    // 读取当前的消息类型
         int payloadSize = byteBuf.readInt();
         byte[] payload = new byte[payloadSize];
         byteBuf.readBytes(payload);
-        message.setPayload(payload);
 
+        message.setPayload(payload);
         out.add(message);
     }
 }

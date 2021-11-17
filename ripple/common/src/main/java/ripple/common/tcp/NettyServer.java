@@ -23,7 +23,6 @@ public class NettyServer {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {
-                            System.out.println("Port = " + ch.localAddress().getPort());
                             ChannelPipeline pipeline = ch.pipeline();
                             pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 0, 4, 0, 4));
                             pipeline.addLast(new LengthFieldPrepender(4));
@@ -33,7 +32,7 @@ public class NettyServer {
                         }
                     });
 
-            ChannelFuture future = bootstrap.bind(8888).sync();
+            ChannelFuture future = bootstrap.bind(8585).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

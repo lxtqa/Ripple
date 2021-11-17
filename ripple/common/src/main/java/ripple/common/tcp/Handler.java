@@ -1,7 +1,7 @@
 package ripple.common.tcp;
 
 public interface Handler {
-    Message handle(Message request);
+    Message handle(Message message);
 
-    boolean canHandle(Message request);
+    boolean canHandle(Message message);
 }

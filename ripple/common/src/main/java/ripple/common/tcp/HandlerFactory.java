@@ -31,6 +31,6 @@ public class HandlerFactory {
             }
         }
 
-        throw new RuntimeException("Cannot find handler for message type: " + message.getType());
+        throw new RuntimeException("Cannot find handler for message type: " + message.getMessageType());
     }
 }
