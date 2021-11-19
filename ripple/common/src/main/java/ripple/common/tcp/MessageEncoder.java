@@ -4,37 +4,35 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
 
-import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageEncoder extends MessageToByteEncoder<Message> {
+    private Map<MessageType, Encoder> encoders;
+
+    private Map<MessageType, Encoder> getEncoders() {
+        return encoders;
+    }
+
+    private void setEncoders(Map<MessageType, Encoder> encoders) {
+        this.encoders = encoders;
+    }
+
+    public MessageEncoder() {
+        this.setEncoders(new HashMap<>());
+    }
+
+    public void registerEncoder(MessageType type, Encoder encoder) {
+        this.getEncoders().put(type, encoder);
+    }
+
     @Override
     protected void encode(ChannelHandlerContext ctx, Message message, ByteBuf out) {
-        if (message.getType() == MessageType.REQUEST) {
-            RequestMessage requestMessage = (RequestMessage) message;
-            if (requestMessage.getUuid() == null) {
-                throw new NullPointerException("message.uuid");
-            }
-
-            out.writeByte(message.getType().getValue());
-            byte[] uuidBytes = requestMessage.getUuid().toString().getBytes(StandardCharsets.UTF_8);
-            out.writeInt(uuidBytes.length);
-            out.writeBytes(uuidBytes);
-
-            out.writeInt(requestMessage.getPayload().length);
-            out.writeBytes(requestMessage.getPayload());
-        } else if (message.getType() == MessageType.RESPONSE) {
-            ResponseMessage responseMessage = (ResponseMessage) message;
-            if (responseMessage.getUuid() == null) {
-                throw new NullPointerException("message.uuid");
-            }
-
-            out.writeByte(message.getType().getValue());
-            byte[] uuidBytes = responseMessage.getUuid().toString().getBytes(StandardCharsets.UTF_8);
-            out.writeInt(uuidBytes.length);
-            out.writeBytes(uuidBytes);
-
-            out.writeInt(responseMessage.getPayload().length);
-            out.writeBytes(responseMessage.getPayload());
+        Encoder encoder = this.getEncoders().get(message.getType());
+        if (encoder != null) {
+            encoder.encode(message, out);
+        } else {
+            System.out.println("Cannot find the encoder for the message type: " + message.getType());
         }
     }
 }

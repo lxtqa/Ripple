@@ -4,14 +4,12 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 
-import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ClientMessageHandler extends ServerMessageHandler {
+public class ClientMessageHandler extends MessageHandler {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -25,11 +23,9 @@ public class ClientMessageHandler extends ServerMessageHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                RequestMessage requestMessage = new RequestMessage();
-                requestMessage.setType(MessageType.REQUEST);
-                requestMessage.setUuid(UUID.randomUUID());
-                requestMessage.setPayload("Request".getBytes(StandardCharsets.UTF_8));
-                ctx.writeAndFlush(requestMessage);
+                System.out.println("Send heartbeat message.");
+                HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
+                ctx.writeAndFlush(heartbeatMessage);
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 ctx.close();
             }
@@ -49,11 +45,9 @@ public class ClientMessageHandler extends ServerMessageHandler {
             try {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
-                    RequestMessage requestMessage = new RequestMessage();
-                    requestMessage.setType(MessageType.REQUEST);
-                    requestMessage.setUuid(UUID.randomUUID());
-                    requestMessage.setPayload(("This is my " + counter.getAndIncrement() + " message.").getBytes(StandardCharsets.UTF_8));
-                    ctx.writeAndFlush(requestMessage);
+                    System.out.println("Send heartbeat message.");
+                    HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
+                    ctx.writeAndFlush(heartbeatMessage);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

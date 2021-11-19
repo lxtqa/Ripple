@@ -8,9 +8,18 @@ import java.util.UUID;
  * @author Zhen Tang
  */
 public class AckRequest extends Message {
+    private UUID uuid;
     private UUID messageUuid;
     private int sourceId;
     private int nodeId;
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
+    }
 
     public UUID getMessageUuid() {
         return messageUuid;

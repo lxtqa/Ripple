@@ -6,9 +6,7 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.RippleClient;
-import ripple.common.Endpoint;
 
-import javax.servlet.Servlet;
 import java.net.InetAddress;
 
 public class NumberService {

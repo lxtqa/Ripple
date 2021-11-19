@@ -10,4 +10,8 @@ public class Message {
     public void setType(MessageType type) {
         this.type = type;
     }
+
+    protected Message(MessageType type) {
+        this.setType(type);
+    }
 }

@@ -1,6 +1,5 @@
 package ripple.test.platform;
 
-import ripple.client.RippleClient;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 

@@ -7,7 +7,11 @@ import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
 import ripple.common.Parameter;
-import ripple.common.entity.*;
+import ripple.common.entity.Constants;
+import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.Item;
+import ripple.common.entity.Message;
+import ripple.common.entity.UpdateMessage;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
