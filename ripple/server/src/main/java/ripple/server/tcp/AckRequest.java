@@ -1,6 +1,7 @@
 package ripple.server.tcp;
 
 import ripple.common.tcp.Message;
+import ripple.common.tcp.MessageType;
 
 import java.util.UUID;
 
@@ -12,6 +13,10 @@ public class AckRequest extends Message {
     private UUID messageUuid;
     private int sourceId;
     private int nodeId;
+
+    public AckRequest() {
+        super(MessageType.ACK_REQUEST);
+    }
 
     public UUID getUuid() {
         return uuid;

@@ -1,5 +1,8 @@
 package ripple.common.tcp;
 
+/**
+ * @author Zhen Tang
+ */
 public class Message {
     private MessageType type;
 

@@ -6,6 +6,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Zhen Tang
+ */
 public class MessageHandler extends SimpleChannelInboundHandler<Message> {
     private Map<MessageType, Handler> handlers;
 

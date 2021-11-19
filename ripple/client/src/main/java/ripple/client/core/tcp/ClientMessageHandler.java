@@ -1,16 +1,20 @@
-package ripple.common.tcp;
+package ripple.client.core.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
+import ripple.common.tcp.HeartbeatMessage;
+import ripple.common.tcp.MessageHandler;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * @author Zhen Tang
+ */
 public class ClientMessageHandler extends MessageHandler {
-
     private ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Override

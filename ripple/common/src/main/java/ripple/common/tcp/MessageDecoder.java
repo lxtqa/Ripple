@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Zhen Tang
+ */
 public class MessageDecoder extends ByteToMessageDecoder {
     private Map<MessageType, Decoder> decoders;
 

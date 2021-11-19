@@ -7,6 +7,9 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author Zhen Tang
+ */
 public class MessageEncoder extends MessageToByteEncoder<Message> {
     private Map<MessageType, Encoder> encoders;
 

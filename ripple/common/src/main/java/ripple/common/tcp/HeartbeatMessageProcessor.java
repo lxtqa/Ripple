@@ -2,8 +2,10 @@ package ripple.common.tcp;
 
 import io.netty.buffer.ByteBuf;
 
+/**
+ * @author Zhen Tang
+ */
 public class HeartbeatMessageProcessor implements Encoder, Decoder, Handler {
-
     @Override
     public void encode(Message message, ByteBuf out) {
         HeartbeatMessage heartbeatMessage = (HeartbeatMessage) message;

@@ -1,7 +1,9 @@
 package ripple.common.tcp;
 
+/**
+ * @author Zhen Tang
+ */
 public enum MessageType {
-
     HEARTBEAT((byte) 1),
     ACK_REQUEST((byte) 2),
     ACK_RESPONSE((byte) 3),
