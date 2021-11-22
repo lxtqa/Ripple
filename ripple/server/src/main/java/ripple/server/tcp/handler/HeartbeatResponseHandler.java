@@ -1,4 +1,4 @@
-package ripple.server.tcp;
+package ripple.server.tcp.handler;
 
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.message.HeartbeatResponse;

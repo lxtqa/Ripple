@@ -1,4 +1,4 @@
-package ripple.server.tcp;
+package ripple.server.tcp.message;
 
 import ripple.common.tcp.Message;
 import ripple.common.tcp.MessageType;

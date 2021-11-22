@@ -10,7 +10,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * @author Zhen Tang
@@ -24,7 +23,7 @@ public class ServerMessageHandler extends MessageHandler {
     }
 
     @Override
-    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
@@ -39,7 +38,6 @@ public class ServerMessageHandler extends MessageHandler {
     }
 
     private static final class MessageSender implements Runnable {
-        private static final AtomicLong counter = new AtomicLong(1);
         private volatile ChannelHandlerContext ctx;
 
         public MessageSender(ChannelHandlerContext ctx) {

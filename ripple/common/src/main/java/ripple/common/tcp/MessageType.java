@@ -9,7 +9,17 @@ public enum MessageType {
     ACK_REQUEST((byte) 2),
     ACK_RESPONSE((byte) 3),
     SYNC_REQUEST((byte) 4),
-    SYNC_RESPONSE((byte) 5);
+    SYNC_RESPONSE((byte) 5),
+    DELETE_REQUEST((byte) 6),
+    DELETE_RESPONSE((byte) 7),
+    GET_REQUEST((byte) 8),
+    GET_RESPONSE((byte) 9),
+    PUT_REQUEST((byte) 10),
+    PUT_RESPONSE((byte) 11),
+    SUBSCRIBE_REQUEST((byte) 12),
+    SUBSCRIBE_RESPONSE((byte) 13),
+    UNSUBSCRIBE_REQUEST((byte) 14),
+    UNSUBSCRIBE_RESPONSE((byte) 15);
 
     private byte value;
 
