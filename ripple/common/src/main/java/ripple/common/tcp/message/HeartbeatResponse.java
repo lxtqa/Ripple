@@ -1,4 +1,7 @@
-package ripple.common.tcp;
+package ripple.common.tcp.message;
+
+import ripple.common.tcp.Message;
+import ripple.common.tcp.MessageType;
 
 /**
  * @author Zhen Tang

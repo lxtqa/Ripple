@@ -5,12 +5,14 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import ripple.common.tcp.HeartbeatRequestProcessor;
-import ripple.common.tcp.HeartbeatResponseProcessor;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
 import ripple.common.tcp.MessageType;
+import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
+import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
+import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
 
 /**
  * @author Zhen Tang
@@ -23,19 +25,16 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new LengthFieldPrepender(4));
         MessageEncoder messageEncoder = new MessageEncoder();
         MessageDecoder messageDecoder = new MessageDecoder();
-        MessageHandler messageHandler = new MessageHandler();
+        MessageHandler messageHandler = new ServerMessageHandler();
         pipeline.addLast(messageEncoder);
         pipeline.addLast(messageDecoder);
         pipeline.addLast(messageHandler);
 
-        HeartbeatRequestProcessor heartbeatRequestProcessor = new HeartbeatRequestProcessor();
-        messageEncoder.registerEncoder(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
-        messageDecoder.registerDecoder(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
-        messageHandler.registerHandler(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
-        
-        HeartbeatResponseProcessor heartbeatResponseProcessor = new HeartbeatResponseProcessor();
-        messageEncoder.registerEncoder(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
-        messageDecoder.registerDecoder(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
-        messageHandler.registerHandler(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
+        messageEncoder.registerEncoder(MessageType.HEARTBEAT_REQUEST, new HeartbeatRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.HEARTBEAT_REQUEST, new HeartbeatRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseDecoder());
+        messageHandler.registerHandler(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseHandler());
     }
 }
