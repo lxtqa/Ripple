@@ -3,9 +3,10 @@ package ripple.client.core.tcp;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import ripple.common.tcp.HeartbeatMessage;
+import ripple.common.tcp.HeartbeatRequest;
 import ripple.common.tcp.MessageHandler;
 
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -27,9 +28,10 @@ public class ClientMessageHandler extends MessageHandler {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             if (event.state() == IdleState.READER_IDLE) {
-                System.out.println("Send heartbeat message.");
-                HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
-                ctx.writeAndFlush(heartbeatMessage);
+                HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
+                heartbeatRequest.setUuid(UUID.randomUUID());
+                System.out.println("Send heartbeat request. uuid = " + heartbeatRequest.getUuid().toString());
+                ctx.writeAndFlush(heartbeatRequest);
             } else if (event.state() == IdleState.WRITER_IDLE) {
                 ctx.close();
             }
@@ -49,9 +51,10 @@ public class ClientMessageHandler extends MessageHandler {
             try {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
-                    System.out.println("Send heartbeat message.");
-                    HeartbeatMessage heartbeatMessage = new HeartbeatMessage();
-                    ctx.writeAndFlush(heartbeatMessage);
+                    HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
+                    heartbeatRequest.setUuid(UUID.randomUUID());
+                    System.out.println("Send heartbeat request. uuid = " + heartbeatRequest.getUuid().toString());
+                    ctx.writeAndFlush(heartbeatRequest);
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

@@ -6,7 +6,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 import io.netty.handler.timeout.IdleStateHandler;
-import ripple.common.tcp.HeartbeatMessageProcessor;
+import ripple.common.tcp.HeartbeatRequestProcessor;
+import ripple.common.tcp.HeartbeatResponseProcessor;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
@@ -29,9 +30,14 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(messageDecoder);
         pipeline.addLast(messageHandler);
 
-        HeartbeatMessageProcessor heartbeatMessageProcessor = new HeartbeatMessageProcessor();
-        messageEncoder.registerEncoder(MessageType.HEARTBEAT, heartbeatMessageProcessor);
-        messageDecoder.registerDecoder(MessageType.HEARTBEAT, heartbeatMessageProcessor);
-        messageHandler.registerHandler(MessageType.HEARTBEAT, heartbeatMessageProcessor);
+        HeartbeatRequestProcessor heartbeatRequestProcessor = new HeartbeatRequestProcessor();
+        messageEncoder.registerEncoder(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
+        messageDecoder.registerDecoder(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
+        messageHandler.registerHandler(MessageType.HEARTBEAT_REQUEST, heartbeatRequestProcessor);
+
+        HeartbeatResponseProcessor heartbeatResponseProcessor = new HeartbeatResponseProcessor();
+        messageEncoder.registerEncoder(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
+        messageDecoder.registerDecoder(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
+        messageHandler.registerHandler(MessageType.HEARTBEAT_RESPONSE, heartbeatResponseProcessor);
     }
 }
