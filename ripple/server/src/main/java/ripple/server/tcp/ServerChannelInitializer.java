@@ -20,6 +20,20 @@ import ripple.server.tcp.handler.HeartbeatResponseHandler;
  * @author Zhen Tang
  */
 public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
+    private NettyServer nettyServer;
+
+    private NettyServer getNettyServer() {
+        return nettyServer;
+    }
+
+    private void setNettyServer(NettyServer nettyServer) {
+        this.nettyServer = nettyServer;
+    }
+
+    public ServerChannelInitializer(NettyServer nettyServer) {
+        this.setNettyServer(nettyServer);
+    }
+
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
@@ -27,7 +41,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         pipeline.addLast(new LengthFieldPrepender(4));
         MessageEncoder messageEncoder = new MessageEncoder();
         MessageDecoder messageDecoder = new MessageDecoder();
-        MessageHandler messageHandler = new ServerMessageHandler();
+        MessageHandler messageHandler = new ServerMessageHandler(this.getNettyServer());
         pipeline.addLast(messageEncoder);
         pipeline.addLast(messageDecoder);
         pipeline.addLast(messageHandler);

@@ -3,6 +3,9 @@ package ripple.common.tcp.message;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.MessageType;
 
+/**
+ * @author Zhen Tang
+ */
 public class UnsubscribeResponse extends Message {
     private boolean success;
 
