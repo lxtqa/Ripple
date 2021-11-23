@@ -12,9 +12,9 @@ public class NettyApi {
         HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
         heartbeatRequest.setUuid(UUID.randomUUID());
         InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
-        InetSocketAddress removeAddress = ((NioSocketChannel) channel).remoteAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
         System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + removeAddress.getHostString() + ":" + removeAddress.getPort() + "] "
+                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
                 + "Send heartbeat request. uuid = " + heartbeatRequest.getUuid().toString());
         channel.writeAndFlush(heartbeatRequest);
     }

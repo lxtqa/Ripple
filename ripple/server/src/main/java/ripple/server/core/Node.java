@@ -17,13 +17,13 @@ import ripple.common.storage.Storage;
 import ripple.server.api.AckServlet;
 import ripple.server.api.DeleteServlet;
 import ripple.server.api.GetServlet;
-import ripple.server.api.HeartbeatServlet;
 import ripple.server.api.PutServlet;
 import ripple.server.api.SubscribeServlet;
 import ripple.server.api.SyncServlet;
 import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
+import ripple.server.tcp.NettyServer;
 import ripple.server.ui.AddConfigServlet;
 import ripple.server.ui.ClientClusterServlet;
 import ripple.server.ui.GetConfigServlet;
@@ -69,15 +69,17 @@ public class Node {
     private Thread workingThread;
 
     private String address;
-    private int port;
-    private Server server;
+    private int uiPort;
+    private int apiPort;
+    private Server uiServer;
+    private NettyServer apiServer;
     private boolean running;
 
     public Node(int id, Overlay overlay, String storageLocation) {
-        this(id, overlay, storageLocation, 0);
+        this(id, overlay, storageLocation, 0, 0);
     }
 
-    public Node(int id, Overlay overlay, String storageLocation, int port) {
+    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort) {
         this.setExecutorService(Executors.newCachedThreadPool());
         this.setId(id);
         this.setOverlay(overlay);
@@ -88,7 +90,8 @@ public class Node {
 
         this.setNodeList(new ArrayList<>());
         this.setSubscription(new ConcurrentHashMap<>());
-        this.setPort(port);
+        this.setApiPort(apiPort);
+        this.setUiPort(uiPort);
         this.setConnectedClients(new HashSet<>());
     }
 
@@ -180,20 +183,36 @@ public class Node {
         this.address = address;
     }
 
-    public int getPort() {
-        return port;
+    public int getUiPort() {
+        return uiPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    public void setUiPort(int uiPort) {
+        this.uiPort = uiPort;
     }
 
-    public Server getServer() {
-        return server;
+    public int getApiPort() {
+        return apiPort;
     }
 
-    private void setServer(Server server) {
-        this.server = server;
+    public void setApiPort(int apiPort) {
+        this.apiPort = apiPort;
+    }
+
+    public Server getUiServer() {
+        return uiServer;
+    }
+
+    public void setUiServer(Server uiServer) {
+        this.uiServer = uiServer;
+    }
+
+    public NettyServer getApiServer() {
+        return apiServer;
+    }
+
+    public void setApiServer(NettyServer apiServer) {
+        this.apiServer = apiServer;
     }
 
     public boolean isRunning() {
@@ -240,7 +259,6 @@ public class Node {
         this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.API_DELETE);
         this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
         this.registerServlet(servletContextHandler, new AckServlet(this), Endpoint.API_ACK);
-        this.registerServlet(servletContextHandler, new HeartbeatServlet(this), Endpoint.API_HEARTBEAT);
     }
 
     public Item get(String applicationName, String key) {
@@ -367,19 +385,20 @@ public class Node {
             return true;
         }
         try {
-            this.setServer(new Server());
-            ServerConnector serverConnector = new ServerConnector(this.getServer());
-            serverConnector.setPort(this.getPort());
-            this.getServer().setConnectors(new Connector[]{serverConnector});
+            this.setApiServer(new NettyServer(this, this.getApiPort()));
+            this.getApiServer().start();
+            this.setApiPort(this.getApiServer().getPort());
 
+            this.setUiServer(new Server());
+            ServerConnector serverConnector = new ServerConnector(this.getUiServer());
+            serverConnector.setPort(this.getUiPort());
+            this.getUiServer().setConnectors(new Connector[]{serverConnector});
             ServletContextHandler servletContextHandler = new ServletContextHandler();
-
             this.registerHandlers(servletContextHandler);
-
-            this.getServer().setHandler(servletContextHandler);
-            this.getServer().start();
+            this.getUiServer().setHandler(servletContextHandler);
+            this.getUiServer().start();
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
-            this.setPort(serverConnector.getLocalPort());
+            this.setUiPort(serverConnector.getLocalPort());
             if (this.getExecutorService() == null || this.getExecutorService().isShutdown()) {
                 this.setExecutorService(Executors.newCachedThreadPool());
             }
@@ -396,8 +415,10 @@ public class Node {
         if (!this.isRunning()) {
             return true;
         }
+
         try {
-            this.getServer().stop();
+            this.getApiServer().stop();
+            this.getUiServer().stop();
             this.getWorkingThread().interrupt();
 
             this.executorService.shutdown();
@@ -456,9 +477,17 @@ public class Node {
 
     public void initCluster(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
+        this.initConnections(nodeList);
         this.getOverlay().buildOverlay(this.getNodeList());
         this.setWorkingThread(new Thread(this.getWorker()));
-
         this.getWorkingThread().start();
+    }
+
+    private void initConnections(List<NodeMetadata> nodeList) {
+        for (NodeMetadata metadata : nodeList) {
+            if (metadata.getId() > this.getId()) {
+                this.getApiServer().connect(metadata.getAddress(), metadata.getPort());
+            }
+        }
     }
 }

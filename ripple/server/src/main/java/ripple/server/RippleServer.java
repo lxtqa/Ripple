@@ -23,32 +23,32 @@ public class RippleServer {
         return new RippleServer(new Node(id, new StarOverlay(), storageLocation));
     }
 
-    public static RippleServer starProtocol(int id, String storageLocation, int port) {
-        return new RippleServer(new Node(id, new StarOverlay(), storageLocation, port));
+    public static RippleServer starProtocol(int id, String storageLocation, int nettyPort, int uiPort) {
+        return new RippleServer(new Node(id, new StarOverlay(), storageLocation, nettyPort, uiPort));
     }
 
     public static RippleServer treeProtocol(int id, String storageLocation, int branch) {
         return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation));
     }
 
-    public static RippleServer treeProtocol(int id, String storageLocation, int port, int branch) {
-        return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, port));
+    public static RippleServer treeProtocol(int id, String storageLocation, int nettyPort, int uiPort, int branch) {
+        return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, nettyPort, uiPort));
     }
 
     public static RippleServer expanderProtocol(int id, String storageLocation, int scale) {
         return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation));
     }
 
-    public static RippleServer expanderProtocol(int id, String storageLocation, int port, int scale) {
-        return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, port));
+    public static RippleServer expanderProtocol(int id, String storageLocation, int nettyPort, int uiPort, int scale) {
+        return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, nettyPort, uiPort));
     }
 
     public static RippleServer gossipProtocol(int id, String storageLocation, int fanout) {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation));
     }
 
-    public static RippleServer gossipProtocol(int id, String storageLocation, int port, int fanout) {
-        return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, port));
+    public static RippleServer gossipProtocol(int id, String storageLocation, int nettyPort, int uiPort, int fanout) {
+        return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, nettyPort, uiPort));
     }
 
     public Node getNode() {
@@ -79,8 +79,12 @@ public class RippleServer {
         return this.getNode().getAddress();
     }
 
-    public int getPort() {
-        return this.getNode().getPort();
+    public int getApiPort() {
+        return this.getNode().getApiPort();
+    }
+
+    public int getUiPort() {
+        return this.getNode().getUiPort();
     }
 
     public void initCluster(List<NodeMetadata> nodeList) {

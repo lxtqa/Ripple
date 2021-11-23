@@ -1,4 +1,4 @@
-package ripple.server.core;
+package ripple.server.core.resolver;
 
 import java.util.Date;
 import java.util.UUID;

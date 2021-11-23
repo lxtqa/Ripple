@@ -12,16 +12,21 @@ public class Main {
 
     public static void main(String[] args) {
         // 以默认端口启动，数据库位于同目录下：java -jar -Did="1" -Dprotocol="tree" -Dbranch="3" -Dnodes="[id]:[address]:[port],2:192.168.1.3:2345" ripple-server.jar
-        // 以指定端口和数据库文件位置启动：java -Dport=xxx -DstorageLocation=xxx -jar ripple-server.jar
+        // 以指定端口和数据库文件位置启动：java -DapiPort=xxx -DuiPort=xxx -DstorageLocation=xxx -jar ripple-server.jar
 
         String storageLocation = System.getProperty("storageLocation");
         if (storageLocation == null) {
             storageLocation = "database.sqlite";
         }
 
-        String port = System.getProperty("port");
-        if (port == null) {
-            port = "0";
+        String apiPort = System.getProperty("apiPort");
+        if (apiPort == null) {
+            apiPort = "0";
+        }
+
+        String uiPort = System.getProperty("uiPort");
+        if (uiPort == null) {
+            uiPort = "0";
         }
 
         String protocol = System.getProperty("protocol");
@@ -49,9 +54,9 @@ public class Main {
                 LOGGER.info("[Main] Missing parameter: branch for protocol tree.");
                 return;
             }
-            server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(port), Integer.parseInt(branch));
+            server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort), Integer.parseInt(branch));
         } else if (protocol.equals("star")) {
-            server = RippleServer.starProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(port));
+            server = RippleServer.starProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort));
         }
 
         if (server != null) {
@@ -64,8 +69,8 @@ public class Main {
             }
             server.getNode().setNodeList(nodeList);
             server.start();
-            LOGGER.info("[Main] Ripple Server started. The port is {}. The storage location is {}."
-                    , server.getPort(), server.getNode().getStorage().getFileName());
+            LOGGER.info("[Main] Ripple Server started. The API port is {}. The UI port is {}. The storage location is {}."
+                    , server.getApiPort(), server.getUiPort(), server.getNode().getStorage().getFileName());
         }
     }
 }

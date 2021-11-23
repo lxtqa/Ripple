@@ -5,7 +5,9 @@ import ripple.server.core.NodeMetadata;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,8 +32,9 @@ public class TestUnsubscribe {
                 RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
                 rippleServer.start();
                 serverList.add(rippleServer);
-                System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
-                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getPort()));
+                System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
+                        + "Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ", API port = " + rippleServer.getApiPort() + ", UI port = " + rippleServer.getUiPort());
+                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getApiPort()));
             }
             for (i = 0; i < SERVER_COUNT; i++) {
                 serverList.get(i).initCluster(nodeList);
@@ -41,19 +44,19 @@ public class TestUnsubscribe {
             int numberTwo = 7;
             String oldFunction = "add";
 
-            NumberService one = new NumberService(numberOne, serverList.get(0).getAddress(), serverList.get(0).getPort()
+            NumberService one = new NumberService(numberOne, serverList.get(0).getAddress(), serverList.get(0).getApiPort()
                     , DATABASE_PATH + "\\number-service-1.db");
             one.start();
             System.out.println("[Number Service 1] " + one.getAddress() + ":" + one.getPort()
                     + ", Client = " + one.getClient().getAddress() + ":" + one.getClient().getPort());
 
-            NumberService two = new NumberService(numberTwo, serverList.get(1).getAddress(), serverList.get(1).getPort()
+            NumberService two = new NumberService(numberTwo, serverList.get(1).getAddress(), serverList.get(1).getApiPort()
                     , DATABASE_PATH + "\\number-service-2.db");
             two.start();
             System.out.println("[Number Service 2] " + two.getAddress() + ":" + two.getPort()
                     + ", Client = " + two.getClient().getAddress() + ":" + two.getClient().getPort());
 
-            OperatorService operator = new OperatorService(serverList.get(2).getAddress(), serverList.get(2).getPort()
+            OperatorService operator = new OperatorService(serverList.get(2).getAddress(), serverList.get(2).getApiPort()
                     , DATABASE_PATH + "\\operator-service.db");
             operator.start();
             System.out.println("[Operator Service] " + operator.getAddress() + ":" + operator.getPort()

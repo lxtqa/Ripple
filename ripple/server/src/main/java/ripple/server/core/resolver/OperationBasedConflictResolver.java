@@ -1,7 +1,6 @@
 package ripple.server.core.resolver;
 
 import ripple.common.entity.Item;
-import ripple.server.core.Operation;
 
 /**
  * Public interface for a operation based conflict resolver.

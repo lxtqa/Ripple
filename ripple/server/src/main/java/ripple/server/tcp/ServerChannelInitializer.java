@@ -39,9 +39,11 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         ChannelPipeline pipeline = socketChannel.pipeline();
         pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
+
         MessageEncoder messageEncoder = new MessageEncoder();
         MessageDecoder messageDecoder = new MessageDecoder();
         MessageHandler messageHandler = new ServerMessageHandler(this.getNettyServer());
+
         pipeline.addLast(messageEncoder);
         pipeline.addLast(messageDecoder);
         pipeline.addLast(messageHandler);
@@ -52,6 +54,6 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseEncoder());
         messageDecoder.registerDecoder(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseDecoder());
-        messageHandler.registerHandler(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseHandler());
+        messageHandler.registerHandler(MessageType.HEARTBEAT_RESPONSE, new HeartbeatResponseHandler(this.getNettyServer().getNode()));
     }
 }

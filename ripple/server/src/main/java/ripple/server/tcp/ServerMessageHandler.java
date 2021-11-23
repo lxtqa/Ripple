@@ -27,9 +27,9 @@ public class ServerMessageHandler extends MessageHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
-        InetSocketAddress removeAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
         System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + removeAddress.getHostString() + ":" + removeAddress.getPort() + "] "
+                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
                 + "Connected.");
         this.getNettyServer().getConnectedNodes().add(ctx.channel());
     }
@@ -37,9 +37,9 @@ public class ServerMessageHandler extends MessageHandler {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
-        InetSocketAddress removeAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
         System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + removeAddress.getHostString() + ":" + removeAddress.getPort() + "] "
+                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
                 + "Disconnected.");
         this.getNettyServer().getConnectedNodes().remove(ctx.channel());
     }
@@ -47,9 +47,9 @@ public class ServerMessageHandler extends MessageHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
-        InetSocketAddress removeAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
         System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + removeAddress.getHostString() + ":" + removeAddress.getPort() + "] "
+                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
                 + "Exception caught: " + cause.getLocalizedMessage());
     }
 }

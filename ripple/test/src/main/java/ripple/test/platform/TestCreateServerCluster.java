@@ -5,14 +5,16 @@ import ripple.server.core.NodeMetadata;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author Zhen Tang
  */
 public class TestCreateServerCluster {
-    private static final int SERVER_COUNT = 10;
+    private static final int SERVER_COUNT = 3;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -30,8 +32,9 @@ public class TestCreateServerCluster {
                 RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
                 rippleServer.start();
                 serverList.add(rippleServer);
-                System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
-                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getPort()));
+                System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
+                        + "Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ", API port = " + rippleServer.getApiPort() + ", UI port = " + rippleServer.getUiPort());
+                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getApiPort()));
             }
             for (i = 0; i < SERVER_COUNT; i++) {
                 serverList.get(i).initCluster(nodeList);

@@ -1,8 +1,9 @@
 package ripple.server.core;
 
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.helper.Api;
+import ripple.server.helper.NettyApi;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -46,8 +47,10 @@ public class HealthManager {
     public void checkHealth() {
         for (NodeMetadata metadata : this.getNode().getNodeList()) {
             if (this.getAliveMap().get(metadata) == false) {
-                boolean result = Api.heartbeat(metadata.getAddress(), metadata.getPort());
-                this.getAliveMap().put(metadata, result);
+                Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
+                if (channel != null) {
+                    NettyApi.heartbeat(channel); //Api.heartbeat(metadata.getAddress(), metadata.getPort());
+                }
             }
         }
     }

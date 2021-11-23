@@ -1,4 +1,4 @@
-package ripple.server.core;
+package ripple.server.core.resolver;
 
 /**
  * Type of atomic operations

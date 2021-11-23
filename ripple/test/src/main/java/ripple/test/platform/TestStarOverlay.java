@@ -6,7 +6,9 @@ import ripple.server.core.NodeMetadata;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,8 +34,9 @@ public class TestStarOverlay {
                 RippleServer rippleServer = RippleServer.starProtocol(serverId, storageLocation);
                 rippleServer.start();
                 serverList.add(rippleServer);
-                System.out.println("Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
-                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getPort()));
+                System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
+                        + "Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ", API port = " + rippleServer.getApiPort() + ", UI port = " + rippleServer.getUiPort());
+                nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getApiPort()));
             }
             for (i = 0; i < SERVER_COUNT; i++) {
                 serverList.get(i).initCluster(nodeList);
@@ -44,7 +47,7 @@ public class TestStarOverlay {
                 for (j = 0; j < CLIENTS_PER_SERVER; j++) {
                     RippleServer rippleServer = serverList.get(i);
                     String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getPort();
+                    int serverPort = rippleServer.getApiPort();
                     String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
                     RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
                     rippleClient.start();

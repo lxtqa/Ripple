@@ -11,7 +11,6 @@ public final class Endpoint {
     public static final String API_PUT = "/Api/Put";
     public static final String API_DELETE = "/Api/Delete";
     public static final String API_SYNC = "/Api/Sync";
-    public static final String API_HEARTBEAT = "/Api/Heartbeat";
     public static final String API_ACK = "/Api/Ack";
 
     // Common UI

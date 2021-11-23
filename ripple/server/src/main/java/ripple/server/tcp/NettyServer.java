@@ -11,19 +11,21 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
-import ripple.server.helper.NettyApi;
+import ripple.common.tcp.MessageDecoder;
+import ripple.common.tcp.MessageEncoder;
+import ripple.common.tcp.MessageHandler;
+import ripple.server.core.Node;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Zhen Tang
  */
 public class NettyServer {
+    private Node node;
+
     private boolean running;
     private int port;
     private Channel serverChannel;
@@ -31,6 +33,17 @@ public class NettyServer {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
+    private MessageEncoder messageEncoder;
+    private MessageDecoder messageDecoder;
+    private MessageHandler messageHandler;
+
+    public Node getNode() {
+        return node;
+    }
+
+    private void setNode(Node node) {
+        this.node = node;
+    }
 
     public boolean isRunning() {
         return running;
@@ -80,7 +93,32 @@ public class NettyServer {
         this.workerGroup = workerGroup;
     }
 
-    public NettyServer(int port) {
+    public MessageEncoder getMessageEncoder() {
+        return messageEncoder;
+    }
+
+    private void setMessageEncoder(MessageEncoder messageEncoder) {
+        this.messageEncoder = messageEncoder;
+    }
+
+    public MessageDecoder getMessageDecoder() {
+        return messageDecoder;
+    }
+
+    private void setMessageDecoder(MessageDecoder messageDecoder) {
+        this.messageDecoder = messageDecoder;
+    }
+
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
+
+    private void setMessageHandler(MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
+    }
+
+    public NettyServer(Node node, int port) {
+        this.setNode(node);
         this.setPort(port);
     }
 
@@ -89,9 +127,12 @@ public class NettyServer {
             if (this.isRunning()) {
                 return true;
             }
+
             this.setConnectedNodes(new ArrayList<>());
             this.setBossGroup(new NioEventLoopGroup());
             this.setWorkerGroup(new NioEventLoopGroup());
+
+
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(this.getBossGroup(), this.getWorkerGroup())
                     .channel(NioServerSocketChannel.class)
@@ -104,7 +145,6 @@ public class NettyServer {
             }
             this.setServerChannel(future.channel());
             this.setRunning(true);
-            executor.execute(new MessageSender(this));
             return true;
         } catch (Exception exception) {
             exception.printStackTrace();
@@ -136,8 +176,8 @@ public class NettyServer {
                     .handler(new ServerChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect(address, port).sync();
-            InetSocketAddress removeAddress = ((NioSocketChannel) future.channel()).remoteAddress();
-            System.out.println("Connected to " + removeAddress.getHostString() + ":" + removeAddress.getPort());
+            InetSocketAddress remoteAddress = ((NioSocketChannel) future.channel()).remoteAddress();
+            System.out.println("Connected to " + remoteAddress.getHostString() + ":" + remoteAddress.getPort());
             return future.channel();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -145,28 +185,13 @@ public class NettyServer {
         }
     }
 
-    private static final class MessageSender implements Runnable {
-        private NettyServer nettyServer;
-
-        public MessageSender(NettyServer nettyServer) {
-            this.nettyServer = nettyServer;
-        }
-
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    TimeUnit.SECONDS.sleep(1);
-                    System.out.println(nettyServer.getConnectedNodes().size());
-                    for (Channel channel : nettyServer.getConnectedNodes()) {
-                        NettyApi.heartbeat(channel);
-                    }
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+    public Channel findChannel(String address, int port) {
+        for (Channel channel : this.getConnectedNodes()) {
+            InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+            if (remoteAddress.getHostString().equals(address) && remoteAddress.getPort() == port) {
+                return channel;
             }
         }
+        return null;
     }
-
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
 }

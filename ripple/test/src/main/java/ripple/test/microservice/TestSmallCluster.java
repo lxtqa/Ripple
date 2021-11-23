@@ -55,8 +55,8 @@ public class TestSmallCluster {
                     rippleServer.start();
                     serverList.add(rippleServer);
                     System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
-                            + "Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ":" + rippleServer.getPort());
-                    nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getPort()));
+                            + "Node " + rippleServer.getId() + ": " + rippleServer.getAddress() + ", API port = " + rippleServer.getApiPort() + ", UI port = " + rippleServer.getUiPort());
+                    nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getApiPort()));
                 }
                 for (i = 0; i < SERVER_COUNT; i++) {
                     serverList.get(i).initCluster(nodeList);
@@ -65,7 +65,7 @@ public class TestSmallCluster {
                 for (i = 0; i < SERVER_COUNT; i++) {
                     RippleServer rippleServer = serverList.get(i);
                     String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getPort();
+                    int serverPort = rippleServer.getApiPort();
                     OperatorService operator = new OperatorService(serverAddress, serverPort
                             , databasePath + "\\server-" + rippleServer.getId() + "-operator-service.db");
                     operator.start();
