@@ -28,7 +28,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, Message message) {
         Handler handler = this.getHandlers().get(message.getType());
         if (handler != null) {
-            Message result = handler.handle(message);
+            Message result = handler.handle(channelHandlerContext, message);
             if (result != null) {
                 channelHandlerContext.writeAndFlush(result);
             }

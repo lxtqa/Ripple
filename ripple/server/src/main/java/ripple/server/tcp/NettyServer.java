@@ -7,10 +7,12 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import ripple.common.tcp.message.HeartbeatRequest;
 
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -138,12 +140,12 @@ public class NettyServer {
                 while (true) {
                     TimeUnit.SECONDS.sleep(1);
                     for (Channel channel : nettyServer.getConnectedNodes()) {
-                        if (channel.isActive()) {
-                            HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
-                            heartbeatRequest.setUuid(UUID.randomUUID());
-                            System.out.println("Send heartbeat request. uuid = " + heartbeatRequest.getUuid().toString());
-                            channel.writeAndFlush(heartbeatRequest);
-                        }
+                        HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
+                        heartbeatRequest.setUuid(UUID.randomUUID());
+                        InetSocketAddress address = ((NioSocketChannel) channel).remoteAddress();
+                        System.out.println("[" + address.getHostString() + ":" + address.getPort() + "] "
+                                + "Send heartbeat request. uuid = " + heartbeatRequest.getUuid().toString());
+                        channel.writeAndFlush(heartbeatRequest);
                     }
                 }
             } catch (InterruptedException e) {

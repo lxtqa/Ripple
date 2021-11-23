@@ -19,7 +19,7 @@ public class NettyClient {
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                     .handler(new ClientChannelInitializer());
 
-            ChannelFuture future = bootstrap.connect("127.0.0.1", 12224).sync();
+            ChannelFuture future = bootstrap.connect("127.0.0.1", 9510).sync();
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();

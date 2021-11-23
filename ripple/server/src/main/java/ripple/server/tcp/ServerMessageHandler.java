@@ -27,7 +27,20 @@ public class ServerMessageHandler extends MessageHandler {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
         InetSocketAddress address = ((NioSocketChannel) ctx.channel()).remoteAddress();
-        System.out.println("Connected: " + address.getHostString() + ":" + address.getPort());
+        System.out.println("[" + address.getHostString() + ":" + address.getPort() + "] " + "Connected.");
         this.getNettyServer().getConnectedNodes().add(ctx.channel());
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        InetSocketAddress address = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        System.out.println("[" + address.getHostString() + ":" + address.getPort() + "] " + "Disconnected.");
+        this.getNettyServer().getConnectedNodes().remove(ctx.channel());
+    }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        InetSocketAddress address = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        System.out.println("[" + address.getHostString() + ":" + address.getPort() + "] " + "Exception caught: " + cause.getLocalizedMessage());
     }
 }
