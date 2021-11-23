@@ -14,9 +14,11 @@ import java.net.InetSocketAddress;
 public class HeartbeatResponseHandler implements Handler {
     @Override
     public Message handle(ChannelHandlerContext channelHandlerContext, Message message) {
-        InetSocketAddress address = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
         HeartbeatResponse heartbeatResponse = (HeartbeatResponse) message;
-        System.out.println("[" + address.getHostString() + ":" + address.getPort() + "] "
+        InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
+        InetSocketAddress removeAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
+        System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
+                + "<-->" + removeAddress.getHostString() + ":" + removeAddress.getPort() + "] "
                 + "Receive heartbeat response.uuid = "
                 + heartbeatResponse.getUuid().toString()
                 + ", success = " + heartbeatResponse.isSuccess());
