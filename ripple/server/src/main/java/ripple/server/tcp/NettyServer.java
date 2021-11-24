@@ -187,23 +187,25 @@ public class NettyServer {
     }
 
     public Channel findChannel(String address, int port) {
-        System.out.println("[" + "Server-" + this.getNode().getId() + "] findChannel() called. Active channel = " + this.getConnectedNodes().size());
-        for (Channel channel : this.getConnectedNodes()) {
-            System.out.println("[" + "Server-" + this.getNode().getId() + "]" + channel.toString());
-        }
+//        System.out.println("[" + "Server-" + this.getNode().getId() + "] findChannel() called. Active channel = " + this.getConnectedNodes().size());
+//        for (Channel channel : this.getConnectedNodes()) {
+//            System.out.println("[" + "Server-" + this.getNode().getId() + "]" + channel.toString());
+//        }
         for (Channel channel : this.getConnectedNodes()) {
             InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
             if (remoteAddress.getHostString().equals(address) && remoteAddress.getPort() == port) {
                 return channel;
             }
         }
+        System.out.println("[" + "Server-" + this.getNode().getId() + "] "
+                + "Cannot find channel for " + address + ":" + port);
         return null;
     }
 
     public boolean sendMessage(String address, int port, Message message) {
         Channel channel = this.findChannel(address, port);
         if (channel == null) {
-            System.out.println("channel is null");
+            System.out.println("[" + "Server-" + this.getNode().getId() + "] " + "Channel is null");
             return false;
         }
         channel.writeAndFlush(message);

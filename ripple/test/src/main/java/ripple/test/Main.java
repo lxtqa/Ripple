@@ -1,6 +1,8 @@
 package ripple.test;
 
+import ripple.common.entity.Constants;
 import ripple.common.tcp.message.HeartbeatRequest;
+import ripple.common.tcp.message.SyncRequest;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 import ripple.server.tcp.message.AckRequest;
@@ -43,9 +45,10 @@ public class Main {
                 serverList.get(i).initCluster(nodeList);
             }
 
+            Thread.sleep(2000);
+
             HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
             heartbeatRequest.setUuid(UUID.randomUUID());
-            Thread.sleep(1000);
             serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), heartbeatRequest);
 
             AckRequest ackRequest = new AckRequest();
@@ -54,6 +57,17 @@ public class Main {
             ackRequest.setSourceId(1);
             ackRequest.setNodeId(2);
             serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), ackRequest);
+
+            SyncRequest syncRequest = new SyncRequest();
+            syncRequest.setUuid(UUID.randomUUID());
+            syncRequest.setMessageUuid(UUID.randomUUID());
+            syncRequest.setOperationType(Constants.MESSAGE_TYPE_UPDATE);
+            syncRequest.setApplicationName("testApp");
+            syncRequest.setKey("testKey");
+            syncRequest.setValue("testValue");
+            syncRequest.setLastUpdate(new Date(System.currentTimeMillis()));
+            syncRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
+            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncRequest);
 
             System.out.println("Press any key to stop.");
             System.in.read();

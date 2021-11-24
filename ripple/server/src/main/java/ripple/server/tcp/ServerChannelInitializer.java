@@ -16,11 +16,17 @@ import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 import ripple.server.tcp.decoder.AckRequestDecoder;
 import ripple.server.tcp.decoder.AckResponseDecoder;
+import ripple.server.tcp.decoder.SyncRequestDecoder;
+import ripple.server.tcp.decoder.SyncResponseDecoder;
 import ripple.server.tcp.encoder.AckRequestEncoder;
 import ripple.server.tcp.encoder.AckResponseEncoder;
+import ripple.server.tcp.encoder.SyncRequestEncoder;
+import ripple.server.tcp.encoder.SyncResponseEncoder;
 import ripple.server.tcp.handler.AckRequestHandler;
 import ripple.server.tcp.handler.AckResponseHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
+import ripple.server.tcp.handler.SyncRequestHandler;
+import ripple.server.tcp.handler.SyncResponseHandler;
 
 /**
  * @author Zhen Tang
@@ -69,5 +75,13 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.ACK_RESPONSE, new AckResponseEncoder());
         messageDecoder.registerDecoder(MessageType.ACK_RESPONSE, new AckResponseDecoder());
         messageHandler.registerHandler(MessageType.ACK_RESPONSE, new AckResponseHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.SYNC_REQUEST, new SyncRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.SYNC_REQUEST, new SyncRequestDecoder());
+        messageHandler.registerHandler(MessageType.SYNC_REQUEST, new SyncRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.SYNC_RESPONSE, new SyncResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.SYNC_RESPONSE, new SyncResponseDecoder());
+        messageHandler.registerHandler(MessageType.SYNC_RESPONSE, new SyncResponseHandler(this.getNettyServer().getNode()));
     }
 }
