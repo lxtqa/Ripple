@@ -7,6 +7,9 @@ import ripple.server.core.NodeMetadata;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author Zhen Tang
+ */
 public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 

@@ -11,6 +11,7 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import ripple.common.tcp.Message;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
@@ -186,6 +187,10 @@ public class NettyServer {
     }
 
     public Channel findChannel(String address, int port) {
+        System.out.println("[" + "Server-" + this.getNode().getId() + "] findChannel() called. Active channel = " + this.getConnectedNodes().size());
+        for (Channel channel : this.getConnectedNodes()) {
+            System.out.println("[" + "Server-" + this.getNode().getId() + "]" + channel.toString());
+        }
         for (Channel channel : this.getConnectedNodes()) {
             InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
             if (remoteAddress.getHostString().equals(address) && remoteAddress.getPort() == port) {
@@ -193,5 +198,15 @@ public class NettyServer {
             }
         }
         return null;
+    }
+
+    public boolean sendMessage(String address, int port, Message message) {
+        Channel channel = this.findChannel(address, port);
+        if (channel == null) {
+            System.out.println("channel is null");
+            return false;
+        }
+        channel.writeAndFlush(message);
+        return true;
     }
 }

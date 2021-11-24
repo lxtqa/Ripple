@@ -7,6 +7,9 @@ import ripple.common.tcp.message.HeartbeatRequest;
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
+/**
+ * @author Zhen Tang
+ */
 public class NettyApi {
     public static void heartbeat(Channel channel) {
         HeartbeatRequest heartbeatRequest = new HeartbeatRequest();

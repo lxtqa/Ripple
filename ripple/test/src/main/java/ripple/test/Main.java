@@ -1,8 +1,9 @@
 package ripple.test;
 
-import ripple.client.RippleClient;
+import ripple.common.tcp.message.HeartbeatRequest;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
+import ripple.server.tcp.message.AckRequest;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,13 +11,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Zhen Tang
  */
 public class Main {
-    private static final int SERVER_COUNT = 10;
-    private static final int CLIENTS_PER_SERVER = 1;
+    private static final int SERVER_COUNT = 2;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -24,10 +25,9 @@ public class Main {
             Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
-            List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
-            int branch = 2;
+            int branch = 3;
             int i = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
@@ -43,44 +43,26 @@ public class Main {
                 serverList.get(i).initCluster(nodeList);
             }
 
-            String applicationName = "testApp";
-            String key = "test";
-            String value = "test";
+            HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
+            heartbeatRequest.setUuid(UUID.randomUUID());
+            Thread.sleep(1000);
+            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), heartbeatRequest);
 
-            int j = 0;
-            for (i = 0; i < SERVER_COUNT; i++) {
-                for (j = 0; j < CLIENTS_PER_SERVER; j++) {
-                    RippleServer rippleServer = serverList.get(i);
-                    String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getApiPort();
-                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
-                    RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
-                    rippleClient.start();
-                    clientList.add(rippleClient);
-                    System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
-                            + rippleClient.getAddress() + ":" + rippleClient.getPort());
-                }
-            }
+            AckRequest ackRequest = new AckRequest();
+            ackRequest.setUuid(UUID.randomUUID());
+            ackRequest.setMessageUuid(UUID.randomUUID());
+            ackRequest.setSourceId(1);
+            ackRequest.setNodeId(2);
+            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), ackRequest);
 
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.subscribe(applicationName, key);
-            }
-
-            clientList.get(0).put(applicationName, key, value);
-            clientList.get((SERVER_COUNT - 1) * CLIENTS_PER_SERVER).put(applicationName, key, value);
-            clientList.get(0).delete(applicationName, key);
-
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.unsubscribe(applicationName, key);
-            }
-
-            for (RippleClient rippleClient : clientList) {
-                rippleClient.stop();
-            }
+            System.out.println("Press any key to stop.");
+            System.in.read();
 
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
             }
+
+
         } catch (Exception exception) {
             exception.printStackTrace();
         }

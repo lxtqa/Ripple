@@ -44,7 +44,7 @@ public class HeartbeatResponseHandler implements Handler {
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
         System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
                 + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
-                + "Receive heartbeat response.uuid = "
+                + "Receive heartbeat response. uuid = "
                 + heartbeatResponse.getUuid().toString()
                 + ", success = " + heartbeatResponse.isSuccess());
         NodeMetadata nodeMetadata = this.findNodeMetadata(remoteAddress.getHostString(), remoteAddress.getPort());

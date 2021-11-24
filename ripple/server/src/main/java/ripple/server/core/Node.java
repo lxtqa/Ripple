@@ -485,9 +485,9 @@ public class Node {
 
     private void initConnections(List<NodeMetadata> nodeList) {
         for (NodeMetadata metadata : nodeList) {
-            if (metadata.getId() > this.getId()) {
+            // if (metadata.getId() > this.getId()) {
                 this.getApiServer().connect(metadata.getAddress(), metadata.getPort());
-            }
+            // }
         }
     }
 }

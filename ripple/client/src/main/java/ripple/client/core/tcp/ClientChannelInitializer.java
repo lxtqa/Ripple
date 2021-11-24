@@ -13,6 +13,7 @@ import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.handler.HeartbeatRequestHandler;
 
 /**
  * @author Zhen Tang
