@@ -1,4 +1,6 @@
-package ripple.server.core;
+package ripple.server.ui;
+
+import ripple.server.core.Node;
 
 import javax.servlet.http.HttpServlet;
 

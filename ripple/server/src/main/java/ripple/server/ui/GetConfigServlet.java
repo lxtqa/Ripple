@@ -7,7 +7,6 @@ import ripple.common.entity.Constants;
 import ripple.common.entity.Item;
 import ripple.common.entity.Message;
 import ripple.common.entity.UpdateMessage;
-import ripple.server.core.BaseServlet;
 import ripple.server.core.Node;
 
 import javax.servlet.http.HttpServletRequest;
