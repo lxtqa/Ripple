@@ -1,6 +1,7 @@
 package ripple.server.tcp.encoder;
 
 import io.netty.buffer.ByteBuf;
+import ripple.common.entity.Constants;
 import ripple.common.helper.TypeHelper;
 import ripple.common.tcp.Encoder;
 import ripple.common.tcp.Message;
@@ -19,7 +20,9 @@ public class SyncRequestEncoder implements Encoder {
         TypeHelper.writeString(syncRequest.getOperationType(), byteBuf);
         TypeHelper.writeString(syncRequest.getApplicationName(), byteBuf);
         TypeHelper.writeString(syncRequest.getKey(), byteBuf);
-        TypeHelper.writeString(syncRequest.getValue(), byteBuf);
+        if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
+            TypeHelper.writeString(syncRequest.getValue(), byteBuf);
+        }
         byteBuf.writeLong(syncRequest.getLastUpdate().getTime());
         byteBuf.writeInt(syncRequest.getLastUpdateServerId());
     }

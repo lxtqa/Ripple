@@ -1,6 +1,7 @@
 package ripple.server.tcp.decoder;
 
 import io.netty.buffer.ByteBuf;
+import ripple.common.entity.Constants;
 import ripple.common.helper.TypeHelper;
 import ripple.common.tcp.Decoder;
 import ripple.common.tcp.Message;
@@ -21,7 +22,9 @@ public class SyncRequestDecoder implements Decoder {
         syncRequest.setOperationType(TypeHelper.readString(byteBuf));
         syncRequest.setApplicationName(TypeHelper.readString(byteBuf));
         syncRequest.setKey(TypeHelper.readString(byteBuf));
-        syncRequest.setValue(TypeHelper.readString(byteBuf));
+        if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
+            syncRequest.setValue(TypeHelper.readString(byteBuf));
+        }
         syncRequest.setLastUpdate(new Date(byteBuf.readLong()));
         syncRequest.setLastUpdateServerId(byteBuf.readInt());
         return syncRequest;

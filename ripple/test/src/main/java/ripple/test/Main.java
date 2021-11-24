@@ -58,16 +58,26 @@ public class Main {
             ackRequest.setNodeId(2);
             serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), ackRequest);
 
-            SyncRequest syncRequest = new SyncRequest();
-            syncRequest.setUuid(UUID.randomUUID());
-            syncRequest.setMessageUuid(UUID.randomUUID());
-            syncRequest.setOperationType(Constants.MESSAGE_TYPE_UPDATE);
-            syncRequest.setApplicationName("testApp");
-            syncRequest.setKey("testKey");
-            syncRequest.setValue("testValue");
-            syncRequest.setLastUpdate(new Date(System.currentTimeMillis()));
-            syncRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
-            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncRequest);
+            SyncRequest syncUpdateRequest = new SyncRequest();
+            syncUpdateRequest.setUuid(UUID.randomUUID());
+            syncUpdateRequest.setMessageUuid(UUID.randomUUID());
+            syncUpdateRequest.setOperationType(Constants.MESSAGE_TYPE_UPDATE);
+            syncUpdateRequest.setApplicationName("testApp");
+            syncUpdateRequest.setKey("testKey");
+            syncUpdateRequest.setValue("testValue");
+            syncUpdateRequest.setLastUpdate(new Date(System.currentTimeMillis()));
+            syncUpdateRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
+            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncUpdateRequest);
+
+            SyncRequest syncDeleteRequest = new SyncRequest();
+            syncDeleteRequest.setUuid(UUID.randomUUID());
+            syncDeleteRequest.setMessageUuid(UUID.randomUUID());
+            syncDeleteRequest.setOperationType(Constants.MESSAGE_TYPE_DELETE);
+            syncDeleteRequest.setApplicationName("testApp");
+            syncDeleteRequest.setKey("testKey");
+            syncDeleteRequest.setLastUpdate(new Date(System.currentTimeMillis()));
+            syncDeleteRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
+            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncDeleteRequest);
 
             System.out.println("Press any key to stop.");
             System.in.read();
