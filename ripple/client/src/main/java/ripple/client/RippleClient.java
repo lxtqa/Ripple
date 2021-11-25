@@ -1,11 +1,18 @@
 package ripple.client;
 
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.api.SyncServlet;
+import ripple.client.core.tcp.ClientChannelInitializer;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
 import ripple.client.core.ui.GetConfigServlet;
@@ -35,6 +42,8 @@ public class RippleClient {
     private Storage storage;
     private String address;
     private int port;
+    private NioEventLoopGroup eventLoopGroup;
+    private Channel channel;
     private Server server;
     private boolean running;
     private Set<Item> subscription;
@@ -61,6 +70,22 @@ public class RippleClient {
 
     public void setPort(int port) {
         this.port = port;
+    }
+
+    private NioEventLoopGroup getEventLoopGroup() {
+        return eventLoopGroup;
+    }
+
+    private void setEventLoopGroup(NioEventLoopGroup eventLoopGroup) {
+        this.eventLoopGroup = eventLoopGroup;
+    }
+
+    public Channel getChannel() {
+        return channel;
+    }
+
+    public void setChannel(Channel channel) {
+        this.channel = channel;
     }
 
     public Server getServer() {
@@ -118,10 +143,7 @@ public class RippleClient {
     private Item refreshItem(String applicationName, String key) {
         Item item = this.getStorage().getItemService().getItem(applicationName, key);
         if (item == null) {
-            item = Api.get(this.getServerAddress(), this.getServerPort(), applicationName, key);
-            if (item != null) {
-                this.getStorage().getItemService().newItem(item.getApplicationName(), item.getKey());
-            }
+            Api.getAsync(this.getChannel(), applicationName, key);
         }
         return item;
     }
@@ -177,6 +199,23 @@ public class RippleClient {
         this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
     }
 
+    public Channel connectToServer(String address, int port) {
+        try {
+            this.setEventLoopGroup(new NioEventLoopGroup());
+            Bootstrap bootstrap = new Bootstrap();
+            bootstrap.group(this.getEventLoopGroup())
+                    .channel(NioSocketChannel.class)
+                    .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                    .handler(new ClientChannelInitializer(this));
+
+            ChannelFuture future = bootstrap.connect(address, port).sync();
+            return future.channel();
+        } catch (InterruptedException exception) {
+            exception.printStackTrace();
+            return null;
+        }
+    }
+
     public synchronized boolean start() {
         if (this.isRunning()) {
             return true;
@@ -195,6 +234,7 @@ public class RippleClient {
             this.getServer().start();
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setPort(serverConnector.getLocalPort());
+            this.connectToServer(this.getServerAddress(), this.getServerPort());
             this.setRunning(true);
             return true;
         } catch (Exception exception) {
@@ -209,6 +249,7 @@ public class RippleClient {
         }
         try {
             this.getServer().stop();
+            this.getEventLoopGroup().shutdownGracefully();
             this.setRunning(false);
             return true;
         } catch (Exception exception) {

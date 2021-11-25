@@ -1,5 +1,6 @@
 package ripple.test;
 
+import ripple.client.RippleClient;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
@@ -39,6 +40,14 @@ public class Main {
             for (i = 0; i < SERVER_COUNT; i++) {
                 serverList.get(i).initCluster(nodeList);
             }
+
+            Thread.sleep(1000);
+
+            RippleClient client = new RippleClient(serverList.get(0).getAddress(), serverList.get(0).getApiPort()
+                    , DATABASE_PATH + "\\server-" + serverList.get(0).getId() + "-client-" + "1" + ".db");
+            client.start();
+            Thread.sleep(1000);
+            client.get("testApp", "test");
 
 //            Thread.sleep(2000);
 

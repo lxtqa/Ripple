@@ -1,4 +1,4 @@
-package ripple.server.tcp.encoder;
+package ripple.common.tcp.encoder;
 
 import io.netty.buffer.ByteBuf;
 import ripple.common.helper.TypeHelper;
