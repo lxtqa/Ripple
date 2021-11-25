@@ -3,7 +3,7 @@ package ripple.server.core;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.helper.NettyApi;
+import ripple.server.helper.Api;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,7 +49,7 @@ public class HealthManager {
             if (this.getAliveMap().get(metadata) == false) {
                 Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
                 if (channel != null) {
-                    NettyApi.heartbeat(channel); //Api.heartbeat(metadata.getAddress(), metadata.getPort());
+                    Api.heartbeat(channel);
                 }
             }
         }

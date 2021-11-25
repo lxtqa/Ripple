@@ -23,7 +23,7 @@ import ripple.server.api.SubscribeServlet;
 import ripple.server.api.SyncServlet;
 import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
-import ripple.server.helper.NettyApi;
+import ripple.server.helper.Api;
 import ripple.server.tcp.NettyServer;
 import ripple.server.ui.AddConfigServlet;
 import ripple.server.ui.ClientClusterServlet;
@@ -345,7 +345,7 @@ public class Node {
             if (this.getHealthManager().isAlive(nodeMetadata)) {
                 LOGGER.info("[Node-{}] Sync {} with server {}:{}.", this.getId(), message.getType(), nodeMetadata.getAddress(), nodeMetadata.getPort());
                 Channel channel = this.getApiServer().findChannel(nodeMetadata.getAddress(), nodeMetadata.getPort());
-                NettyApi.sync(channel, message);
+                Api.sync(channel, message);
                 LOGGER.info("[Node-{}] Record ACK of message {} from server {}.", this.getId(), message.getUuid(), nodeMetadata.getId());
                 this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
             } else {
@@ -365,7 +365,7 @@ public class Node {
                 LOGGER.info("[Node-{}] Notify {} to client {}:{}."
                         , this.getId(), message.getType(), metadata.getAddress(), metadata.getPort());
                 Channel channel = this.getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
-                NettyApi.sync(channel, message);
+                Api.sync(channel, message);
             }
         }
     }

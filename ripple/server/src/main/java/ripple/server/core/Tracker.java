@@ -6,7 +6,6 @@ import org.slf4j.LoggerFactory;
 import ripple.common.entity.Ack;
 import ripple.common.entity.Message;
 import ripple.server.helper.Api;
-import ripple.server.helper.NettyApi;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -61,7 +60,7 @@ public class Tracker {
                 NodeMetadata metadata = this.getNode().findServerById(id);
                 LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
                 Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
-                NettyApi.sync(channel, message);
+                Api.sync(channel, message);
                 LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
                 this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
             }
@@ -89,7 +88,8 @@ public class Tracker {
             // Transfer ACK to the original sender
             LOGGER.info("[Tracker] Resend ACK of message {} from server {} to message source {}.", messageUuid, nodeId, sourceId);
             NodeMetadata metadata = this.getNode().findServerById(sourceId);
-            Api.ack(metadata.getAddress(), metadata.getPort(), messageUuid, sourceId, nodeId);
+            Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
+            Api.ack(channel, messageUuid, sourceId, nodeId);
         }
     }
 
