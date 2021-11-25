@@ -11,6 +11,8 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
@@ -25,6 +27,7 @@ import java.util.List;
  * @author Zhen Tang
  */
 public class NettyServer {
+    private static final Logger LOGGER = LoggerFactory.getLogger(NettyServer.class);
     private Node node;
 
     private boolean running;
@@ -178,7 +181,8 @@ public class NettyServer {
 
             ChannelFuture future = bootstrap.connect(address, port).sync();
             InetSocketAddress remoteAddress = ((NioSocketChannel) future.channel()).remoteAddress();
-            System.out.println("Connected to " + remoteAddress.getHostString() + ":" + remoteAddress.getPort());
+            LOGGER.info("[NettyServer] [Server-{}] connect(): Connected to {}:{}."
+                    , this.getNode().getId(), remoteAddress.getHostString(), remoteAddress.getPort());
             return future.channel();
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -187,25 +191,21 @@ public class NettyServer {
     }
 
     public Channel findChannel(String address, int port) {
-//        System.out.println("[" + "Server-" + this.getNode().getId() + "] findChannel() called. Active channel = " + this.getConnectedNodes().size());
-//        for (Channel channel : this.getConnectedNodes()) {
-//            System.out.println("[" + "Server-" + this.getNode().getId() + "]" + channel.toString());
-//        }
         for (Channel channel : this.getConnectedNodes()) {
             InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
             if (remoteAddress.getHostString().equals(address) && remoteAddress.getPort() == port) {
                 return channel;
             }
         }
-        System.out.println("[" + "Server-" + this.getNode().getId() + "] "
-                + "Cannot find channel for " + address + ":" + port);
+        LOGGER.info("[NettyServer] [Server-{}] findChannel(): Cannot find the channel for {}:{}."
+                , this.getNode().getId(), address, port);
         return null;
     }
 
     public boolean sendMessage(String address, int port, Message message) {
         Channel channel = this.findChannel(address, port);
         if (channel == null) {
-            System.out.println("[" + "Server-" + this.getNode().getId() + "] " + "Channel is null");
+            LOGGER.info("[NettyServer] [Server-{}] sendMessage(): Channel is null.", this.getNode().getId());
             return false;
         }
         channel.writeAndFlush(message);

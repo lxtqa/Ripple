@@ -1,9 +1,10 @@
 package ripple.common.tcp;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Map;
  * @author Zhen Tang
  */
 public class MessageDecoder extends ByteToMessageDecoder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageDecoder.class);
+
     private Map<MessageType, Decoder> decoders;
 
     private Map<MessageType, Decoder> getDecoders() {
@@ -39,7 +42,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
             Message message = decoder.decode(byteBuf, messageType);
             out.add(message);
         } else {
-            System.out.println("Cannot find the decoder for the message type: " + messageType);
+            LOGGER.info("[MessageDecoder] decode(): Cannot find the decoder for the message type: {}.", messageType);
         }
     }
 }

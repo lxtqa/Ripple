@@ -13,8 +13,6 @@ public class Parameter {
     public static final String LAST_UPDATE_SERVER_ID = "x-ripple-last-update-server-id";
     public static final String CALLBACK_ADDRESS = "x-ripple-callback-address";
     public static final String CALLBACK_PORT = "x-ripple-callback-port";
-    public static final String SOURCE_ID = "x-ripple-source-id";
-    public static final String NODE_ID = "x-ripple-node-id";
 
     private Parameter() {
 

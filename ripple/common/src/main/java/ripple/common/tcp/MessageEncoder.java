@@ -3,6 +3,8 @@ package ripple.common.tcp;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToByteEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,8 @@ import java.util.Map;
  * @author Zhen Tang
  */
 public class MessageEncoder extends MessageToByteEncoder<Message> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageEncoder.class);
+
     private Map<MessageType, Encoder> encoders;
 
     private Map<MessageType, Encoder> getEncoders() {
@@ -35,7 +39,7 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
         if (encoder != null) {
             encoder.encode(message, out);
         } else {
-            System.out.println("Cannot find the encoder for the message type: " + message.getType());
+            LOGGER.info("[MessageEncoder] encode(): Cannot find the encoder for the message type: {}.", message.getType());
         }
     }
 }

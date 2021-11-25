@@ -15,12 +15,10 @@ import ripple.common.entity.Item;
 import ripple.common.entity.Message;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
-import ripple.server.api.AckServlet;
 import ripple.server.api.DeleteServlet;
 import ripple.server.api.GetServlet;
 import ripple.server.api.PutServlet;
 import ripple.server.api.SubscribeServlet;
-import ripple.server.api.SyncServlet;
 import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
@@ -258,8 +256,6 @@ public class Node {
         this.registerServlet(servletContextHandler, new GetServlet(this), Endpoint.API_GET);
         this.registerServlet(servletContextHandler, new PutServlet(this), Endpoint.API_PUT);
         this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.API_DELETE);
-        this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
-        this.registerServlet(servletContextHandler, new AckServlet(this), Endpoint.API_ACK);
     }
 
     public Item get(String applicationName, String key) {

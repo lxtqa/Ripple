@@ -2,6 +2,8 @@ package ripple.server.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ripple.common.tcp.MessageHandler;
 
 import java.net.InetSocketAddress;
@@ -10,6 +12,8 @@ import java.net.InetSocketAddress;
  * @author Zhen Tang
  */
 public class ServerMessageHandler extends MessageHandler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerMessageHandler.class);
+
     private NettyServer nettyServer;
 
     private NettyServer getNettyServer() {
@@ -28,9 +32,9 @@ public class ServerMessageHandler extends MessageHandler {
     public void channelActive(ChannelHandlerContext ctx) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
-        System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
-                + "Connected.");
+        LOGGER.info("[ServerMessageHandler] [{}:{}<-->{}:{}] Connected."
+                , localAddress.getHostString(), localAddress.getPort()
+                , remoteAddress.getHostString(), remoteAddress.getPort());
         this.getNettyServer().getConnectedNodes().add(ctx.channel());
     }
 
@@ -38,9 +42,9 @@ public class ServerMessageHandler extends MessageHandler {
     public void channelInactive(ChannelHandlerContext ctx) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
-        System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
-                + "Disconnected.");
+        LOGGER.info("[ServerMessageHandler] [{}:{}<-->{}:{}] Disconnected."
+                , localAddress.getHostString(), localAddress.getPort()
+                , remoteAddress.getHostString(), remoteAddress.getPort());
         this.getNettyServer().getConnectedNodes().remove(ctx.channel());
     }
 
@@ -48,8 +52,9 @@ public class ServerMessageHandler extends MessageHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
-        System.out.println("[" + localAddress.getHostString() + ":" + localAddress.getPort()
-                + "<-->" + remoteAddress.getHostString() + ":" + remoteAddress.getPort() + "] "
-                + "Exception caught: " + cause.getLocalizedMessage());
+        LOGGER.info("[ServerMessageHandler] [{}:{}<-->{}:{}] Exception caught: {}."
+                , localAddress.getHostString(), localAddress.getPort()
+                , remoteAddress.getHostString(), remoteAddress.getPort()
+                , cause.getLocalizedMessage());
     }
 }
