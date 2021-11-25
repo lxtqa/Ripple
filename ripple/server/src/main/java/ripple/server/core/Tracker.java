@@ -1,10 +1,12 @@
 package ripple.server.core;
 
+import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.Ack;
 import ripple.common.entity.Message;
 import ripple.server.helper.Api;
+import ripple.server.helper.NettyApi;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,11 +60,10 @@ public class Tracker {
             for (Integer id : nodeList) {
                 NodeMetadata metadata = this.getNode().findServerById(id);
                 LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
-                boolean success = Api.sync(metadata.getAddress(), metadata.getPort(), message);
-                if (success) {
-                    LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
-                    this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
-                }
+                Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
+                NettyApi.sync(channel, message);
+                LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
+                this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
             }
         } catch (Exception exception) {
             exception.printStackTrace();
