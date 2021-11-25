@@ -9,10 +9,15 @@ import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
 import ripple.common.tcp.MessageType;
+import ripple.common.tcp.decoder.GetRequestDecoder;
+import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.encoder.GetRequestEncoder;
+import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.handler.GetResponseHandler;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 import ripple.server.tcp.decoder.AckRequestDecoder;
 import ripple.server.tcp.decoder.AckResponseDecoder;
@@ -24,6 +29,7 @@ import ripple.server.tcp.encoder.SyncRequestEncoder;
 import ripple.server.tcp.encoder.SyncResponseEncoder;
 import ripple.server.tcp.handler.AckRequestHandler;
 import ripple.server.tcp.handler.AckResponseHandler;
+import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
 import ripple.server.tcp.handler.SyncResponseHandler;
@@ -49,7 +55,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(8192, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
 
         MessageEncoder messageEncoder = new MessageEncoder();
@@ -83,5 +89,13 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.SYNC_RESPONSE, new SyncResponseEncoder());
         messageDecoder.registerDecoder(MessageType.SYNC_RESPONSE, new SyncResponseDecoder());
         messageHandler.registerHandler(MessageType.SYNC_RESPONSE, new SyncResponseHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.GET_REQUEST, new GetRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.GET_REQUEST, new GetRequestDecoder());
+        messageHandler.registerHandler(MessageType.GET_REQUEST, new GetRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
+        messageHandler.registerHandler(MessageType.GET_RESPONSE, new GetResponseHandler());
     }
 }

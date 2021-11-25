@@ -12,8 +12,8 @@ public class GetResponseItem {
     private String applicationName;
     private String key;
     private String value;
-    private int lastUpdateServerId;
     private Date lastUpdate;
+    private int lastUpdateServerId;
 
     public UUID getMessageUuid() {
         return messageUuid;
@@ -55,6 +55,14 @@ public class GetResponseItem {
         this.value = value;
     }
 
+    public Date getLastUpdate() {
+        return lastUpdate;
+    }
+
+    public void setLastUpdate(Date lastUpdate) {
+        this.lastUpdate = lastUpdate;
+    }
+
     public int getLastUpdateServerId() {
         return lastUpdateServerId;
     }
@@ -63,11 +71,4 @@ public class GetResponseItem {
         this.lastUpdateServerId = lastUpdateServerId;
     }
 
-    public Date getLastUpdate() {
-        return lastUpdate;
-    }
-
-    public void setLastUpdate(Date lastUpdate) {
-        this.lastUpdate = lastUpdate;
-    }
 }

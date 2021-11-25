@@ -34,7 +34,7 @@ public class PutRequest extends Message {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     public PutRequest() {
         this.setType(MessageType.PUT_REQUEST);
     }

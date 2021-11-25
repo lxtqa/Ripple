@@ -34,7 +34,7 @@ public class HeartbeatRequestHandler implements Handler {
         LOGGER.info("[HeartbeatRequestHandler] [{}:{}<-->{}:{}] Send HEARTBEAT response. Success = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), heartbeatResponse.isSuccess());
-        
+
         return heartbeatResponse;
     }
 }

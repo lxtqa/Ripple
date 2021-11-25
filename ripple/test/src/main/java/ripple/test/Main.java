@@ -1,11 +1,7 @@
 package ripple.test;
 
-import ripple.common.entity.Constants;
-import ripple.common.tcp.message.HeartbeatRequest;
-import ripple.common.tcp.message.SyncRequest;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
-import ripple.server.tcp.message.AckRequest;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -13,7 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @author Zhen Tang
@@ -78,6 +73,12 @@ public class Main {
 //            syncDeleteRequest.setLastUpdate(new Date(System.currentTimeMillis()));
 //            syncDeleteRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
 //            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncDeleteRequest);
+
+//            GetRequest getRequest = new GetRequest();
+//            getRequest.setUuid(UUID.randomUUID());
+//            getRequest.setApplicationName("testApp");
+//            getRequest.setKey("test");
+//            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), getRequest);
 
             System.out.println("Press any key to stop.");
             System.in.read();

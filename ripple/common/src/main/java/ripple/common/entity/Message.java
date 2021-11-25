@@ -11,8 +11,8 @@ public abstract class Message {
     private String type;
     private String applicationName;
     private String key;
-    private int lastUpdateServerId;
     private Date lastUpdate;
+    private int lastUpdateServerId;
 
     public UUID getUuid() {
         return uuid;
@@ -46,20 +46,20 @@ public abstract class Message {
         this.key = key;
     }
 
-    public int getLastUpdateServerId() {
-        return lastUpdateServerId;
-    }
-
-    public void setLastUpdateServerId(int lastUpdateServerId) {
-        this.lastUpdateServerId = lastUpdateServerId;
-    }
-
     public Date getLastUpdate() {
         return lastUpdate;
     }
 
     public void setLastUpdate(Date lastUpdate) {
         this.lastUpdate = lastUpdate;
+    }
+
+    public int getLastUpdateServerId() {
+        return lastUpdateServerId;
+    }
+
+    public void setLastUpdateServerId(int lastUpdateServerId) {
+        this.lastUpdateServerId = lastUpdateServerId;
     }
 
     public Message() {
