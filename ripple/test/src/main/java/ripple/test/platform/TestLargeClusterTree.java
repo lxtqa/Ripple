@@ -60,7 +60,7 @@ public class TestLargeClusterTree {
                     rippleClient.start();
                     clientList.add(rippleClient);
                     System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
-                            + rippleClient.getAddress() + ":" + rippleClient.getPort());
+                            + rippleClient.getUiAddress() + ":" + rippleClient.getUiPort());
                 }
             }
 

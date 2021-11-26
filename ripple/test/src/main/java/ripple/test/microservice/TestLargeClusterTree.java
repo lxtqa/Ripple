@@ -74,7 +74,7 @@ public class TestLargeClusterTree {
                     clientList.add(operator.getClient());
                     System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
                             + "[Operator Service] " + operator.getAddress() + ":" + operator.getPort()
-                            + ", Client = " + operator.getClient().getAddress() + ":" + operator.getClient().getPort());
+                            + ", Client = " + operator.getClient().getUiAddress() + ":" + operator.getClient().getUiPort());
                 }
 
                 String applicationName = "testApp";

@@ -17,6 +17,8 @@ import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
 import ripple.common.tcp.decoder.PutRequestDecoder;
 import ripple.common.tcp.decoder.PutResponseDecoder;
+import ripple.common.tcp.decoder.SubscribeRequestDecoder;
+import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -27,6 +29,8 @@ import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
 import ripple.common.tcp.encoder.PutRequestEncoder;
 import ripple.common.tcp.encoder.PutResponseEncoder;
+import ripple.common.tcp.encoder.SubscribeRequestEncoder;
+import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -40,6 +44,7 @@ import ripple.server.tcp.handler.DeleteRequestHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
 import ripple.server.tcp.handler.PutRequestHandler;
+import ripple.server.tcp.handler.SubscribeRequestHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
 import ripple.server.tcp.handler.SyncResponseHandler;
 
@@ -119,5 +124,12 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.DELETE_RESPONSE, new DeleteResponseEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_RESPONSE, new DeleteResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestDecoder());
+        messageHandler.registerHandler(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseDecoder());
     }
 }

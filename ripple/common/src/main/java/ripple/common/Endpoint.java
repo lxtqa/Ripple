@@ -5,9 +5,7 @@ package ripple.common;
  */
 public final class Endpoint {
     // API
-    public static final String API_SUBSCRIBE = "/Api/Subscribe";
     public static final String API_UNSUBSCRIBE = "/Api/Unsubscribe";
-    public static final String API_SYNC = "/Api/Sync";
 
     // Common UI
     public static final String UI_STYLE = "/Style";

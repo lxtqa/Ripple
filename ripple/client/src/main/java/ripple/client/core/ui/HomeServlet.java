@@ -26,10 +26,10 @@ public class HomeServlet extends BaseServlet {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("客户端IP地址：").append(this.getClient().getAddress()).append("\n");
+        stringBuilder.append("                    ").append("客户端 UI IP地址：").append(this.getClient().getUiAddress()).append("\n");
         stringBuilder.append("                </p>\n");
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("客户端端口号：").append(this.getClient().getPort()).append("\n");
+        stringBuilder.append("                    ").append("客户端 UI 端口号：").append(this.getClient().getUiPort()).append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 

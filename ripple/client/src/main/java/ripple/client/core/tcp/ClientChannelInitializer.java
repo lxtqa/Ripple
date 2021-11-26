@@ -9,6 +9,8 @@ import ripple.client.RippleClient;
 import ripple.client.core.tcp.handler.DeleteResponseHandler;
 import ripple.client.core.tcp.handler.GetResponseHandler;
 import ripple.client.core.tcp.handler.PutResponseHandler;
+import ripple.client.core.tcp.handler.SubscribeResponseHandler;
+import ripple.client.core.tcp.handler.SyncRequestHandler;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
@@ -21,6 +23,8 @@ import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
 import ripple.common.tcp.decoder.PutRequestDecoder;
 import ripple.common.tcp.decoder.PutResponseDecoder;
+import ripple.common.tcp.decoder.SubscribeRequestDecoder;
+import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -31,6 +35,8 @@ import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
 import ripple.common.tcp.encoder.PutRequestEncoder;
 import ripple.common.tcp.encoder.PutResponseEncoder;
+import ripple.common.tcp.encoder.SubscribeRequestEncoder;
+import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -74,6 +80,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.SYNC_REQUEST, new SyncRequestEncoder());
         messageDecoder.registerDecoder(MessageType.SYNC_REQUEST, new SyncRequestDecoder());
+        messageHandler.registerHandler(MessageType.SYNC_REQUEST, new SyncRequestHandler(this.getRippleClient()));
 
         messageEncoder.registerEncoder(MessageType.SYNC_RESPONSE, new SyncResponseEncoder());
         messageDecoder.registerDecoder(MessageType.SYNC_RESPONSE, new SyncResponseDecoder());
@@ -98,5 +105,12 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.DELETE_RESPONSE, new DeleteResponseEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_RESPONSE, new DeleteResponseDecoder());
         messageHandler.registerHandler(MessageType.DELETE_RESPONSE, new DeleteResponseHandler(this.getRippleClient()));
+
+        messageEncoder.registerEncoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseDecoder());
+        messageHandler.registerHandler(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseHandler(this.getRippleClient()));
     }
 }

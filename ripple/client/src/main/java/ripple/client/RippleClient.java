@@ -11,7 +11,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import ripple.client.core.api.SyncServlet;
 import ripple.client.core.tcp.ClientChannelInitializer;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
@@ -40,8 +39,8 @@ public class RippleClient {
     private String serverAddress;
     private int serverPort;
     private Storage storage;
-    private String address;
-    private int port;
+    private String uiAddress;
+    private int uiPort;
     private NioEventLoopGroup eventLoopGroup;
     private Channel channel;
     private Server server;
@@ -56,20 +55,20 @@ public class RippleClient {
         this.setSubscription(new HashSet<>());
     }
 
-    public String getAddress() {
-        return address;
+    public String getUiAddress() {
+        return uiAddress;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    private void setUiAddress(String uiAddress) {
+        this.uiAddress = uiAddress;
     }
 
-    public int getPort() {
-        return port;
+    public int getUiPort() {
+        return uiPort;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    private void setUiPort(int uiPort) {
+        this.uiPort = uiPort;
     }
 
     private NioEventLoopGroup getEventLoopGroup() {
@@ -158,13 +157,13 @@ public class RippleClient {
         this.refreshItem(applicationName, key);
     }
 
-    public boolean subscribe(String applicationName, String key) {
+    public void subscribe(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
         this.getSubscription().add(new Item(applicationName, key));
-        return Api.subscribe(this.getServerAddress(), this.getServerPort()
-                , this.getAddress(), this.getPort(), applicationName, key);
+        Api.subscribeAsync(this.getChannel(), applicationName, key);
+        this.refreshItem(applicationName, key);
     }
 
     public boolean unsubscribe(String applicationName, String key) {
@@ -173,7 +172,7 @@ public class RippleClient {
         }
         this.getSubscription().remove(new Item(applicationName, key));
         return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
-                , this.getAddress(), this.getPort(), applicationName, key);
+                , this.getUiAddress(), this.getUiPort(), applicationName, key);
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -192,9 +191,6 @@ public class RippleClient {
         this.registerServlet(servletContextHandler, new AddSubscriptionServlet(this), Endpoint.UI_ADD_SUBSCRIPTION);
         this.registerServlet(servletContextHandler, new RemoveSubscriptionServlet(this), Endpoint.UI_REMOVE_SUBSCRIPTION);
         this.registerServlet(servletContextHandler, new ServerInfoServlet(this), Endpoint.UI_SERVER_INFO);
-
-        // API
-        this.registerServlet(servletContextHandler, new SyncServlet(this), Endpoint.API_SYNC);
     }
 
     public Channel connectToServer(String address, int port) {
@@ -230,8 +226,8 @@ public class RippleClient {
 
             this.getServer().setHandler(servletContextHandler);
             this.getServer().start();
-            this.setAddress(InetAddress.getLocalHost().getHostAddress());
-            this.setPort(serverConnector.getLocalPort());
+            this.setUiAddress(InetAddress.getLocalHost().getHostAddress());
+            this.setUiPort(serverConnector.getLocalPort());
             this.connectToServer(this.getServerAddress(), this.getServerPort());
             this.setRunning(true);
             return true;

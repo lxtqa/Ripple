@@ -15,7 +15,6 @@ import ripple.common.entity.Item;
 import ripple.common.entity.Message;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
-import ripple.server.api.SubscribeServlet;
 import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
@@ -248,7 +247,6 @@ public class Node {
         this.registerServlet(servletContextHandler, new ClientClusterServlet(this), Endpoint.UI_CLIENT_CLUSTER);
 
         // API
-        this.registerServlet(servletContextHandler, new SubscribeServlet(this), Endpoint.API_SUBSCRIBE);
         this.registerServlet(servletContextHandler, new UnsubscribeServlet(this), Endpoint.API_UNSUBSCRIBE);
     }
 

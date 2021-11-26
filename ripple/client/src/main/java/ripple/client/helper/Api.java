@@ -11,6 +11,7 @@ import ripple.common.helper.Http;
 import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetRequest;
 import ripple.common.tcp.message.PutRequest;
+import ripple.common.tcp.message.SubscribeRequest;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -69,21 +70,20 @@ public final class Api {
         channel.writeAndFlush(deleteRequest);
     }
 
-    public static boolean subscribe(String serverAddress, int serverPort
-            , String callbackAddress, int callbackPort, String applicationName, String key) {
-        try {
-            Map<String, String> headers = new HashMap<>(4);
-            headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put(Parameter.KEY, key);
-            headers.put(Parameter.CALLBACK_ADDRESS, callbackAddress);
-            headers.put(Parameter.CALLBACK_PORT, String.valueOf(callbackPort));
-            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.API_SUBSCRIBE;
-            String returnValue = Http.post(url, headers);
-            return MAPPER.readValue(returnValue, Boolean.class);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return false;
-        }
+    public static void subscribeAsync(Channel channel, String applicationName, String key) {
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        SubscribeRequest subscribeRequest = new SubscribeRequest();
+        subscribeRequest.setUuid(UUID.randomUUID());
+        subscribeRequest.setApplicationName(applicationName);
+        subscribeRequest.setKey(key);
+        subscribeRequest.setCallbackAddress(localAddress.getHostString());
+        subscribeRequest.setCallbackPort(localAddress.getPort());
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), subscribeRequest.getUuid(), subscribeRequest.getApplicationName()
+                , subscribeRequest.getKey(), subscribeRequest.getCallbackAddress(), subscribeRequest.getCallbackPort());
+        channel.writeAndFlush(subscribeRequest);
     }
 
     public static boolean unsubscribe(String serverAddress, int serverPort

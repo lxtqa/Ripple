@@ -48,19 +48,19 @@ public class TestGuaranteeConsistency {
                     , DATABASE_PATH + "\\number-service-1.db");
             one.start();
             System.out.println("[Number Service 1] " + one.getAddress() + ":" + one.getPort()
-                    + ", Client = " + one.getClient().getAddress() + ":" + one.getClient().getPort());
+                    + ", Client = " + one.getClient().getUiAddress() + ":" + one.getClient().getUiPort());
 
             NumberService two = new NumberService(numberTwo, serverList.get(1).getAddress(), serverList.get(1).getApiPort()
                     , DATABASE_PATH + "\\number-service-2.db");
             two.start();
             System.out.println("[Number Service 2] " + two.getAddress() + ":" + two.getPort()
-                    + ", Client = " + two.getClient().getAddress() + ":" + two.getClient().getPort());
+                    + ", Client = " + two.getClient().getUiAddress() + ":" + two.getClient().getUiPort());
 
             OperatorService operator = new OperatorService(serverList.get(2).getAddress(), serverList.get(2).getApiPort()
                     , DATABASE_PATH + "\\operator-service.db");
             operator.start();
             System.out.println("[Operator Service] " + operator.getAddress() + ":" + operator.getPort()
-                    + ", Client = " + operator.getClient().getAddress() + ":" + operator.getClient().getPort());
+                    + ", Client = " + operator.getClient().getUiAddress() + ":" + operator.getClient().getUiPort());
 
             one.getClient().put("testApp", "oneAddress", one.getAddress() + ":" + one.getPort());
             one.getClient().put("testApp", "twoAddress", two.getAddress() + ":" + two.getPort());
