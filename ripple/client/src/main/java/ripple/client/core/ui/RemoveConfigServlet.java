@@ -4,8 +4,6 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
-import ripple.client.core.BaseServlet;
-import ripple.common.Endpoint;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

@@ -14,6 +14,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.core.tcp.ClientChannelInitializer;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
+import ripple.client.core.ui.Endpoint;
 import ripple.client.core.ui.GetConfigServlet;
 import ripple.client.core.ui.GetSubscriptionServlet;
 import ripple.client.core.ui.HomeServlet;
@@ -23,7 +24,6 @@ import ripple.client.core.ui.RemoveSubscriptionServlet;
 import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
-import ripple.common.Endpoint;
 import ripple.common.entity.Item;
 import ripple.common.storage.Storage;
 

@@ -1,4 +1,4 @@
-package ripple.client.core;
+package ripple.client.core.ui;
 
 import ripple.client.RippleClient;
 

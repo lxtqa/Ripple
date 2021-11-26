@@ -1,6 +1,5 @@
 package ripple.client.core.ui;
 
-import ripple.common.Endpoint;
 import ripple.common.helper.PageHelper;
 
 /**

@@ -3,7 +3,6 @@ package ripple.server.ui;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.Endpoint;
 import ripple.server.core.Node;
 
 import javax.servlet.ServletException;

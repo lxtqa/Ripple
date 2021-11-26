@@ -19,7 +19,6 @@ import java.util.UUID;
  */
 public final class Api {
     private static final Logger LOGGER = LoggerFactory.getLogger(Api.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private Api() {
 
