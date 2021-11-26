@@ -48,7 +48,7 @@ public class Main {
             client.start();
             System.out.println("Client UI: " + client.getUiAddress() + ":" + client.getUiPort());
             Thread.sleep(1000);
-            client.get("testApp", "test");
+            client.put("testApp", "test", "test");
 
 //            Thread.sleep(2000);
 //            GetRequest getRequest = new GetRequest();

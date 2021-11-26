@@ -163,16 +163,14 @@ public class RippleClient {
         }
         this.getSubscription().add(new Item(applicationName, key));
         Api.subscribeAsync(this.getChannel(), applicationName, key);
-        this.refreshItem(applicationName, key);
     }
 
-    public boolean unsubscribe(String applicationName, String key) {
+    public void unsubscribe(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
         this.getSubscription().remove(new Item(applicationName, key));
-        return Api.unsubscribe(this.getServerAddress(), this.getServerPort()
-                , this.getUiAddress(), this.getUiPort(), applicationName, key);
+        Api.unsubscribeAsync(this.getChannel(), applicationName, key);
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {

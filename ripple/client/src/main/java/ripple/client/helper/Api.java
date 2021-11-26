@@ -5,17 +5,13 @@ import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.Endpoint;
-import ripple.common.Parameter;
-import ripple.common.helper.Http;
 import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetRequest;
 import ripple.common.tcp.message.PutRequest;
 import ripple.common.tcp.message.SubscribeRequest;
+import ripple.common.tcp.message.UnsubscribeRequest;
 
 import java.net.InetSocketAddress;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -86,20 +82,19 @@ public final class Api {
         channel.writeAndFlush(subscribeRequest);
     }
 
-    public static boolean unsubscribe(String serverAddress, int serverPort
-            , String callbackAddress, int callbackPort, String applicationName, String key) {
-        try {
-            Map<String, String> headers = new HashMap<>(4);
-            headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put(Parameter.KEY, key);
-            headers.put(Parameter.CALLBACK_ADDRESS, callbackAddress);
-            headers.put(Parameter.CALLBACK_PORT, String.valueOf(callbackPort));
-            String url = "http://" + serverAddress + ":" + serverPort + Endpoint.API_UNSUBSCRIBE;
-            String returnValue = Http.post(url, headers);
-            return MAPPER.readValue(returnValue, Boolean.class);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return false;
-        }
+    public static void unsubscribeAsync(Channel channel, String applicationName, String key) {
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        UnsubscribeRequest unsubscribeRequest = new UnsubscribeRequest();
+        unsubscribeRequest.setUuid(UUID.randomUUID());
+        unsubscribeRequest.setApplicationName(applicationName);
+        unsubscribeRequest.setKey(key);
+        unsubscribeRequest.setCallbackAddress(localAddress.getHostString());
+        unsubscribeRequest.setCallbackPort(localAddress.getPort());
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send UNSUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), unsubscribeRequest.getUuid(), unsubscribeRequest.getApplicationName()
+                , unsubscribeRequest.getKey(), unsubscribeRequest.getCallbackAddress(), unsubscribeRequest.getCallbackPort());
+        channel.writeAndFlush(unsubscribeRequest);
     }
 }

@@ -11,6 +11,7 @@ import ripple.client.core.tcp.handler.GetResponseHandler;
 import ripple.client.core.tcp.handler.PutResponseHandler;
 import ripple.client.core.tcp.handler.SubscribeResponseHandler;
 import ripple.client.core.tcp.handler.SyncRequestHandler;
+import ripple.client.core.tcp.handler.UnsubscribeResponseHandler;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
@@ -27,6 +28,8 @@ import ripple.common.tcp.decoder.SubscribeRequestDecoder;
 import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
+import ripple.common.tcp.decoder.UnsubscribeRequestDecoder;
+import ripple.common.tcp.decoder.UnsubscribeResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
 import ripple.common.tcp.encoder.DeleteResponseEncoder;
 import ripple.common.tcp.encoder.GetRequestEncoder;
@@ -39,6 +42,8 @@ import ripple.common.tcp.encoder.SubscribeRequestEncoder;
 import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
+import ripple.common.tcp.encoder.UnsubscribeRequestEncoder;
+import ripple.common.tcp.encoder.UnsubscribeResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 
 /**
@@ -112,5 +117,12 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseEncoder());
         messageDecoder.registerDecoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseDecoder());
         messageHandler.registerHandler(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseHandler(this.getRippleClient()));
+
+        messageEncoder.registerEncoder(MessageType.UNSUBSCRIBE_REQUEST, new UnsubscribeRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.UNSUBSCRIBE_REQUEST, new UnsubscribeRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseDecoder());
+        messageHandler.registerHandler(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseHandler(this.getRippleClient()));
     }
 }

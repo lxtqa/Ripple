@@ -21,6 +21,8 @@ import ripple.common.tcp.decoder.SubscribeRequestDecoder;
 import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
+import ripple.common.tcp.decoder.UnsubscribeRequestDecoder;
+import ripple.common.tcp.decoder.UnsubscribeResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
 import ripple.common.tcp.encoder.DeleteResponseEncoder;
 import ripple.common.tcp.encoder.GetRequestEncoder;
@@ -33,6 +35,8 @@ import ripple.common.tcp.encoder.SubscribeRequestEncoder;
 import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
+import ripple.common.tcp.encoder.UnsubscribeRequestEncoder;
+import ripple.common.tcp.encoder.UnsubscribeResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 import ripple.server.tcp.decoder.AckRequestDecoder;
 import ripple.server.tcp.decoder.AckResponseDecoder;
@@ -47,6 +51,7 @@ import ripple.server.tcp.handler.PutRequestHandler;
 import ripple.server.tcp.handler.SubscribeRequestHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
 import ripple.server.tcp.handler.SyncResponseHandler;
+import ripple.server.tcp.handler.UnsubscribeRequestHandler;
 
 /**
  * @author Zhen Tang
@@ -131,5 +136,12 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseEncoder());
         messageDecoder.registerDecoder(MessageType.SUBSCRIBE_RESPONSE, new SubscribeResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.UNSUBSCRIBE_REQUEST, new UnsubscribeRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.UNSUBSCRIBE_REQUEST, new UnsubscribeRequestDecoder());
+        messageHandler.registerHandler(MessageType.UNSUBSCRIBE_REQUEST, new UnsubscribeRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseDecoder());
     }
 }

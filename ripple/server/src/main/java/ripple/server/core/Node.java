@@ -15,7 +15,6 @@ import ripple.common.entity.Item;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
-import ripple.server.api.UnsubscribeServlet;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
 import ripple.server.tcp.NettyServer;
@@ -48,7 +47,6 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class Node {
     private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
-    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private ExecutorService executorService;
 
@@ -218,10 +216,6 @@ public class Node {
         this.running = running;
     }
 
-    public ObjectMapper getObjectMapper() {
-        return MAPPER;
-    }
-
     public ExecutorService getExecutorService() {
         return executorService;
     }
@@ -245,9 +239,6 @@ public class Node {
         this.registerServlet(servletContextHandler, new GetSubscriptionServlet(this), Endpoint.UI_GET_SUBSCRIPTION);
         this.registerServlet(servletContextHandler, new ServerClusterServlet(this), Endpoint.UI_SERVER_CLUSTER);
         this.registerServlet(servletContextHandler, new ClientClusterServlet(this), Endpoint.UI_CLIENT_CLUSTER);
-
-        // API
-        this.registerServlet(servletContextHandler, new UnsubscribeServlet(this), Endpoint.API_UNSUBSCRIBE);
     }
 
     public Item get(String applicationName, String key) {
