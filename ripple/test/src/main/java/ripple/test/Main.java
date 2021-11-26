@@ -46,6 +46,7 @@ public class Main {
             RippleClient client = new RippleClient(serverList.get(0).getAddress(), serverList.get(0).getApiPort()
                     , DATABASE_PATH + "\\server-" + serverList.get(0).getId() + "-client-" + "1" + ".db");
             client.start();
+            System.out.println("Client UI: " + client.getAddress() + ":" + client.getPort());
             Thread.sleep(1000);
             client.get("testApp", "test");
 

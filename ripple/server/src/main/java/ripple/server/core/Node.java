@@ -16,7 +16,6 @@ import ripple.common.entity.Message;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
 import ripple.server.api.DeleteServlet;
-import ripple.server.api.GetServlet;
 import ripple.server.api.PutServlet;
 import ripple.server.api.SubscribeServlet;
 import ripple.server.api.UnsubscribeServlet;
@@ -253,7 +252,6 @@ public class Node {
         // API
         this.registerServlet(servletContextHandler, new SubscribeServlet(this), Endpoint.API_SUBSCRIBE);
         this.registerServlet(servletContextHandler, new UnsubscribeServlet(this), Endpoint.API_UNSUBSCRIBE);
-        this.registerServlet(servletContextHandler, new GetServlet(this), Endpoint.API_GET);
         this.registerServlet(servletContextHandler, new PutServlet(this), Endpoint.API_PUT);
         this.registerServlet(servletContextHandler, new DeleteServlet(this), Endpoint.API_DELETE);
     }

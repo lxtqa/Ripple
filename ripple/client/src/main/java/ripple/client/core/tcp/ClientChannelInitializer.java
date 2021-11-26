@@ -22,7 +22,6 @@ import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
-import ripple.common.tcp.handler.GetResponseHandler;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 
 /**
@@ -73,6 +72,6 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
-        messageHandler.registerHandler(MessageType.GET_RESPONSE, new GetResponseHandler());
+        messageHandler.registerHandler(MessageType.GET_RESPONSE, new GetResponseHandler(this.getRippleClient()));
     }
 }

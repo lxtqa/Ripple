@@ -13,20 +13,19 @@ import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.decoder.SyncRequestDecoder;
+import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
-import ripple.common.tcp.handler.GetResponseHandler;
+import ripple.common.tcp.encoder.SyncRequestEncoder;
+import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
 import ripple.server.tcp.decoder.AckRequestDecoder;
 import ripple.server.tcp.decoder.AckResponseDecoder;
-import ripple.common.tcp.decoder.SyncRequestDecoder;
-import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.server.tcp.encoder.AckRequestEncoder;
 import ripple.server.tcp.encoder.AckResponseEncoder;
-import ripple.common.tcp.encoder.SyncRequestEncoder;
-import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.server.tcp.handler.AckRequestHandler;
 import ripple.server.tcp.handler.AckResponseHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
@@ -96,6 +95,5 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
-        messageHandler.registerHandler(MessageType.GET_RESPONSE, new GetResponseHandler());
     }
 }

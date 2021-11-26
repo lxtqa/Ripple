@@ -41,7 +41,7 @@ public class MessageService {
         return false;
     }
 
-    private boolean exist(UUID messageUuid) {
+    public boolean exist(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [message] WHERE [uuid] = ?;";
