@@ -148,10 +148,9 @@ public class RippleClient {
         return item;
     }
 
-    public boolean put(String applicationName, String key, String value) {
-        boolean result = Api.put(this.getServerAddress(), this.getServerPort(), applicationName, key, value);
+    public void put(String applicationName, String key, String value) {
+        Api.putAsync(this.getChannel(), applicationName, key, value);
         this.refreshItem(applicationName, key);
-        return result;
     }
 
     public void delete(String applicationName, String key) {

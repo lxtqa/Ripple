@@ -10,6 +10,7 @@ import ripple.common.Parameter;
 import ripple.common.helper.Http;
 import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetRequest;
+import ripple.common.tcp.message.PutRequest;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
@@ -40,19 +41,19 @@ public final class Api {
         channel.writeAndFlush(getRequest);
     }
 
-    public static boolean put(String address, int port, String applicationName, String key, String value) {
-        try {
-            Map<String, String> headers = new HashMap<>(3);
-            headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put(Parameter.KEY, key);
-            headers.put(Parameter.VALUE, value);
-            String url = "http://" + address + ":" + port + Endpoint.API_PUT;
-            String returnValue = Http.post(url, headers);
-            return MAPPER.readValue(returnValue, Boolean.class);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return false;
-        }
+    public static void putAsync(Channel channel, String applicationName, String key, String value) {
+        PutRequest putRequest = new PutRequest();
+        putRequest.setUuid(UUID.randomUUID());
+        putRequest.setApplicationName(applicationName);
+        putRequest.setKey(key);
+        putRequest.setValue(value);
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send PUT request. UUID = {}, Application Name = {}, Key = {}, Value = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), putRequest.getUuid(), putRequest.getApplicationName()
+                , putRequest.getKey(), putRequest.getValue());
+        channel.writeAndFlush(putRequest);
     }
 
     public static void deleteAsync(Channel channel, String applicationName, String key) {

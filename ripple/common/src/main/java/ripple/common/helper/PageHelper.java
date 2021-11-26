@@ -36,7 +36,7 @@ public class PageHelper {
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.min.js\"></script>\n");
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/popper.js/2.5.4/umd/popper.min.js\"></script>\n");
         stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js\"></script>\n");
-        stringBuilder.append("    <script src=\"https://unpkg.com/feather-icons/dist/feather.min.js\"></script>\n");
+        stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/feather-icons/4.28.0/feather.min.js\"></script>\n");
         stringBuilder.append("</head>\n");
     }
 

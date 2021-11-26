@@ -15,6 +15,8 @@ import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.decoder.PutRequestDecoder;
+import ripple.common.tcp.decoder.PutResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -23,6 +25,8 @@ import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.encoder.PutRequestEncoder;
+import ripple.common.tcp.encoder.PutResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -35,6 +39,7 @@ import ripple.server.tcp.handler.AckResponseHandler;
 import ripple.server.tcp.handler.DeleteRequestHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
+import ripple.server.tcp.handler.PutRequestHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
 import ripple.server.tcp.handler.SyncResponseHandler;
 
@@ -100,6 +105,13 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.PUT_REQUEST, new PutRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.PUT_REQUEST, new PutRequestDecoder());
+        messageHandler.registerHandler(MessageType.PUT_REQUEST, new PutRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.PUT_RESPONSE, new PutResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.PUT_RESPONSE, new PutResponseDecoder());
 
         messageEncoder.registerEncoder(MessageType.DELETE_REQUEST, new DeleteRequestEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_REQUEST, new DeleteRequestDecoder());

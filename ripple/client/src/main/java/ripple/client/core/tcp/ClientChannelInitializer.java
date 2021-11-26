@@ -8,6 +8,7 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import ripple.client.RippleClient;
 import ripple.client.core.tcp.handler.DeleteResponseHandler;
 import ripple.client.core.tcp.handler.GetResponseHandler;
+import ripple.client.core.tcp.handler.PutResponseHandler;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
@@ -18,6 +19,8 @@ import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.decoder.PutRequestDecoder;
+import ripple.common.tcp.decoder.PutResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -26,6 +29,8 @@ import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.encoder.PutRequestEncoder;
+import ripple.common.tcp.encoder.PutResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -79,6 +84,13 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
         messageHandler.registerHandler(MessageType.GET_RESPONSE, new GetResponseHandler(this.getRippleClient()));
+
+        messageEncoder.registerEncoder(MessageType.PUT_REQUEST, new PutRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.PUT_REQUEST, new PutRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.PUT_RESPONSE, new PutResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.PUT_RESPONSE, new PutResponseDecoder());
+        messageHandler.registerHandler(MessageType.PUT_RESPONSE, new PutResponseHandler(this.getRippleClient()));
 
         messageEncoder.registerEncoder(MessageType.DELETE_REQUEST, new DeleteRequestEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_REQUEST, new DeleteRequestDecoder());

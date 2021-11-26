@@ -61,17 +61,11 @@ public class ModifyConfigServlet extends BaseServlet {
         LOGGER.info("[ModifyConfigServlet] Receive POST request. applicationName = {}, key = {}, value = {}."
                 , applicationName, key, value);
 
-        boolean success = this.getClient().put(applicationName, key, value);
+        this.getClient().put(applicationName, key, value);
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ");
-        if (success) {
-            stringBuilder.append("操作已成功完成。");
-        } else {
-            stringBuilder.append("出现错误，请重试。");
-        }
-        stringBuilder.append("\n");
+        stringBuilder.append("                    ").append("操作已成功提交").append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 

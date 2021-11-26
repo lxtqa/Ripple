@@ -7,15 +7,15 @@ import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
-import ripple.common.tcp.message.DeleteResponse;
+import ripple.common.tcp.message.PutResponse;
 
 import java.net.InetSocketAddress;
 
 /**
  * @author Zhen Tang
  */
-public class DeleteResponseHandler implements Handler {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DeleteResponseHandler.class);
+public class PutResponseHandler implements Handler {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PutResponseHandler.class);
     private RippleClient rippleClient;
 
     public RippleClient getRippleClient() {
@@ -26,18 +26,18 @@ public class DeleteResponseHandler implements Handler {
         this.rippleClient = rippleClient;
     }
 
-    public DeleteResponseHandler(RippleClient rippleClient) {
+    public PutResponseHandler(RippleClient rippleClient) {
         this.setRippleClient(rippleClient);
     }
 
     @Override
     public Message handle(ChannelHandlerContext channelHandlerContext, Message message) {
-        DeleteResponse deleteResponse = (DeleteResponse) message;
+        PutResponse putResponse = (PutResponse) message;
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
-        LOGGER.info("[DeleteResponseHandler] [{}:{}<-->{}:{}] Receive DELETE response. UUID = {}, Success = {}"
+        LOGGER.info("[PutResponseHandler] [{}:{}<-->{}:{}] Receive PUT response. UUID = {}, Success = {}"
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
-                , remoteAddress.getPort(), deleteResponse.getUuid(), deleteResponse.isSuccess());
+                , remoteAddress.getPort(), putResponse.getUuid(), putResponse.isSuccess());
         return null;
     }
 }

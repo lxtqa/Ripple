@@ -51,39 +51,6 @@ public class Main {
             client.get("testApp", "test");
 
 //            Thread.sleep(2000);
-
-//            HeartbeatRequest heartbeatRequest = new HeartbeatRequest();
-//            heartbeatRequest.setUuid(UUID.randomUUID());
-//            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), heartbeatRequest);
-//
-//            AckRequest ackRequest = new AckRequest();
-//            ackRequest.setUuid(UUID.randomUUID());
-//            ackRequest.setMessageUuid(UUID.randomUUID());
-//            ackRequest.setSourceId(1);
-//            ackRequest.setNodeId(2);
-//            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), ackRequest);
-
-//            SyncRequest syncUpdateRequest = new SyncRequest();
-//            syncUpdateRequest.setUuid(UUID.randomUUID());
-//            syncUpdateRequest.setMessageUuid(UUID.randomUUID());
-//            syncUpdateRequest.setOperationType(Constants.MESSAGE_TYPE_UPDATE);
-//            syncUpdateRequest.setApplicationName("testApp");
-//            syncUpdateRequest.setKey("testKey");
-//            syncUpdateRequest.setValue("testValue");
-//            syncUpdateRequest.setLastUpdate(new Date(System.currentTimeMillis()));
-//            syncUpdateRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
-//            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncUpdateRequest);
-//
-//            SyncRequest syncDeleteRequest = new SyncRequest();
-//            syncDeleteRequest.setUuid(UUID.randomUUID());
-//            syncDeleteRequest.setMessageUuid(UUID.randomUUID());
-//            syncDeleteRequest.setOperationType(Constants.MESSAGE_TYPE_DELETE);
-//            syncDeleteRequest.setApplicationName("testApp");
-//            syncDeleteRequest.setKey("testKey");
-//            syncDeleteRequest.setLastUpdate(new Date(System.currentTimeMillis()));
-//            syncDeleteRequest.setLastUpdateServerId(serverList.get(0).getNode().getId());
-//            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), syncDeleteRequest);
-
 //            GetRequest getRequest = new GetRequest();
 //            getRequest.setUuid(UUID.randomUUID());
 //            getRequest.setApplicationName("testApp");
@@ -96,8 +63,6 @@ public class Main {
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();
             }
-
-
         } catch (Exception exception) {
             exception.printStackTrace();
         }
