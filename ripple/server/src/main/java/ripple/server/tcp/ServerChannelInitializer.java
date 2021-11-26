@@ -9,12 +9,16 @@ import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
 import ripple.common.tcp.MessageHandler;
 import ripple.common.tcp.MessageType;
+import ripple.common.tcp.decoder.DeleteRequestDecoder;
+import ripple.common.tcp.decoder.DeleteResponseDecoder;
 import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
+import ripple.common.tcp.encoder.DeleteRequestEncoder;
+import ripple.common.tcp.encoder.DeleteResponseEncoder;
 import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
@@ -28,6 +32,7 @@ import ripple.server.tcp.encoder.AckRequestEncoder;
 import ripple.server.tcp.encoder.AckResponseEncoder;
 import ripple.server.tcp.handler.AckRequestHandler;
 import ripple.server.tcp.handler.AckResponseHandler;
+import ripple.server.tcp.handler.DeleteRequestHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
@@ -95,5 +100,12 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.GET_RESPONSE, new GetResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_RESPONSE, new GetResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.DELETE_REQUEST, new DeleteRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.DELETE_REQUEST, new DeleteRequestDecoder());
+        messageHandler.registerHandler(MessageType.DELETE_REQUEST, new DeleteRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.DELETE_RESPONSE, new DeleteResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.DELETE_RESPONSE, new DeleteResponseDecoder());
     }
 }

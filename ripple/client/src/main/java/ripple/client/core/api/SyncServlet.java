@@ -38,7 +38,9 @@ public class SyncServlet extends BaseServlet {
         if (item == null) {
             this.getClient().getStorage().getItemService().newItem(applicationName, key);
         }
-        this.getClient().getStorage().getMessageService().newMessage(message);
+        if (!this.getClient().getStorage().getMessageService().exist(message.getUuid())) {
+            this.getClient().getStorage().getMessageService().newMessage(message);
+        }
     }
 
     @Override

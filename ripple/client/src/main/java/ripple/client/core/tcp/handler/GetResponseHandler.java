@@ -1,4 +1,4 @@
-package ripple.client.core.tcp;
+package ripple.client.core.tcp.handler;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;

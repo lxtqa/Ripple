@@ -154,10 +154,9 @@ public class RippleClient {
         return result;
     }
 
-    public boolean delete(String applicationName, String key) {
-        boolean result = Api.delete(this.getServerAddress(), this.getServerPort(), applicationName, key);
+    public void delete(String applicationName, String key) {
+        Api.deleteAsync(this.getChannel(), applicationName, key);
         this.refreshItem(applicationName, key);
-        return result;
     }
 
     public boolean subscribe(String applicationName, String key) {

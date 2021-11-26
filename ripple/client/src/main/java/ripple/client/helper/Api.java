@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import ripple.common.Endpoint;
 import ripple.common.Parameter;
 import ripple.common.helper.Http;
+import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetRequest;
 
 import java.net.InetSocketAddress;
@@ -54,18 +55,17 @@ public final class Api {
         }
     }
 
-    public static boolean delete(String address, int port, String applicationName, String key) {
-        try {
-            Map<String, String> headers = new HashMap<>(2);
-            headers.put(Parameter.APPLICATION_NAME, applicationName);
-            headers.put(Parameter.KEY, key);
-            String url = "http://" + address + ":" + port + Endpoint.API_DELETE;
-            String returnValue = Http.post(url, headers);
-            return MAPPER.readValue(returnValue, Boolean.class);
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            return false;
-        }
+    public static void deleteAsync(Channel channel, String applicationName, String key) {
+        DeleteRequest deleteRequest = new DeleteRequest();
+        deleteRequest.setUuid(UUID.randomUUID());
+        deleteRequest.setApplicationName(applicationName);
+        deleteRequest.setKey(key);
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send DELETE request. UUID = {}, Application Name = {}, Key = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), deleteRequest.getUuid(), deleteRequest.getApplicationName(), deleteRequest.getKey());
+        channel.writeAndFlush(deleteRequest);
     }
 
     public static boolean subscribe(String serverAddress, int serverPort

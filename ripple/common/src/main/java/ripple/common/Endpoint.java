@@ -8,7 +8,6 @@ public final class Endpoint {
     public static final String API_SUBSCRIBE = "/Api/Subscribe";
     public static final String API_UNSUBSCRIBE = "/Api/Unsubscribe";
     public static final String API_PUT = "/Api/Put";
-    public static final String API_DELETE = "/Api/Delete";
     public static final String API_SYNC = "/Api/Sync";
 
     // Common UI

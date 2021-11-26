@@ -56,17 +56,11 @@ public class RemoveConfigServlet extends BaseServlet {
         LOGGER.info("[RemoveConfigServlet] Receive POST request. applicationName = {}, key = {}."
                 , applicationName, key);
 
-        boolean success = this.getClient().delete(applicationName, key);
+        this.getClient().delete(applicationName, key);
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ");
-        if (success) {
-            stringBuilder.append("操作已成功完成。");
-        } else {
-            stringBuilder.append("出现错误，请重试。");
-        }
-        stringBuilder.append("\n");
+        stringBuilder.append("                    ").append("操作已成功提交").append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
