@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
 import ripple.common.entity.Constants;
 import ripple.common.entity.Item;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.helper.Http;
 
@@ -33,9 +33,9 @@ public class OperatorServlet extends HttpServlet {
         this.setOperatorService(operatorService);
     }
 
-    public static class MessageComparator implements Comparator<Message> {
+    public static class MessageComparator implements Comparator<AbstractMessage> {
         @Override
-        public int compare(Message o1, Message o2) {
+        public int compare(AbstractMessage o1, AbstractMessage o2) {
             return Long.compare(o2.getLastUpdate().getTime(), o1.getLastUpdate().getTime());
         }
     }
@@ -45,7 +45,7 @@ public class OperatorServlet extends HttpServlet {
         if (item == null) {
             return null;
         }
-        List<Message> messageList = this.getOperatorService().getClient().getStorage().getMessageService()
+        List<AbstractMessage> messageList = this.getOperatorService().getClient().getStorage().getMessageService()
                 .findMessages(item.getApplicationName(), item.getKey());
         if (messageList.size() == 0) {
             return null;

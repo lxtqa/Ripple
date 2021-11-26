@@ -7,7 +7,7 @@ import ripple.client.RippleClient;
 import ripple.client.core.BaseServlet;
 import ripple.common.entity.Constants;
 import ripple.common.entity.Item;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 
 import javax.servlet.http.HttpServletRequest;
@@ -56,11 +56,11 @@ public class GetConfigServlet extends BaseServlet {
             int i = 0;
             for (i = 0; i < allConfigs.size(); i++) {
                 Item item = allConfigs.get(i);
-                List<Message> messageList = this.getClient().getStorage().getMessageService()
+                List<AbstractMessage> messageList = this.getClient().getStorage().getMessageService()
                         .findMessages(item.getApplicationName(), item.getKey());
 
                 String history = "";
-                for (Message message : messageList) {
+                for (AbstractMessage message : messageList) {
                     history += "                            <p>";
                     history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
                     history += "                                <span>类型: " + (message.getType().equals(Constants.MESSAGE_TYPE_UPDATE) ? "更新" : "删除") + "; </span> <br />";

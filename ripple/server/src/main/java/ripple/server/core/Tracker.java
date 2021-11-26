@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.Ack;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.server.helper.Api;
 
 import java.util.ArrayList;
@@ -35,11 +35,11 @@ public class Tracker {
         this.setNode(node);
     }
 
-    private Map<UUID, Message> getPendingMessages() {
-        Map<UUID, Message> map = new ConcurrentHashMap<>();
+    private Map<UUID, AbstractMessage> getPendingMessages() {
+        Map<UUID, AbstractMessage> map = new ConcurrentHashMap<>();
         List<Ack> ackList = this.getNode().getStorage().getAckService().getAllAcks();
         for (Ack ack : ackList) {
-            Message message = this.getNode().getStorage().getMessageService().getMessageByUuid(ack.getMessageUuid());
+            AbstractMessage message = this.getNode().getStorage().getMessageService().getMessageByUuid(ack.getMessageUuid());
             map.put(message.getUuid(), message);
         }
         return map;
@@ -55,7 +55,7 @@ public class Tracker {
     public void retrySending(UUID messageUuid) {
         try {
             Set<Integer> nodeList = this.getNodesToRetry(messageUuid);
-            Message message = this.getPendingMessages().get(messageUuid);
+            AbstractMessage message = this.getPendingMessages().get(messageUuid);
             for (Integer id : nodeList) {
                 NodeMetadata metadata = this.getNode().findServerById(id);
                 LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
@@ -69,7 +69,7 @@ public class Tracker {
         }
     }
 
-    public void initProgress(Message message) {
+    public void initProgress(AbstractMessage message) {
         this.getPendingMessages().put(message.getUuid(), message);
         List<Integer> nodeList = new ArrayList<>();
         for (NodeMetadata metadata : this.getNode().getNodeList()) {

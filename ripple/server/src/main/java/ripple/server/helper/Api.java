@@ -4,7 +4,7 @@ import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.message.HeartbeatRequest;
 import ripple.common.tcp.message.SyncRequest;
@@ -35,7 +35,7 @@ public class Api {
         channel.writeAndFlush(heartbeatRequest);
     }
 
-    public static void sync(Channel channel, Message message) {
+    public static void sync(Channel channel, AbstractMessage message) {
         SyncRequest syncRequest = new SyncRequest();
         syncRequest.setUuid(UUID.randomUUID());
         syncRequest.setMessageUuid(message.getUuid());

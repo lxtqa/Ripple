@@ -2,7 +2,7 @@ package ripple.common.storage;
 
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 
 import java.sql.Connection;
@@ -32,7 +32,7 @@ public class MessageService {
         this.setStorage(storage);
     }
 
-    public boolean newMessage(Message message) {
+    public boolean newMessage(AbstractMessage message) {
         if (message instanceof UpdateMessage) {
             return this.newUpdateMessage((UpdateMessage) message);
         } else if (message instanceof DeleteMessage) {
@@ -112,14 +112,14 @@ public class MessageService {
         }
     }
 
-    public Message getMessageByUuid(UUID messageUuid) {
+    public AbstractMessage getMessageByUuid(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [message] WHERE [uuid] = ?;";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, messageUuid.toString());
             ResultSet resultSet = statement.executeQuery();
-            Message message = null;
+            AbstractMessage message = null;
             if (resultSet.next()) {
                 message = (this.parseMessage(resultSet));
             }
@@ -131,7 +131,7 @@ public class MessageService {
         }
     }
 
-    public List<Message> findMessages(String applicationName, String key) {
+    public List<AbstractMessage> findMessages(String applicationName, String key) {
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ?;";
@@ -139,7 +139,7 @@ public class MessageService {
             statement.setString(1, applicationName);
             statement.setString(2, key);
             ResultSet resultSet = statement.executeQuery();
-            List<Message> ret = new ArrayList<>();
+            List<AbstractMessage> ret = new ArrayList<>();
             while (resultSet.next()) {
                 ret.add(this.parseMessage(resultSet));
             }
@@ -151,8 +151,8 @@ public class MessageService {
         }
     }
 
-    private Message parseMessage(ResultSet resultSet) throws SQLException {
-        Message message = null;
+    private AbstractMessage parseMessage(ResultSet resultSet) throws SQLException {
+        AbstractMessage message = null;
         UUID uuid = UUID.fromString(resultSet.getString("uuid"));
         String type = resultSet.getString("message_type");
         String itemApplicationName = resultSet.getString("item_application_name");

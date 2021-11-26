@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import ripple.common.Endpoint;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.Item;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
 import ripple.server.api.UnsubscribeServlet;
@@ -278,7 +278,7 @@ public class Node {
         return true;
     }
 
-    public boolean propagateMessage(final Message message) {
+    public boolean propagateMessage(final AbstractMessage message) {
         // Update local storage
         this.applyMessageToStorage(message);
 
@@ -320,7 +320,7 @@ public class Node {
         return null;
     }
 
-    private void doSyncWithServer(Message message, int sourceId, int currentId) {
+    private void doSyncWithServer(AbstractMessage message, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
         List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(source, current);
@@ -345,7 +345,7 @@ public class Node {
         }
     }
 
-    private void doNotifyClients(Message message) {
+    private void doNotifyClients(AbstractMessage message) {
         Item item = new Item(message.getApplicationName(), message.getKey());
         if (this.getSubscription().containsKey(item)) {
             Set<ClientMetadata> clients = this.getSubscription().get(item);
@@ -358,7 +358,7 @@ public class Node {
         }
     }
 
-    private void applyMessageToStorage(Message message) {
+    private void applyMessageToStorage(AbstractMessage message) {
         String applicationName = message.getApplicationName();
         String key = message.getKey();
         Item item = this.getStorage().getItemService().getItem(applicationName, key);

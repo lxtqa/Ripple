@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.UpdateMessage;
@@ -44,6 +45,7 @@ public class SyncRequestHandler implements Handler {
 
         boolean result = false;
 
+        AbstractMessage msg = null;
         if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
             LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}" +
@@ -53,9 +55,8 @@ public class SyncRequestHandler implements Handler {
                     , syncRequest.getOperationType(), syncRequest.getApplicationName(), syncRequest.getKey()
                     , syncRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate())
                     , syncRequest.getLastUpdateServerId());
-            UpdateMessage updateMessage = new UpdateMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
+            msg = new UpdateMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
                     , syncRequest.getKey(), syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
-            result = this.getNode().propagateMessage(updateMessage);
         } else if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_DELETE)) {
             LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Last Update = {}" +
@@ -64,10 +65,10 @@ public class SyncRequestHandler implements Handler {
                     , remoteAddress.getPort(), syncRequest.getUuid(), syncRequest.getMessageUuid()
                     , syncRequest.getOperationType(), syncRequest.getApplicationName(), syncRequest.getKey()
                     , SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate()), syncRequest.getLastUpdateServerId());
-            DeleteMessage deleteMessage = new DeleteMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
+            msg = new DeleteMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
                     , syncRequest.getKey(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
-            result = this.getNode().propagateMessage(deleteMessage);
         }
+        result = this.getNode().propagateMessage(msg);
 
         SyncResponse syncResponse = new SyncResponse();
         syncResponse.setUuid(syncRequest.getUuid());

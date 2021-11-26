@@ -1,7 +1,7 @@
 package ripple.test.platform;
 
 import ripple.client.RippleClient;
-import ripple.common.entity.Message;
+import ripple.common.entity.AbstractMessage;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
@@ -77,7 +77,7 @@ public class TestLargeClusterStar {
             Date startDate = new Date(System.currentTimeMillis());
             System.out.println("Start update delivery");
             serverList.get(0).getNode().put(applicationName, key, value);
-            Message message = serverList.get(0).getNode().getStorage().getMessageService()
+            AbstractMessage message = serverList.get(0).getNode().getStorage().getMessageService()
                     .findMessages(applicationName, key).get(0);
             long count = serverList.get(0).getNode().getStorage().getAckService()
                     .getAck(message.getUuid()).getAckNodes().size();

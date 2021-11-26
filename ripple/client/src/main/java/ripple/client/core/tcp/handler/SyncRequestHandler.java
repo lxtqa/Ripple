@@ -5,6 +5,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.Item;
@@ -36,7 +37,7 @@ public class SyncRequestHandler implements Handler {
         this.setRippleClient(rippleClient);
     }
 
-    private void applyMessage(ripple.common.entity.Message message) {
+    private void applyMessage(AbstractMessage message) {
         String applicationName = message.getApplicationName();
         String key = message.getKey();
         Item item = this.getRippleClient().getStorage().getItemService().getItem(applicationName, key);
@@ -54,7 +55,7 @@ public class SyncRequestHandler implements Handler {
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
 
-        ripple.common.entity.Message msg = null;
+        AbstractMessage msg = null;
         if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
             LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}" +

@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class UpdateMessage extends Message {
+public class UpdateMessage extends AbstractMessage {
     private String value;
 
     public UpdateMessage(UUID uuid, String applicationName, String key, String value

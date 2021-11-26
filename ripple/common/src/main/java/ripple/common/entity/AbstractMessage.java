@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public abstract class Message {
+public abstract class AbstractMessage {
     private UUID uuid;
     private String type;
     private String applicationName;
@@ -62,11 +62,11 @@ public abstract class Message {
         this.lastUpdateServerId = lastUpdateServerId;
     }
 
-    public Message() {
+    public AbstractMessage() {
 
     }
 
-    public Message(UUID uuid, String type, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
+    public AbstractMessage(UUID uuid, String type, String applicationName, String key, Date lastUpdate, int lastUpdateServerId) {
         this.setUuid(uuid);
         this.setType(type);
         this.setApplicationName(applicationName);
