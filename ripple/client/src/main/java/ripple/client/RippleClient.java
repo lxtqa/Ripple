@@ -198,9 +198,11 @@ public class RippleClient {
             bootstrap.group(this.getEventLoopGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                    .option(ChannelOption.SO_REUSEADDR, true)
                     .handler(new ClientChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect(address, port).sync();
+            this.setChannel(future.channel());
             return future.channel();
         } catch (InterruptedException exception) {
             exception.printStackTrace();
@@ -241,6 +243,9 @@ public class RippleClient {
         }
         try {
             this.getServer().stop();
+            if (this.getChannel() != null && this.getChannel().isActive()) {
+                this.getChannel().close().sync();
+            }
             this.getEventLoopGroup().shutdownGracefully();
             this.setRunning(false);
             return true;

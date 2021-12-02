@@ -14,9 +14,6 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.tcp.Message;
-import ripple.common.tcp.MessageDecoder;
-import ripple.common.tcp.MessageEncoder;
-import ripple.common.tcp.MessageHandler;
 import ripple.server.core.Node;
 
 import java.net.InetSocketAddress;
@@ -37,9 +34,6 @@ public class NettyServer {
 
     private EventLoopGroup bossGroup;
     private EventLoopGroup workerGroup;
-    private MessageEncoder messageEncoder;
-    private MessageDecoder messageDecoder;
-    private MessageHandler messageHandler;
 
     public Node getNode() {
         return node;
@@ -97,30 +91,6 @@ public class NettyServer {
         this.workerGroup = workerGroup;
     }
 
-    public MessageEncoder getMessageEncoder() {
-        return messageEncoder;
-    }
-
-    private void setMessageEncoder(MessageEncoder messageEncoder) {
-        this.messageEncoder = messageEncoder;
-    }
-
-    public MessageDecoder getMessageDecoder() {
-        return messageDecoder;
-    }
-
-    private void setMessageDecoder(MessageDecoder messageDecoder) {
-        this.messageDecoder = messageDecoder;
-    }
-
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
-    }
-
-    private void setMessageHandler(MessageHandler messageHandler) {
-        this.messageHandler = messageHandler;
-    }
-
     public NettyServer(Node node, int port) {
         this.setNode(node);
         this.setPort(port);
@@ -136,13 +106,14 @@ public class NettyServer {
             this.setBossGroup(new NioEventLoopGroup());
             this.setWorkerGroup(new NioEventLoopGroup());
 
-
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(this.getBossGroup(), this.getWorkerGroup())
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 1024)
+                    .option(ChannelOption.SO_REUSEADDR, true)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ServerChannelInitializer(this));
+
             ChannelFuture future = serverBootstrap.bind(this.getPort()).sync();
             if (this.getPort() == 0) {
                 this.setPort(((NioServerSocketChannel) future.channel()).localAddress().getPort());
@@ -161,6 +132,12 @@ public class NettyServer {
             return true;
         }
         try {
+            List<Channel> currentConnectedNodes = new ArrayList<>(this.getConnectedNodes());
+            for (Channel channel : currentConnectedNodes) {
+                if (channel != null && channel.isActive()) {
+                    channel.close().sync();
+                }
+            }
             this.getBossGroup().shutdownGracefully();
             this.getWorkerGroup().shutdownGracefully();
             this.setRunning(false);
@@ -177,6 +154,7 @@ public class NettyServer {
             bootstrap.group(this.getWorkerGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
+                    .option(ChannelOption.SO_REUSEADDR, true)
                     .handler(new ServerChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect(address, port).sync();

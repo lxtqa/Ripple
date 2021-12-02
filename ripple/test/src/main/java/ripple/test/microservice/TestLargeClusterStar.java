@@ -58,6 +58,8 @@ public class TestLargeClusterStar {
                     nodeList.add(new NodeMetadata(serverList.get(i).getId(), serverList.get(i).getAddress(), serverList.get(i).getApiPort()));
                 }
                 for (i = 0; i < SERVER_COUNT; i++) {
+                    System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
+                            + "Node " + serverList.get(i).getId() + ": Init cluster");
                     serverList.get(i).initCluster(nodeList);
                 }
 
