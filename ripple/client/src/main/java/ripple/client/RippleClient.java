@@ -31,6 +31,7 @@ import javax.servlet.Servlet;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Zhen Tang
@@ -198,7 +199,7 @@ public class RippleClient {
             bootstrap.group(this.getEventLoopGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new ClientChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect(address, port).sync();
@@ -243,10 +244,11 @@ public class RippleClient {
         }
         try {
             this.getServer().stop();
-            if (this.getChannel() != null && this.getChannel().isActive()) {
-                this.getChannel().close().sync();
-            }
-            this.getEventLoopGroup().shutdownGracefully();
+            CountDownLatch lock = new CountDownLatch(1);
+            this.getEventLoopGroup().shutdownGracefully().addListener(e -> {
+                lock.countDown();
+            });
+            lock.await();
             this.setRunning(false);
             return true;
         } catch (Exception exception) {

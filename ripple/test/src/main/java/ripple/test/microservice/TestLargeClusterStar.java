@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author Zhen Tang
@@ -45,6 +49,9 @@ public class TestLargeClusterStar {
                 System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
                         + "Calling System.gc().");
                 System.gc();
+
+//                System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] Sleep for 5 seconds.");
+//                Thread.sleep(5000);
 
                 int i = 0;
                 for (i = 0; i < SERVER_COUNT; i++) {
@@ -120,13 +127,31 @@ public class TestLargeClusterStar {
                 System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "
                         + "Unsubscribe completed in " + (unsubscribeEndDate.getTime() - unsubscribeStartDate.getTime()) + " ms. (" + clientList.size() + " clients)");
 
+                ExecutorService executorService = Executors.newFixedThreadPool(SERVER_COUNT * 2);
+                List<Future<Void>> taskList = new ArrayList<>();
                 for (OperatorService operatorService : operatorServiceList) {
-                    operatorService.stop();
+                    taskList.add(executorService.submit(new Callable<Void>() {
+                        @Override
+                        public Void call() throws Exception {
+                            operatorService.stop();
+                            return null;
+                        }
+                    }));
+                }
+                for (RippleServer rippleServer : serverList) {
+                    taskList.add(executorService.submit(new Callable<Void>() {
+                        @Override
+                        public Void call() throws Exception {
+                            rippleServer.stop();
+                            return null;
+                        }
+                    }));
                 }
 
-                for (RippleServer rippleServer : serverList) {
-                    rippleServer.stop();
+                for (Future<Void> elem : taskList) {
+                    elem.get();
                 }
+                executorService.shutdown();
             }
 
             System.out.println("Summary:");

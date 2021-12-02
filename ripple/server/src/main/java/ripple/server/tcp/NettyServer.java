@@ -19,6 +19,7 @@ import ripple.server.core.Node;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @author Zhen Tang
@@ -110,7 +111,7 @@ public class NettyServer {
             serverBootstrap.group(this.getBossGroup(), this.getWorkerGroup())
                     .channel(NioServerSocketChannel.class)
                     .option(ChannelOption.SO_BACKLOG, 1024)
-                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ServerChannelInitializer(this));
 
@@ -132,14 +133,14 @@ public class NettyServer {
             return true;
         }
         try {
-            List<Channel> currentConnectedNodes = new ArrayList<>(this.getConnectedNodes());
-            for (Channel channel : currentConnectedNodes) {
-                if (channel != null && channel.isActive()) {
-                    channel.close().sync();
-                }
-            }
-            this.getBossGroup().shutdownGracefully();
-            this.getWorkerGroup().shutdownGracefully();
+            CountDownLatch lock = new CountDownLatch(2);
+            this.getBossGroup().shutdownGracefully().addListener(e -> {
+                lock.countDown();
+            });
+            this.getWorkerGroup().shutdownGracefully().addListener(e -> {
+                lock.countDown();
+            });
+            lock.await();
             this.setRunning(false);
             return true;
         } catch (Exception exception) {
@@ -154,7 +155,7 @@ public class NettyServer {
             bootstrap.group(this.getWorkerGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                    .option(ChannelOption.SO_REUSEADDR, true)
+                    .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new ServerChannelInitializer(this));
 
             ChannelFuture future = bootstrap.connect(address, port).sync();
