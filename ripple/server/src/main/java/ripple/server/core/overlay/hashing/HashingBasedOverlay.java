@@ -9,6 +9,8 @@ import java.util.List;
  * @author Zhen Tang
  */
 public class HashingBasedOverlay implements Overlay {
+    // TODO: Fix this
+
     @Override
     public void buildOverlay(List<NodeMetadata> nodeList) {
 
