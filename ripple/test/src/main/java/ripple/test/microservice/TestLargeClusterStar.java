@@ -130,21 +130,15 @@ public class TestLargeClusterStar {
                 ExecutorService executorService = Executors.newFixedThreadPool(SERVER_COUNT * 2);
                 List<Future<Void>> taskList = new ArrayList<>();
                 for (OperatorService operatorService : operatorServiceList) {
-                    taskList.add(executorService.submit(new Callable<Void>() {
-                        @Override
-                        public Void call() throws Exception {
-                            operatorService.stop();
-                            return null;
-                        }
+                    taskList.add(executorService.submit(() -> {
+                        operatorService.stop();
+                        return null;
                     }));
                 }
                 for (RippleServer rippleServer : serverList) {
-                    taskList.add(executorService.submit(new Callable<Void>() {
-                        @Override
-                        public Void call() throws Exception {
-                            rippleServer.stop();
-                            return null;
-                        }
+                    taskList.add(executorService.submit(() -> {
+                        rippleServer.stop();
+                        return null;
                     }));
                 }
 

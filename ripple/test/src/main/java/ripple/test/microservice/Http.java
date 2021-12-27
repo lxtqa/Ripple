@@ -1,4 +1,4 @@
-package ripple.common.helper;
+package ripple.test.microservice;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
