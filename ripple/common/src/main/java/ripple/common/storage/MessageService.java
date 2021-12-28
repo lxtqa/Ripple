@@ -1,8 +1,9 @@
 package ripple.common.storage;
 
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
-import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
 
 import java.sql.Connection;
@@ -37,6 +38,8 @@ public class MessageService {
             return this.newUpdateMessage((UpdateMessage) message);
         } else if (message instanceof DeleteMessage) {
             return this.newDeleteMessage((DeleteMessage) message);
+        } else if (message instanceof IncrementalUpdateMessage) {
+            return this.newIncrementalUpdateMessage((IncrementalUpdateMessage) message);
         }
         return false;
     }
@@ -112,6 +115,37 @@ public class MessageService {
         }
     }
 
+    private synchronized boolean newIncrementalUpdateMessage(IncrementalUpdateMessage incrementalUpdateMessage) {
+        if (this.exist(incrementalUpdateMessage.getUuid())) {
+            return false;
+        }
+
+        try {
+            Connection connection = this.getStorage().getConnection();
+            String sql = "INSERT INTO [message] " +
+                    "([uuid], [item_application_name], [item_key], [message_type]" +
+                    ", [base_message_uuid], [atomic_operation], [new_value]" +
+                    ", [last_update], [last_update_id]) " +
+                    "VALUES (?,?,?,?,?, ?, ?, ?,?);";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            int i = 1;
+            statement.setString(i++, incrementalUpdateMessage.getUuid().toString());
+            statement.setString(i++, incrementalUpdateMessage.getApplicationName());
+            statement.setString(i++, incrementalUpdateMessage.getKey());
+            statement.setString(i++, incrementalUpdateMessage.getType());
+            statement.setString(i++, incrementalUpdateMessage.getBaseMessageUuid().toString());
+            statement.setString(i++, incrementalUpdateMessage.getAtomicOperation());
+            statement.setString(i++, incrementalUpdateMessage.getValue());
+            statement.setLong(i++, incrementalUpdateMessage.getLastUpdate().getTime());
+            statement.setInt(i, incrementalUpdateMessage.getLastUpdateServerId());
+            int count = statement.executeUpdate();
+            return count == 1;
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            return false;
+        }
+    }
+
     public AbstractMessage getMessageByUuid(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -175,6 +209,20 @@ public class MessageService {
             message.setType(type);
             message.setApplicationName(itemApplicationName);
             message.setKey(itemKey);
+            message.setLastUpdate(lastUpdate);
+            message.setLastUpdateServerId(lastUpdateServerId);
+        } else if (type.equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+            UUID baseMessageUuid = UUID.fromString(resultSet.getString("base_message_uuid"));
+            String atomicOperation = resultSet.getString("atomic_operation");
+            String value = resultSet.getString("new_value");
+            message = new IncrementalUpdateMessage();
+            message.setUuid(uuid);
+            message.setType(type);
+            message.setApplicationName(itemApplicationName);
+            message.setKey(itemKey);
+            ((IncrementalUpdateMessage) message).setBaseMessageUuid(baseMessageUuid);
+            ((IncrementalUpdateMessage) message).setAtomicOperation(atomicOperation);
+            ((IncrementalUpdateMessage) message).setValue(value);
             message.setLastUpdate(lastUpdate);
             message.setLastUpdateServerId(lastUpdateServerId);
         }

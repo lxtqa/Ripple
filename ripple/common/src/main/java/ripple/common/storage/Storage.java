@@ -83,12 +83,14 @@ public class Storage {
                     " [key] TEXT NOT NULL, " +
                     "PRIMARY KEY ([application_name], [key]));");
 
-            // Message: uuid, item_application_name, item_key, message_type, new_value, last_update, last_update_id
+            // Message: uuid, item_application_name, item_key, message_type, base_message_uuid, atomic_operation, new_value, last_update, last_update_id
             statement.execute("CREATE TABLE IF NOT EXISTS [message] " +
                     "([uuid] TEXT NOT NULL, " +
                     "[item_application_name] TEXT NOT NULL, " +
                     "[item_key] TEXT NOT NULL, " +
                     "[message_type] TEXT NOT NULL, " +
+                    "[base_message_uuid] TEXT, " +
+                    "[atomic_operation] TEXT, " +
                     "[new_value] TEXT, " +
                     "[last_update] INTEGER NOT NULL, " +
                     "[last_update_id] INTEGER NOT NULL, " +
