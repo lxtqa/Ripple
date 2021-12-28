@@ -46,7 +46,7 @@ public class PutRequestHandler implements Handler {
         boolean result = this.getNode().put(putRequest.getApplicationName(), putRequest.getKey(), putRequest.getValue());
 
         PutResponse putResponse = new PutResponse();
-        putResponse.setUuid(putResponse.getUuid());
+        putResponse.setUuid(putRequest.getUuid());
         putResponse.setSuccess(result);
 
         LOGGER.info("[PutRequestHandler] [{}:{}<-->{}:{}] Send PUT response. Success = {}."

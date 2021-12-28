@@ -47,7 +47,7 @@ public class UnsubscribeRequestHandler implements Handler {
                 , unsubscribeRequest.getApplicationName(), unsubscribeRequest.getKey());
 
         UnsubscribeResponse unsubscribeResponse = new UnsubscribeResponse();
-        unsubscribeResponse.setUuid(unsubscribeResponse.getUuid());
+        unsubscribeResponse.setUuid(unsubscribeRequest.getUuid());
         unsubscribeResponse.setSuccess(true);
 
         LOGGER.info("[UnsubscribeRequestHandler] [{}:{}<-->{}:{}] Send UNSUBSCRIBE response. Success = {}."
