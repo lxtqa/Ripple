@@ -30,6 +30,10 @@ public class GetResponseEncoder implements Encoder {
             TypeHelper.writeString(getResponseItem.getKey(), byteBuf);
             if (getResponseItem.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
                 TypeHelper.writeString(getResponseItem.getValue(), byteBuf);
+            } else if (getResponseItem.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+                TypeHelper.writeUuid(getResponseItem.getBaseMessageUuid(), byteBuf);
+                TypeHelper.writeString(getResponseItem.getAtomicOperation(), byteBuf);
+                TypeHelper.writeString(getResponseItem.getValue(), byteBuf);
             }
             byteBuf.writeLong(getResponseItem.getLastUpdate().getTime());
             byteBuf.writeInt(getResponseItem.getLastUpdateServerId());

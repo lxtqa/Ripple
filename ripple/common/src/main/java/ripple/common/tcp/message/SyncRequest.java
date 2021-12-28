@@ -14,6 +14,8 @@ public class SyncRequest extends Message {
     private String operationType;
     private String applicationName;
     private String key;
+    private UUID baseMessageUuid;
+    private String atomicOperation;
     private String value;
     private Date lastUpdate;
     private int lastUpdateServerId;
@@ -48,6 +50,22 @@ public class SyncRequest extends Message {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public UUID getBaseMessageUuid() {
+        return baseMessageUuid;
+    }
+
+    public void setBaseMessageUuid(UUID baseMessageUuid) {
+        this.baseMessageUuid = baseMessageUuid;
+    }
+
+    public String getAtomicOperation() {
+        return atomicOperation;
+    }
+
+    public void setAtomicOperation(String atomicOperation) {
+        this.atomicOperation = atomicOperation;
     }
 
     public String getValue() {

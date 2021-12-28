@@ -33,6 +33,10 @@ public class GetResponseDecoder implements Decoder {
             getResponseItem.setKey(TypeHelper.readString(byteBuf));
             if (getResponseItem.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
                 getResponseItem.setValue(TypeHelper.readString(byteBuf));
+            } else if (getResponseItem.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+                getResponseItem.setBaseMessageUuid(TypeHelper.readUuid(byteBuf));
+                getResponseItem.setAtomicOperation(TypeHelper.readString(byteBuf));
+                getResponseItem.setValue(TypeHelper.readString(byteBuf));
             }
             getResponseItem.setLastUpdate(new Date(byteBuf.readLong()));
             getResponseItem.setLastUpdateServerId(byteBuf.readInt());

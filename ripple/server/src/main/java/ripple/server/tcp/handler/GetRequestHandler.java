@@ -5,6 +5,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.Handler;
@@ -69,6 +70,17 @@ public class GetRequestHandler implements Handler {
                 elem.setKey(deleteMessage.getKey());
                 elem.setLastUpdate(deleteMessage.getLastUpdate());
                 elem.setLastUpdateServerId(deleteMessage.getLastUpdateServerId());
+            } else if (object instanceof IncrementalUpdateMessage) {
+                IncrementalUpdateMessage incrementalUpdateMessage = (IncrementalUpdateMessage) object;
+                elem.setMessageUuid(incrementalUpdateMessage.getUuid());
+                elem.setOperationType(incrementalUpdateMessage.getType());
+                elem.setApplicationName(incrementalUpdateMessage.getApplicationName());
+                elem.setKey(incrementalUpdateMessage.getKey());
+                elem.setBaseMessageUuid(incrementalUpdateMessage.getBaseMessageUuid());
+                elem.setAtomicOperation(incrementalUpdateMessage.getAtomicOperation());
+                elem.setValue(incrementalUpdateMessage.getValue());
+                elem.setLastUpdate(incrementalUpdateMessage.getLastUpdate());
+                elem.setLastUpdateServerId(incrementalUpdateMessage.getLastUpdateServerId());
             }
             history.add(elem);
         }

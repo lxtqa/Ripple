@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
@@ -67,7 +68,20 @@ public class SyncRequestHandler implements Handler {
                     , SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate()), syncRequest.getLastUpdateServerId());
             msg = new DeleteMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
                     , syncRequest.getKey(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
+        } else if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+            LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
+                            ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
+                            ", Atomic Operation = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
+                    , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                    , remoteAddress.getPort(), syncRequest.getUuid(), syncRequest.getMessageUuid()
+                    , syncRequest.getOperationType(), syncRequest.getApplicationName(), syncRequest.getKey()
+                    , syncRequest.getBaseMessageUuid(), syncRequest.getAtomicOperation(), syncRequest.getValue()
+                    , SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate()), syncRequest.getLastUpdateServerId());
+            msg = new IncrementalUpdateMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
+                    , syncRequest.getKey(), syncRequest.getBaseMessageUuid(), syncRequest.getAtomicOperation()
+                    , syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         }
+
         result = this.getNode().propagateMessage(msg);
 
         SyncResponse syncResponse = new SyncResponse();

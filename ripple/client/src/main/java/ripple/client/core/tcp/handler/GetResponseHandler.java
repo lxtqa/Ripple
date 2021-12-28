@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.Handler;
@@ -80,6 +81,24 @@ public class GetResponseHandler implements Handler {
                         , getResponseItem.getLastUpdate(), getResponseItem.getLastUpdateServerId());
                 if (!this.getRippleClient().getStorage().getMessageService().exist(getResponseItem.getMessageUuid())) {
                     this.getRippleClient().getStorage().getMessageService().newMessage(deleteMessage);
+                }
+            } else if (getResponseItem.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+                LOGGER.info("[GetResponseHandler] [{}:{}<-->{}:{}] ---> History: Message UUID = {}" +
+                                ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
+                                ", Atomic Operation = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
+                        , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                        , remoteAddress.getPort(), getResponseItem.getMessageUuid()
+                        , getResponseItem.getOperationType(), getResponseItem.getApplicationName()
+                        , getResponseItem.getKey(), getResponseItem.getBaseMessageUuid()
+                        , getResponseItem.getAtomicOperation(), getResponseItem.getValue()
+                        , SimpleDateFormat.getDateTimeInstance().format(getResponseItem.getLastUpdate())
+                        , getResponseItem.getLastUpdateServerId());
+                IncrementalUpdateMessage incrementalUpdateMessage = new IncrementalUpdateMessage(getResponseItem.getMessageUuid()
+                        , getResponseItem.getApplicationName(), getResponseItem.getKey()
+                        , getResponseItem.getBaseMessageUuid(), getResponseItem.getAtomicOperation(), getResponseItem.getValue()
+                        , getResponseItem.getLastUpdate(), getResponseItem.getLastUpdateServerId());
+                if (!this.getRippleClient().getStorage().getMessageService().exist(getResponseItem.getMessageUuid())) {
+                    this.getRippleClient().getStorage().getMessageService().newMessage(incrementalUpdateMessage);
                 }
             }
         }

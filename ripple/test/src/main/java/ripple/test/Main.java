@@ -1,6 +1,7 @@
 package ripple.test;
 
 import ripple.client.RippleClient;
+import ripple.common.entity.Constants;
 import ripple.server.RippleServer;
 import ripple.server.core.NodeMetadata;
 
@@ -10,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author Zhen Tang
@@ -48,7 +50,10 @@ public class Main {
             client.start();
             System.out.println("Client UI: " + client.getUiAddress() + ":" + client.getUiPort());
             Thread.sleep(1000);
-            client.put("testApp", "test", "test");
+            UUID baseMessageUuid = UUID.randomUUID();
+            System.out.println("Test incremental update, uuid = " + baseMessageUuid);
+            client.incrementalUpdate("testApp", "test", baseMessageUuid, Constants.ATOMIC_OPERATION_ADD_ENTRY, "test");
+            client.get("testApp", "test");
 
 //            Thread.sleep(2000);
 //            GetRequest getRequest = new GetRequest();

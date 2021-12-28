@@ -24,6 +24,10 @@ public class SyncRequestDecoder implements Decoder {
         syncRequest.setKey(TypeHelper.readString(byteBuf));
         if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
             syncRequest.setValue(TypeHelper.readString(byteBuf));
+        } else if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+            syncRequest.setBaseMessageUuid(TypeHelper.readUuid(byteBuf));
+            syncRequest.setAtomicOperation(TypeHelper.readString(byteBuf));
+            syncRequest.setValue(TypeHelper.readString(byteBuf));
         }
         syncRequest.setLastUpdate(new Date(byteBuf.readLong()));
         syncRequest.setLastUpdateServerId(byteBuf.readInt());

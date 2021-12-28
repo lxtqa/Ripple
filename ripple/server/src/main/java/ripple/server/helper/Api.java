@@ -5,6 +5,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.message.HeartbeatRequest;
 import ripple.common.tcp.message.SyncRequest;
@@ -44,17 +45,23 @@ public class Api {
         syncRequest.setKey(message.getKey());
         if (message instanceof UpdateMessage) {
             syncRequest.setValue(((UpdateMessage) message).getValue());
+        } else if (message instanceof IncrementalUpdateMessage) {
+            syncRequest.setBaseMessageUuid(((IncrementalUpdateMessage) message).getBaseMessageUuid());
+            syncRequest.setAtomicOperation(((IncrementalUpdateMessage) message).getAtomicOperation());
+            syncRequest.setValue(((IncrementalUpdateMessage) message).getValue());
         }
         syncRequest.setLastUpdate(message.getLastUpdate());
         syncRequest.setLastUpdateServerId(message.getLastUpdateServerId());
         InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
         LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SYNC request. UUID = {}, Message UUID = {}" +
-                        ", Operation Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}" +
+                        ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
+                        ", Atomic Operation = {}, Value = {}, Last Update = {}" +
                         ", Last Update Server Id = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), syncRequest.getUuid(), syncRequest.getMessageUuid()
                 , syncRequest.getOperationType(), syncRequest.getApplicationName(), syncRequest.getKey()
+                , syncRequest.getBaseMessageUuid(), syncRequest.getAtomicOperation()
                 , syncRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate())
                 , syncRequest.getLastUpdateServerId());
         channel.writeAndFlush(syncRequest);

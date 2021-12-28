@@ -4,6 +4,7 @@ import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.Constants;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
@@ -24,6 +25,17 @@ public class GetConfigServlet extends BaseServlet {
 
     public GetConfigServlet(Node node) {
         super(node);
+    }
+
+    private String parseMessageType(String messageType) {
+        if (messageType.equals(Constants.MESSAGE_TYPE_DELETE)) {
+            return "删除";
+        } else if (messageType.equals(Constants.MESSAGE_TYPE_UPDATE)) {
+            return "更新";
+        } else if (messageType.equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
+            return "增量更新";
+        }
+        return null;
     }
 
     @Override
@@ -62,9 +74,13 @@ public class GetConfigServlet extends BaseServlet {
                 for (AbstractMessage message : messageList) {
                     history += "                            <p>";
                     history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
-                    history += "                                <span>类型: " + (message.getType().equals(Constants.MESSAGE_TYPE_UPDATE) ? "更新" : "删除") + "; </span> <br />";
+                    history += "                                <span>类型: " + this.parseMessageType(message.getType()) + "; </span> <br />";
                     if (message instanceof UpdateMessage) {
                         history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span> <br />";
+                    } else if (message instanceof IncrementalUpdateMessage) {
+                        history += "                                <span>基准版本: " + ((IncrementalUpdateMessage) message).getBaseMessageUuid() + "; </span> <br />";
+                        history += "                                <span>原子操作: " + ((IncrementalUpdateMessage) message).getAtomicOperation() + "; </span> <br />";
+                        history += "                                <span>值: " + ((IncrementalUpdateMessage) message).getValue() + "; </span> <br />";
                     }
                     history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
                     history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
