@@ -31,6 +31,7 @@ import javax.servlet.Servlet;
 import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -155,6 +156,12 @@ public class RippleClient {
 
     public void delete(String applicationName, String key) {
         Api.deleteAsync(this.getChannel(), applicationName, key);
+        this.refreshItem(applicationName, key);
+    }
+
+    public void incrementalUpdate(String applicationName, String key, UUID baseMessageUuid
+            , String atomicOperation, String value) {
+        Api.incrementalUpdateAsync(this.getChannel(), applicationName, key, baseMessageUuid, atomicOperation, value);
         this.refreshItem(applicationName, key);
     }
 

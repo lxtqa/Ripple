@@ -8,6 +8,7 @@ import io.netty.handler.codec.LengthFieldPrepender;
 import ripple.client.RippleClient;
 import ripple.client.core.tcp.handler.DeleteResponseHandler;
 import ripple.client.core.tcp.handler.GetResponseHandler;
+import ripple.client.core.tcp.handler.IncrementalUpdateResponseHandler;
 import ripple.client.core.tcp.handler.PutResponseHandler;
 import ripple.client.core.tcp.handler.SubscribeResponseHandler;
 import ripple.client.core.tcp.handler.SyncRequestHandler;
@@ -22,6 +23,8 @@ import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.decoder.IncrementalUpdateRequestDecoder;
+import ripple.common.tcp.decoder.IncrementalUpdateResponseDecoder;
 import ripple.common.tcp.decoder.PutRequestDecoder;
 import ripple.common.tcp.decoder.PutResponseDecoder;
 import ripple.common.tcp.decoder.SubscribeRequestDecoder;
@@ -36,6 +39,8 @@ import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.encoder.IncrementalUpdateRequestEncoder;
+import ripple.common.tcp.encoder.IncrementalUpdateResponseEncoder;
 import ripple.common.tcp.encoder.PutRequestEncoder;
 import ripple.common.tcp.encoder.PutResponseEncoder;
 import ripple.common.tcp.encoder.SubscribeRequestEncoder;
@@ -110,6 +115,13 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.DELETE_RESPONSE, new DeleteResponseEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_RESPONSE, new DeleteResponseDecoder());
         messageHandler.registerHandler(MessageType.DELETE_RESPONSE, new DeleteResponseHandler(this.getRippleClient()));
+
+        messageEncoder.registerEncoder(MessageType.INCREMENTAL_UPDATE_REQUEST, new IncrementalUpdateRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.INCREMENTAL_UPDATE_REQUEST, new IncrementalUpdateRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.INCREMENTAL_UPDATE_RESPONSE, new IncrementalUpdateResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.INCREMENTAL_UPDATE_RESPONSE, new IncrementalUpdateResponseDecoder());
+        messageHandler.registerHandler(MessageType.INCREMENTAL_UPDATE_RESPONSE, new IncrementalUpdateResponseHandler(this.getRippleClient()));
 
         messageEncoder.registerEncoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestEncoder());
         messageDecoder.registerDecoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestDecoder());

@@ -1,12 +1,12 @@
 package ripple.client.helper;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetRequest;
+import ripple.common.tcp.message.IncrementalUpdateRequest;
 import ripple.common.tcp.message.PutRequest;
 import ripple.common.tcp.message.SubscribeRequest;
 import ripple.common.tcp.message.UnsubscribeRequest;
@@ -63,6 +63,26 @@ public final class Api {
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), deleteRequest.getUuid(), deleteRequest.getApplicationName(), deleteRequest.getKey());
         channel.writeAndFlush(deleteRequest);
+    }
+
+    public static void incrementalUpdateAsync(Channel channel, String applicationName, String key
+            , UUID baseMessageUuid, String atomicOperation, String value) {
+        IncrementalUpdateRequest incrementalUpdateRequest = new IncrementalUpdateRequest();
+        incrementalUpdateRequest.setUuid(UUID.randomUUID());
+        incrementalUpdateRequest.setApplicationName(applicationName);
+        incrementalUpdateRequest.setKey(key);
+        incrementalUpdateRequest.setBaseMessageUuid(baseMessageUuid);
+        incrementalUpdateRequest.setAtomicOperation(atomicOperation);
+        incrementalUpdateRequest.setValue(value);
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send INCREMENTAL_UPDATE request. UUID = {}, Application Name = {}" +
+                        ", Key = {}, Base Message UUID = {}, Atomic Operation = {}, Value = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), incrementalUpdateRequest.getUuid(), incrementalUpdateRequest.getApplicationName()
+                , incrementalUpdateRequest.getKey(), incrementalUpdateRequest.getBaseMessageUuid()
+                , incrementalUpdateRequest.getAtomicOperation(), incrementalUpdateRequest.getValue());
+        channel.writeAndFlush(incrementalUpdateRequest);
     }
 
     public static void subscribeAsync(Channel channel, String applicationName, String key) {

@@ -15,6 +15,8 @@ import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
 import ripple.common.tcp.decoder.HeartbeatResponseDecoder;
+import ripple.common.tcp.decoder.IncrementalUpdateRequestDecoder;
+import ripple.common.tcp.decoder.IncrementalUpdateResponseDecoder;
 import ripple.common.tcp.decoder.PutRequestDecoder;
 import ripple.common.tcp.decoder.PutResponseDecoder;
 import ripple.common.tcp.decoder.SubscribeRequestDecoder;
@@ -29,6 +31,8 @@ import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
 import ripple.common.tcp.encoder.HeartbeatResponseEncoder;
+import ripple.common.tcp.encoder.IncrementalUpdateRequestEncoder;
+import ripple.common.tcp.encoder.IncrementalUpdateResponseEncoder;
 import ripple.common.tcp.encoder.PutRequestEncoder;
 import ripple.common.tcp.encoder.PutResponseEncoder;
 import ripple.common.tcp.encoder.SubscribeRequestEncoder;
@@ -47,6 +51,7 @@ import ripple.server.tcp.handler.AckResponseHandler;
 import ripple.server.tcp.handler.DeleteRequestHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
+import ripple.server.tcp.handler.IncrementalUpdateRequestHandler;
 import ripple.server.tcp.handler.PutRequestHandler;
 import ripple.server.tcp.handler.SubscribeRequestHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
@@ -129,6 +134,13 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.DELETE_RESPONSE, new DeleteResponseEncoder());
         messageDecoder.registerDecoder(MessageType.DELETE_RESPONSE, new DeleteResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.INCREMENTAL_UPDATE_REQUEST, new IncrementalUpdateRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.INCREMENTAL_UPDATE_REQUEST, new IncrementalUpdateRequestDecoder());
+        messageHandler.registerHandler(MessageType.INCREMENTAL_UPDATE_REQUEST, new IncrementalUpdateRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.INCREMENTAL_UPDATE_RESPONSE, new IncrementalUpdateResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.INCREMENTAL_UPDATE_RESPONSE, new IncrementalUpdateResponseDecoder());
 
         messageEncoder.registerEncoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestEncoder());
         messageDecoder.registerDecoder(MessageType.SUBSCRIBE_REQUEST, new SubscribeRequestDecoder());
