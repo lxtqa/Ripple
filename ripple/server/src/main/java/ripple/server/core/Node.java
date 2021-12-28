@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
@@ -35,6 +36,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -253,6 +255,17 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
+        this.propagateMessage(message);
+
+        return true;
+    }
+
+    public boolean incrementalUpdate(String applicationName, String key, UUID baseMessageUuid, String atomicOperation, String value) {
+        Date lastUpdate = new Date(System.currentTimeMillis());
+        int lastUpdateServerId = this.getId();
+
+        IncrementalUpdateMessage message = new IncrementalUpdateMessage(applicationName, key
+                , baseMessageUuid, atomicOperation, value, lastUpdate, lastUpdateServerId);
         this.propagateMessage(message);
 
         return true;

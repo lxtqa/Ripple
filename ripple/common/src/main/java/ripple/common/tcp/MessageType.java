@@ -19,7 +19,9 @@ public enum MessageType {
     SUBSCRIBE_REQUEST((byte) 12),
     SUBSCRIBE_RESPONSE((byte) 13),
     UNSUBSCRIBE_REQUEST((byte) 14),
-    UNSUBSCRIBE_RESPONSE((byte) 15);
+    UNSUBSCRIBE_RESPONSE((byte) 15),
+    INCREMENTAL_UPDATE_REQUEST((byte) 16),
+    INCREMENTAL_UPDATE_RESPONSE((byte) 17);
 
     private byte value;
 
