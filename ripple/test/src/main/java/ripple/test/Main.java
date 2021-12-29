@@ -52,8 +52,8 @@ public class Main {
             Thread.sleep(1000);
             UUID baseMessageUuid = UUID.randomUUID();
             System.out.println("Test incremental update, uuid = " + baseMessageUuid);
+            client.subscribe("testApp", "test");
             client.incrementalUpdate("testApp", "test", baseMessageUuid, Constants.ATOMIC_OPERATION_ADD_ENTRY, "test");
-            client.get("testApp", "test");
 
 //            Thread.sleep(2000);
 //            GetRequest getRequest = new GetRequest();

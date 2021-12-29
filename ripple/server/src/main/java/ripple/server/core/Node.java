@@ -23,6 +23,7 @@ import ripple.server.ui.Endpoint;
 import ripple.server.ui.GetConfigServlet;
 import ripple.server.ui.GetSubscriptionServlet;
 import ripple.server.ui.HomeServlet;
+import ripple.server.ui.IncrementalUpdateServlet;
 import ripple.server.ui.ModifyConfigServlet;
 import ripple.server.ui.RemoveConfigServlet;
 import ripple.server.ui.ServerClusterServlet;
@@ -236,6 +237,7 @@ public class Node {
         this.registerServlet(servletContextHandler, new GetConfigServlet(this), Endpoint.UI_GET_CONFIG);
         this.registerServlet(servletContextHandler, new AddConfigServlet(this), Endpoint.UI_ADD_CONFIG);
         this.registerServlet(servletContextHandler, new ModifyConfigServlet(this), Endpoint.UI_MODIFY_CONFIG);
+        this.registerServlet(servletContextHandler, new IncrementalUpdateServlet(this), Endpoint.UI_INCREMENTAL_UPDATE);
         this.registerServlet(servletContextHandler, new RemoveConfigServlet(this), Endpoint.UI_REMOVE_CONFIG);
         this.registerServlet(servletContextHandler, new GetSubscriptionServlet(this), Endpoint.UI_GET_SUBSCRIPTION);
         this.registerServlet(servletContextHandler, new ServerClusterServlet(this), Endpoint.UI_SERVER_CLUSTER);

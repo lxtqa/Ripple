@@ -10,6 +10,7 @@ public final class Endpoint {
     public static final String UI_GET_CONFIG = "/Config/Get";
     public static final String UI_ADD_CONFIG = "/Config/Add";
     public static final String UI_MODIFY_CONFIG = "/Config/Modify";
+    public static final String UI_INCREMENTAL_UPDATE = "/Config/IncrementalUpdate";
     public static final String UI_REMOVE_CONFIG = "/Config/Remove";
     public static final String UI_GET_SUBSCRIPTION = "/Subscription/Get";
 
