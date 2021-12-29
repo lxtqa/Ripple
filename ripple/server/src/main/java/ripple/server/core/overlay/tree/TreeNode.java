@@ -1,6 +1,6 @@
 package ripple.server.core.overlay.tree;
 
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 
 import java.util.ArrayList;
 import java.util.List;

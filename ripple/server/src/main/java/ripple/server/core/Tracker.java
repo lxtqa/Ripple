@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.Ack;
 import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.NodeMetadata;
 import ripple.server.helper.Api;
 
 import java.util.ArrayList;

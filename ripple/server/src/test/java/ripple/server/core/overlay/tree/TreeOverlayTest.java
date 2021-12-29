@@ -2,7 +2,7 @@ package ripple.server.core.overlay.tree;
 
 import org.junit.Assert;
 import org.junit.Test;
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 
 import java.util.ArrayList;
 import java.util.List;

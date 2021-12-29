@@ -8,7 +8,7 @@ import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.message.HeartbeatResponse;
 import ripple.server.core.Node;
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 
 import java.net.InetSocketAddress;
 

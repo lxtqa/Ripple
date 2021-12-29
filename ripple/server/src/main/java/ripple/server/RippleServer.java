@@ -1,7 +1,7 @@
 package ripple.server;
 
 import ripple.server.core.Node;
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.ExpanderOverlay;
 import ripple.server.core.overlay.GossipOverlay;
 import ripple.server.core.overlay.StarOverlay;

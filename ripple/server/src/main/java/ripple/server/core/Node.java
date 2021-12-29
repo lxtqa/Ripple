@@ -13,6 +13,8 @@ import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.UpdateMessage;
+import ripple.common.entity.ClientMetadata;
+import ripple.common.entity.NodeMetadata;
 import ripple.common.storage.Storage;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;

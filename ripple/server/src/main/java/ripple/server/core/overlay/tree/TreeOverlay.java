@@ -2,7 +2,7 @@ package ripple.server.core.overlay.tree;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.Overlay;
 
 import java.util.ArrayList;

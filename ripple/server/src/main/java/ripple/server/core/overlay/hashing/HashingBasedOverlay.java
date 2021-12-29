@@ -1,6 +1,6 @@
 package ripple.server.core.overlay.hashing;
 
-import ripple.server.core.NodeMetadata;
+import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.Overlay;
 
 import java.util.List;

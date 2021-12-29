@@ -3,6 +3,7 @@ package ripple.server.core;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.NodeMetadata;
 import ripple.server.helper.Api;
 
 import java.util.Map;
