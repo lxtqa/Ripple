@@ -1,5 +1,7 @@
 package ripple.common.hashing;
 
+import ripple.common.entity.NodeMetadata;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,10 +9,10 @@ import java.util.List;
  * @author Zhen Tang
  */
 public class DefaultHashing implements Hashing {
-    // TODO: Fix this
+    // Returns the node list
 
     @Override
-    public List<String> hashing(String key, List<String> nodeList) {
+    public List<NodeMetadata> hashing(String key, List<NodeMetadata> nodeList) {
         return new ArrayList<>(nodeList);
     }
 }

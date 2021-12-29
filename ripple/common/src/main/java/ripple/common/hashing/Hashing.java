@@ -1,12 +1,13 @@
 package ripple.common.hashing;
 
+import ripple.common.entity.NodeMetadata;
+
 import java.util.List;
 
 /**
  * @author Zhen Tang
  */
 public interface Hashing {
-    // TODO: Fix this
-    
-    List<String> hashing(String key, List<String> nodeList);
+    // Calculate the node list to store the key-value pair
+    List<NodeMetadata> hashing(String key, List<NodeMetadata> nodeList);
 }
