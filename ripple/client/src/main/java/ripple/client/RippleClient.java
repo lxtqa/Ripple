@@ -18,6 +18,7 @@ import ripple.client.core.ui.Endpoint;
 import ripple.client.core.ui.GetConfigServlet;
 import ripple.client.core.ui.GetSubscriptionServlet;
 import ripple.client.core.ui.HomeServlet;
+import ripple.client.core.ui.IncrementalUpdateServlet;
 import ripple.client.core.ui.ModifyConfigServlet;
 import ripple.client.core.ui.RemoveConfigServlet;
 import ripple.client.core.ui.RemoveSubscriptionServlet;
@@ -192,6 +193,7 @@ public class RippleClient {
         this.registerServlet(servletContextHandler, new GetConfigServlet(this), Endpoint.UI_GET_CONFIG);
         this.registerServlet(servletContextHandler, new AddConfigServlet(this), Endpoint.UI_ADD_CONFIG);
         this.registerServlet(servletContextHandler, new ModifyConfigServlet(this), Endpoint.UI_MODIFY_CONFIG);
+        this.registerServlet(servletContextHandler, new IncrementalUpdateServlet(this), Endpoint.UI_INCREMENTAL_UPDATE);
         this.registerServlet(servletContextHandler, new RemoveConfigServlet(this), Endpoint.UI_REMOVE_CONFIG);
         this.registerServlet(servletContextHandler, new GetSubscriptionServlet(this), Endpoint.UI_GET_SUBSCRIPTION);
         this.registerServlet(servletContextHandler, new AddSubscriptionServlet(this), Endpoint.UI_ADD_SUBSCRIPTION);

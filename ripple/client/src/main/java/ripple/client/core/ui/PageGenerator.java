@@ -21,6 +21,7 @@ public final class PageGenerator {
         PageHelper.buildSidebarItem(stringBuilder, "查询配置", Endpoint.UI_GET_CONFIG, "search", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "添加配置", Endpoint.UI_ADD_CONFIG, "file-plus", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "修改配置", Endpoint.UI_MODIFY_CONFIG, "edit", currentFunction);
+        PageHelper.buildSidebarItem(stringBuilder, "增量更新", Endpoint.UI_INCREMENTAL_UPDATE, "edit-3", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "删除配置", Endpoint.UI_REMOVE_CONFIG, "trash-2", currentFunction);
         stringBuilder.append("                </ul>\n");
         PageHelper.buildSidebarTitle(stringBuilder, "订阅管理");
