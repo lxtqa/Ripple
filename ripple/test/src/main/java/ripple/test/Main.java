@@ -2,8 +2,8 @@ package ripple.test;
 
 import ripple.client.RippleClient;
 import ripple.common.entity.Constants;
-import ripple.server.RippleServer;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.RippleServer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -17,7 +17,7 @@ import java.util.UUID;
  * @author Zhen Tang
  */
 public class Main {
-    private static final int SERVER_COUNT = 2;
+    private static final int SERVER_COUNT = 10;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -45,8 +45,7 @@ public class Main {
 
             Thread.sleep(1000);
 
-            RippleClient client = new RippleClient(serverList.get(0).getAddress(), serverList.get(0).getApiPort()
-                    , DATABASE_PATH + "\\server-" + serverList.get(0).getId() + "-client-" + "1" + ".db");
+            RippleClient client = new RippleClient(nodeList, DATABASE_PATH + "\\server-" + serverList.get(0).getId() + "-client-" + "1" + ".db");
             client.start();
             System.out.println("Client UI: " + client.getUiAddress() + ":" + client.getUiPort());
             Thread.sleep(1000);

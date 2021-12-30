@@ -12,7 +12,7 @@ public class DefaultHashing implements Hashing {
     // Returns the node list
 
     @Override
-    public List<NodeMetadata> hashing(String key, List<NodeMetadata> nodeList) {
+    public List<NodeMetadata> hashing(String applicationName, String key, List<NodeMetadata> nodeList) {
         return new ArrayList<>(nodeList);
     }
 }

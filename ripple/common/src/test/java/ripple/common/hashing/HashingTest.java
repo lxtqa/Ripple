@@ -18,7 +18,7 @@ public class HashingTest {
             nodeList.add(new NodeMetadata(i + 1, "127.0.0.1", i + 8001));
         }
         Hashing hashing = new ModHashing();
-        List<NodeMetadata> ret = hashing.hashing("test", nodeList);
+        List<NodeMetadata> ret = hashing.hashing("testApp", "test", nodeList);
         for (i = 0; i < ret.size(); i++) {
             System.out.println("Node " + ret.get(i).getId() + ": "
                     + ret.get(i).getAddress() + ":" + ret.get(i).getPort());

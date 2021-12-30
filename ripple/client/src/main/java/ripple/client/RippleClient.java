@@ -11,6 +11,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import ripple.client.core.HashingBasedSelector;
+import ripple.client.core.NodeSelector;
 import ripple.client.core.tcp.ClientChannelInitializer;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
@@ -26,12 +28,15 @@ import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.common.entity.Item;
+import ripple.common.entity.NodeMetadata;
+import ripple.common.hashing.ModHashing;
 import ripple.common.storage.Storage;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 
@@ -39,23 +44,38 @@ import java.util.concurrent.CountDownLatch;
  * @author Zhen Tang
  */
 public class RippleClient {
-    private String serverAddress;
-    private int serverPort;
     private Storage storage;
     private String uiAddress;
     private int uiPort;
     private NioEventLoopGroup eventLoopGroup;
-    private Channel channel;
     private Server server;
     private boolean running;
-    private Set<Item> subscription;
+    private List<NodeMetadata> nodeList;
+    private Map<Item, NodeMetadata> mappingCache;
+    private Map<Item, NodeMetadata> subscriptions;
+    private Map<NodeMetadata, Channel> connections;
+    private NodeSelector nodeSelector;
 
-    public RippleClient(String serverAddress, int serverPort, String storageLocation) {
-        this.setServerAddress(serverAddress);
-        this.setServerPort(serverPort);
+    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
         this.setStorage(new Storage(storageLocation));
         this.setRunning(false);
-        this.setSubscription(new HashSet<>());
+        this.setNodeList(nodeList);
+        this.setMappingCache(new HashMap<>());
+        this.setSubscriptions(new HashMap<>());
+        this.setConnections(new HashMap<>());
+        this.setNodeSelector(nodeSelector);
+    }
+
+    public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
+        this(nodeList, new HashingBasedSelector(new ModHashing()), storageLocation);
+    }
+
+    public Storage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
     public String getUiAddress() {
@@ -82,14 +102,6 @@ public class RippleClient {
         this.eventLoopGroup = eventLoopGroup;
     }
 
-    public Channel getChannel() {
-        return channel;
-    }
-
-    public void setChannel(Channel channel) {
-        this.channel = channel;
-    }
-
     public Server getServer() {
         return server;
     }
@@ -106,63 +118,99 @@ public class RippleClient {
         this.running = running;
     }
 
-    public String getServerAddress() {
-        return serverAddress;
+    public List<NodeMetadata> getNodeList() {
+        return nodeList;
     }
 
-    public void setServerAddress(String serverAddress) {
-        this.serverAddress = serverAddress;
+    public void setNodeList(List<NodeMetadata> nodeList) {
+        this.nodeList = nodeList;
     }
 
-    public int getServerPort() {
-        return serverPort;
+
+    public Map<Item, NodeMetadata> getMappingCache() {
+        return mappingCache;
     }
 
-    public void setServerPort(int serverPort) {
-        this.serverPort = serverPort;
+    public void setMappingCache(Map<Item, NodeMetadata> mappingCache) {
+        this.mappingCache = mappingCache;
     }
 
-    public Storage getStorage() {
-        return storage;
+    public Map<Item, NodeMetadata> getSubscriptions() {
+        return subscriptions;
     }
 
-    public void setStorage(Storage storage) {
-        this.storage = storage;
+    public void setSubscriptions(Map<Item, NodeMetadata> subscriptions) {
+        this.subscriptions = subscriptions;
     }
 
-    public Set<Item> getSubscription() {
-        return subscription;
+    public Map<NodeMetadata, Channel> getConnections() {
+        return connections;
     }
 
-    public void setSubscription(Set<Item> subscription) {
-        this.subscription = subscription;
+    public void setConnections(Map<NodeMetadata, Channel> connections) {
+        this.connections = connections;
+    }
+
+    public NodeSelector getNodeSelector() {
+        return nodeSelector;
+    }
+
+    public void setNodeSelector(NodeSelector nodeSelector) {
+        this.nodeSelector = nodeSelector;
     }
 
     public Item get(String applicationName, String key) {
+        if (!this.isRunning()) {
+            this.start();
+        }
         return this.refreshItem(applicationName, key);
     }
 
+    public void fullyGet(String applicationName, String key) {
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnect(applicationName, key);
+        Api.getAsync(channel, applicationName, key);
+    }
+
     private Item refreshItem(String applicationName, String key) {
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnect(applicationName, key);
         Item item = this.getStorage().getItemService().getItem(applicationName, key);
         if (item == null) {
-            Api.getAsync(this.getChannel(), applicationName, key);
+            Api.getAsync(channel, applicationName, key);
         }
         return item;
     }
 
     public void put(String applicationName, String key, String value) {
-        Api.putAsync(this.getChannel(), applicationName, key, value);
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnect(applicationName, key);
+        Api.putAsync(channel, applicationName, key, value);
         this.refreshItem(applicationName, key);
     }
 
     public void delete(String applicationName, String key) {
-        Api.deleteAsync(this.getChannel(), applicationName, key);
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnect(applicationName, key);
+        Api.deleteAsync(channel, applicationName, key);
         this.refreshItem(applicationName, key);
     }
 
     public void incrementalUpdate(String applicationName, String key, UUID baseMessageUuid
             , String atomicOperation, String value) {
-        Api.incrementalUpdateAsync(this.getChannel(), applicationName, key, baseMessageUuid, atomicOperation, value);
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnect(applicationName, key);
+        Api.incrementalUpdateAsync(channel, applicationName, key, baseMessageUuid, atomicOperation, value);
         this.refreshItem(applicationName, key);
     }
 
@@ -170,16 +218,19 @@ public class RippleClient {
         if (!this.isRunning()) {
             this.start();
         }
-        this.getSubscription().add(new Item(applicationName, key));
-        Api.subscribeAsync(this.getChannel(), applicationName, key);
+        Channel channel = this.findOrConnect(applicationName, key);
+        Item item = new Item(applicationName, key);
+        this.getSubscriptions().put(item, this.getMappingCache().get(item));
+        Api.subscribeAsync(channel, applicationName, key);
     }
 
     public void unsubscribe(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
-        this.getSubscription().remove(new Item(applicationName, key));
-        Api.unsubscribeAsync(this.getChannel(), applicationName, key);
+        Channel channel = this.findOrConnect(applicationName, key);
+        this.getSubscriptions().remove(new Item(applicationName, key));
+        Api.unsubscribeAsync(channel, applicationName, key);
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -201,18 +252,35 @@ public class RippleClient {
         this.registerServlet(servletContextHandler, new ServerInfoServlet(this), Endpoint.UI_SERVER_INFO);
     }
 
-    public Channel connectToServer(String address, int port) {
+    private Channel findOrConnect(String applicationName, String key) {
+        Item item = new Item(applicationName, key);
+        if (this.getMappingCache().get(item) == null) {
+            synchronized (this) {
+                if (this.getMappingCache().get(item) == null) {
+                    this.getMappingCache().put(item
+                            , this.getNodeSelector().selectNodeToConnect(applicationName, key, this.getNodeList()));
+                }
+            }
+        }
+        NodeMetadata nodeMetadata = this.getMappingCache().get(item);
+        Channel channel = this.getConnections().get(nodeMetadata);
+        if (channel == null) {
+            this.getConnections().put(nodeMetadata, this.connectToServer(nodeMetadata));
+        }
+        return this.getConnections().get(nodeMetadata);
+    }
+
+    public Channel connectToServer(NodeMetadata server) {
         try {
             this.setEventLoopGroup(new NioEventLoopGroup());
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(this.getEventLoopGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
-                    .option(ChannelOption.SO_REUSEADDR, true) // Trick
+                    .option(ChannelOption.SO_REUSEADDR, true) // TODO: Trick
                     .handler(new ClientChannelInitializer(this));
 
-            ChannelFuture future = bootstrap.connect(address, port).sync();
-            this.setChannel(future.channel());
+            ChannelFuture future = bootstrap.connect(server.getAddress(), server.getPort()).sync();
             return future.channel();
         } catch (InterruptedException exception) {
             exception.printStackTrace();
@@ -238,7 +306,6 @@ public class RippleClient {
             this.getServer().start();
             this.setUiAddress(InetAddress.getLocalHost().getHostAddress());
             this.setUiPort(serverConnector.getLocalPort());
-            this.connectToServer(this.getServerAddress(), this.getServerPort());
             this.setRunning(true);
             return true;
         } catch (Exception exception) {

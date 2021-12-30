@@ -6,8 +6,10 @@ import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import ripple.client.RippleClient;
+import ripple.common.entity.NodeMetadata;
 
 import java.net.InetAddress;
+import java.util.List;
 
 public class OperatorService {
     private RippleClient client;
@@ -56,8 +58,8 @@ public class OperatorService {
         this.running = running;
     }
 
-    public OperatorService(String serverAddress, int serverPort, String storageLocation) {
-        this.setClient(new RippleClient(serverAddress, serverPort, storageLocation));
+    public OperatorService(List<NodeMetadata> nodeList, String storageLocation) {
+        this.setClient(new RippleClient(nodeList, storageLocation));
         this.setPort(0);
     }
 

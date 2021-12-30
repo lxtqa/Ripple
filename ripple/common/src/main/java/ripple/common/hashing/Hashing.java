@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface Hashing {
     // Calculate the node list to store the key-value pair
-    List<NodeMetadata> hashing(String key, List<NodeMetadata> nodeList);
+    List<NodeMetadata> hashing(String applicationName, String key, List<NodeMetadata> nodeList);
 }

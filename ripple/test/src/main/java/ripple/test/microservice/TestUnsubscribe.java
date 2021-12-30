@@ -1,7 +1,7 @@
 package ripple.test.microservice;
 
-import ripple.server.RippleServer;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.RippleServer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -44,20 +44,17 @@ public class TestUnsubscribe {
             int numberTwo = 7;
             String oldFunction = "add";
 
-            NumberService one = new NumberService(numberOne, serverList.get(0).getAddress(), serverList.get(0).getApiPort()
-                    , DATABASE_PATH + "\\number-service-1.db");
+            NumberService one = new NumberService(numberOne, nodeList, DATABASE_PATH + "\\number-service-1.db");
             one.start();
             System.out.println("[Number Service 1] " + one.getAddress() + ":" + one.getPort()
                     + ", Client = " + one.getClient().getUiAddress() + ":" + one.getClient().getUiPort());
 
-            NumberService two = new NumberService(numberTwo, serverList.get(1).getAddress(), serverList.get(1).getApiPort()
-                    , DATABASE_PATH + "\\number-service-2.db");
+            NumberService two = new NumberService(numberTwo, nodeList, DATABASE_PATH + "\\number-service-2.db");
             two.start();
             System.out.println("[Number Service 2] " + two.getAddress() + ":" + two.getPort()
                     + ", Client = " + two.getClient().getUiAddress() + ":" + two.getClient().getUiPort());
 
-            OperatorService operator = new OperatorService(serverList.get(2).getAddress(), serverList.get(2).getApiPort()
-                    , DATABASE_PATH + "\\operator-service.db");
+            OperatorService operator = new OperatorService(nodeList, DATABASE_PATH + "\\operator-service.db");
             operator.start();
             System.out.println("[Operator Service] " + operator.getAddress() + ":" + operator.getPort()
                     + ", Client = " + operator.getClient().getUiAddress() + ":" + operator.getClient().getUiPort());

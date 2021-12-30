@@ -2,8 +2,8 @@ package ripple.test.microservice;
 
 import ripple.client.RippleClient;
 import ripple.common.entity.AbstractMessage;
-import ripple.server.RippleServer;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.RippleServer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,11 +64,7 @@ public class TestLargeClusterTree {
 
                 for (i = 0; i < SERVER_COUNT; i++) {
                     RippleServer rippleServer = serverList.get(i);
-                    String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getApiPort();
-
-                    OperatorService operator = new OperatorService(serverAddress, serverPort
-                            , databasePath + "\\server-" + rippleServer.getId() + "-operator-service.db");
+                    OperatorService operator = new OperatorService(nodeList, databasePath + "\\server-" + rippleServer.getId() + "-operator-service.db");
                     operator.start();
                     operatorServiceList.add(operator);
                     clientList.add(operator.getClient());

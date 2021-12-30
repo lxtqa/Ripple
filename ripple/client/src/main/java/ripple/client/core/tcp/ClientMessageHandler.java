@@ -5,9 +5,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.common.entity.NodeMetadata;
 import ripple.common.tcp.MessageHandler;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Zhen Tang
@@ -35,7 +38,12 @@ public class ClientMessageHandler extends MessageHandler {
         LOGGER.info("[ClientMessageHandler] [{}:{}<-->{}:{}] Connected."
                 , localAddress.getHostString(), localAddress.getPort()
                 , remoteAddress.getHostString(), remoteAddress.getPort());
-        this.getRippleClient().setChannel(ctx.channel());
+        for (NodeMetadata nodeMetadata : this.getRippleClient().getMappingCache().values()) {
+            if (nodeMetadata.getAddress().equals(remoteAddress.getHostString())
+                    && nodeMetadata.getPort() == remoteAddress.getPort()) {
+                this.getRippleClient().getConnections().put(nodeMetadata, ctx.channel());
+            }
+        }
     }
 
     @Override
@@ -45,7 +53,15 @@ public class ClientMessageHandler extends MessageHandler {
         LOGGER.info("[ClientMessageHandler] [{}:{}<-->{}:{}] Disconnected."
                 , localAddress.getHostString(), localAddress.getPort()
                 , remoteAddress.getHostString(), remoteAddress.getPort());
-        this.getRippleClient().setChannel(null);
+        List<NodeMetadata> toRemove = new ArrayList<>();
+        for (NodeMetadata nodeMetadata : this.getRippleClient().getConnections().keySet()) {
+            if (this.getRippleClient().getConnections().get(nodeMetadata) == ctx.channel()) {
+                toRemove.add(nodeMetadata);
+            }
+        }
+        for (NodeMetadata nodeMetadata : toRemove) {
+            this.getRippleClient().getConnections().remove(nodeMetadata);
+        }
     }
 
     @Override

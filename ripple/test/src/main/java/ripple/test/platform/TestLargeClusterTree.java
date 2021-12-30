@@ -2,8 +2,8 @@ package ripple.test.platform;
 
 import ripple.client.RippleClient;
 import ripple.common.entity.AbstractMessage;
-import ripple.server.RippleServer;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.RippleServer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -53,10 +53,8 @@ public class TestLargeClusterTree {
             for (i = 0; i < SERVER_COUNT; i++) {
                 for (j = 0; j < CLIENTS_PER_SERVER; j++) {
                     RippleServer rippleServer = serverList.get(i);
-                    String serverAddress = rippleServer.getAddress();
-                    int serverPort = rippleServer.getApiPort();
                     String storageLocation = databasePath + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
-                    RippleClient rippleClient = new RippleClient(serverAddress, serverPort, storageLocation);
+                    RippleClient rippleClient = new RippleClient(nodeList, storageLocation);
                     rippleClient.start();
                     clientList.add(rippleClient);
                     System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"

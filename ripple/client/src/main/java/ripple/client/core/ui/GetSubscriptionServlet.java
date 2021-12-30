@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
 import ripple.common.entity.Item;
+import ripple.common.entity.NodeMetadata;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,23 +29,27 @@ public class GetSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
                 .append("当前客户端节点共订阅了 <strong>")
-                .append(this.getClient().getSubscription().size())
+                .append(this.getClient().getSubscriptions().size())
                 .append("</strong> 条配置。")
                 .append("\n");
         stringBuilder.append("                </p>\n");
-        if (this.getClient().getSubscription().size() > 0) {
+        if (this.getClient().getSubscriptions().size() > 0) {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
             stringBuilder.append("                        <th>序号</th>\n");
             stringBuilder.append("                        <th>应用名称</th>\n");
             stringBuilder.append("                        <th>键</th>\n");
+            stringBuilder.append("                        <th>服务器ID</th>\n");
+            stringBuilder.append("                        <th>服务器IP地址</th>\n");
+            stringBuilder.append("                        <th>服务器端口号</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
 
             int i = 0;
-            for (Item item : this.getClient().getSubscription()) {
+            for (Item item : this.getClient().getSubscriptions().keySet()) {
+                NodeMetadata nodeMetadata = this.getClient().getSubscriptions().get(item);
                 stringBuilder.append("                    <tr>\n");
                 stringBuilder.append("                        <td>")
                         .append(i + 1)
@@ -54,6 +59,15 @@ public class GetSubscriptionServlet extends BaseServlet {
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
                         .append(item.getKey())
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(nodeMetadata.getId())
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(nodeMetadata.getAddress())
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(nodeMetadata.getPort())
                         .append("</td>\n");
                 stringBuilder.append("                    </tr>\n");
                 i++;

@@ -36,9 +36,14 @@ public class ModHashing implements Hashing {
         this.setDivisor(divisor);
     }
 
+    private String generateHashKey(String applicationName, String key) {
+        return applicationName + key;
+    }
+
     @Override
-    public List<NodeMetadata> hashing(String key, List<NodeMetadata> nodeList) {
-        byte[] bytes = key.getBytes(StandardCharsets.UTF_8);
+    public List<NodeMetadata> hashing(String applicationName, String key, List<NodeMetadata> nodeList) {
+        String hashKey = this.generateHashKey(applicationName, key);
+        byte[] bytes = hashKey.getBytes(StandardCharsets.UTF_8);
         CRC32 crc32 = new CRC32();
         crc32.update(bytes, 0, bytes.length);
         long result = crc32.getValue();
