@@ -254,6 +254,8 @@ public class RippleClient {
 
     private Channel findOrConnect(String applicationName, String key) {
         Item item = new Item(applicationName, key);
+
+        // Double check
         if (this.getMappingCache().get(item) == null) {
             synchronized (this) {
                 if (this.getMappingCache().get(item) == null) {

@@ -21,7 +21,11 @@ public enum MessageType {
     UNSUBSCRIBE_REQUEST((byte) 14),
     UNSUBSCRIBE_RESPONSE((byte) 15),
     INCREMENTAL_UPDATE_REQUEST((byte) 16),
-    INCREMENTAL_UPDATE_RESPONSE((byte) 17);
+    INCREMENTAL_UPDATE_RESPONSE((byte) 17),
+    DISPATCH_REQUEST((byte) 18),
+    DISPATCH_RESPONSE((byte) 19),
+    GET_CLIENT_LIST_REQUEST((byte) 20),
+    GET_CLIENT_LIST_RESPONSE((byte) 21);
 
     private byte value;
 
