@@ -2,6 +2,7 @@ package ripple.server.core.overlay;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
 
 import java.util.ArrayList;
@@ -28,7 +29,7 @@ public class StarOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current) {
+    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current) {
         LOGGER.info("[StarOverlay] calculateNodesToSync() called. sourceId = {}, currentId = {}", source.getId(), current.getId());
         if (source.getId() != current.getId()) {
             // Leaf node
@@ -45,5 +46,10 @@ public class StarOverlay implements Overlay {
             }
             return ret;
         }
+    }
+
+    @Override
+    public List<NodeMetadata> calculateNodesToCollectAck(AbstractMessage message) {
+        return this.getNodeList();
     }
 }

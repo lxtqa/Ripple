@@ -3,6 +3,7 @@ package ripple.test;
 import ripple.client.RippleClient;
 import ripple.common.entity.Constants;
 import ripple.common.entity.NodeMetadata;
+import ripple.common.hashing.ModHashing;
 import ripple.server.RippleServer;
 
 import java.nio.file.Files;
@@ -32,7 +33,7 @@ public class Main {
             for (i = 0; i < SERVER_COUNT; i++) {
                 int serverId = i + 1;
                 String storageLocation = DATABASE_PATH + "\\server-" + serverId + ".db";
-                RippleServer rippleServer = RippleServer.treeProtocol(serverId, storageLocation, branch);
+                RippleServer rippleServer = RippleServer.hashingBasedProtocol(serverId, storageLocation, new ModHashing());
                 rippleServer.start();
                 serverList.add(rippleServer);
                 System.out.println("[" + SimpleDateFormat.getDateTimeInstance().format(new Date(System.currentTimeMillis())) + "] "

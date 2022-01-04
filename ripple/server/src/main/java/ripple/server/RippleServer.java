@@ -1,10 +1,12 @@
 package ripple.server;
 
-import ripple.server.core.Node;
 import ripple.common.entity.NodeMetadata;
+import ripple.common.hashing.Hashing;
+import ripple.server.core.Node;
 import ripple.server.core.overlay.ExpanderOverlay;
 import ripple.server.core.overlay.GossipOverlay;
 import ripple.server.core.overlay.StarOverlay;
+import ripple.server.core.overlay.hashing.HashingBasedOverlay;
 import ripple.server.core.overlay.tree.TreeOverlay;
 
 import java.util.List;
@@ -23,32 +25,40 @@ public class RippleServer {
         return new RippleServer(new Node(id, new StarOverlay(), storageLocation));
     }
 
-    public static RippleServer starProtocol(int id, String storageLocation, int nettyPort, int uiPort) {
-        return new RippleServer(new Node(id, new StarOverlay(), storageLocation, nettyPort, uiPort));
+    public static RippleServer starProtocol(int id, String storageLocation, int apiPort, int uiPort) {
+        return new RippleServer(new Node(id, new StarOverlay(), storageLocation, apiPort, uiPort));
     }
 
     public static RippleServer treeProtocol(int id, String storageLocation, int branch) {
         return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation));
     }
 
-    public static RippleServer treeProtocol(int id, String storageLocation, int nettyPort, int uiPort, int branch) {
-        return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, nettyPort, uiPort));
+    public static RippleServer treeProtocol(int id, String storageLocation, int apiPort, int uiPort, int branch) {
+        return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, apiPort, uiPort));
     }
 
     public static RippleServer expanderProtocol(int id, String storageLocation, int scale) {
         return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation));
     }
 
-    public static RippleServer expanderProtocol(int id, String storageLocation, int nettyPort, int uiPort, int scale) {
-        return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, nettyPort, uiPort));
+    public static RippleServer expanderProtocol(int id, String storageLocation, int apiPort, int uiPort, int scale) {
+        return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, apiPort, uiPort));
     }
 
     public static RippleServer gossipProtocol(int id, String storageLocation, int fanout) {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation));
     }
 
-    public static RippleServer gossipProtocol(int id, String storageLocation, int nettyPort, int uiPort, int fanout) {
-        return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, nettyPort, uiPort));
+    public static RippleServer gossipProtocol(int id, String storageLocation, int apiPort, int uiPort, int fanout) {
+        return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, apiPort, uiPort));
+    }
+
+    public static RippleServer hashingBasedProtocol(int id, String storageLocation, Hashing hashing) {
+        return new RippleServer(new Node(id, new HashingBasedOverlay(hashing), storageLocation));
+    }
+
+    public static RippleServer hashingBasedProtocol(int id, String storageLocation, int apiPort, int uiPort, Hashing hashing) {
+        return new RippleServer(new Node(id, new HashingBasedOverlay(hashing), storageLocation, apiPort, uiPort));
     }
 
     public Node getNode() {

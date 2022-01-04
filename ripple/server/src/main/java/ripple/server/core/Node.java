@@ -9,12 +9,12 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
-import ripple.common.entity.UpdateMessage;
-import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.NodeMetadata;
+import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
@@ -80,7 +80,7 @@ public class Node {
         this.setExecutorService(Executors.newCachedThreadPool());
         this.setId(id);
         this.setOverlay(overlay);
-        this.setTracker(new Tracker(this));
+        this.setTracker(new Tracker(this, overlay));
         this.setStorage(new Storage(storageLocation));
         this.setHealthManager(new HealthManager(this));
         this.setWorker(new Worker(this));
@@ -330,7 +330,7 @@ public class Node {
     private void doSyncWithServer(AbstractMessage message, int sourceId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
         NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(source, current);
+        List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(message, source, current);
         Queue<NodeMetadata> sendQueue = new LinkedBlockingDeque<>(initialList);
 
         // Sync to servers following the overlay
@@ -346,7 +346,7 @@ public class Node {
             } else {
                 LOGGER.info("[Node-{}] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
                         , this.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
-                List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(source, nodeMetadata);
+                List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(message, source, nodeMetadata);
                 sendQueue.addAll(list);
             }
         }

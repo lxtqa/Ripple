@@ -2,6 +2,7 @@ package ripple.server.core.overlay.tree;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.Overlay;
 
@@ -18,6 +19,7 @@ public class TreeOverlay implements Overlay {
 
     private int branch;
     private ConcurrentHashMap<NodeMetadata, CompleteTree> trees;
+    private List<NodeMetadata> nodeList;
 
     public TreeOverlay(int branch) {
         this.setBranch(branch);
@@ -40,8 +42,17 @@ public class TreeOverlay implements Overlay {
         this.trees = trees;
     }
 
+    public List<NodeMetadata> getNodeList() {
+        return nodeList;
+    }
+
+    public void setNodeList(List<NodeMetadata> nodeList) {
+        this.nodeList = nodeList;
+    }
+
     @Override
     public void buildOverlay(List<NodeMetadata> nodeList) {
+        this.setNodeList(nodeList);
         int i = 0;
         for (i = 0; i < nodeList.size(); i++) {
             NodeMetadata source = nodeList.get(i);
@@ -76,7 +87,7 @@ public class TreeOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current) {
+    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current) {
         LOGGER.info("[TreeOverlay] calculateNodesToSync() called. sourceId = {}, currentId = {}", source.getId(), current.getId());
         CompleteTree tree = this.getTrees().get(source);
         for (TreeNode treeNode : tree.getNodeList()) {
@@ -86,5 +97,10 @@ public class TreeOverlay implements Overlay {
         }
         LOGGER.warn("[TreeOverlay] I cannot find children list for node {}.", current.getId());
         return new ArrayList<>();
+    }
+
+    @Override
+    public List<NodeMetadata> calculateNodesToCollectAck(AbstractMessage message) {
+        return this.getNodeList();
     }
 }

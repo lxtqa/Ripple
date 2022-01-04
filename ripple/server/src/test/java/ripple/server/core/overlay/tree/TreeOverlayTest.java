@@ -2,9 +2,12 @@ package ripple.server.core.overlay.tree;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
+import ripple.common.entity.UpdateMessage;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -84,9 +87,12 @@ public class TreeOverlayTest {
         TreeOverlay treeOverlay = new TreeOverlay(branch);
         treeOverlay.buildOverlay(nodeList);
 
+        AbstractMessage testMessage = new UpdateMessage("testApp", "test"
+                , "value", new Date(System.currentTimeMillis()), 1);
+
         NodeMetadata source = new NodeMetadata(1, "test", 0);
         NodeMetadata current = new NodeMetadata(3, "test", 0);
-        List<NodeMetadata> nodes = treeOverlay.calculateNodesToSync(source, current);
+        List<NodeMetadata> nodes = treeOverlay.calculateNodesToSync(testMessage, source, current);
 
         Assert.assertEquals(3, nodes.size());
         Assert.assertEquals(new NodeMetadata(8, "test", 0), nodes.get(0));
@@ -95,7 +101,7 @@ public class TreeOverlayTest {
 
         source = new NodeMetadata(3, "test", 0);
         current = new NodeMetadata(1, "test", 0);
-        nodes = treeOverlay.calculateNodesToSync(source, current);
+        nodes = treeOverlay.calculateNodesToSync(testMessage, source, current);
         Assert.assertEquals(0, nodes.size());
     }
 }

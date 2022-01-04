@@ -3,9 +3,10 @@ package ripple.server.core;
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.entity.Ack;
 import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.Ack;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class Tracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(Tracker.class);
 
     private Node node;
+    private Overlay overlay;
 
     public Node getNode() {
         return node;
@@ -32,8 +34,17 @@ public class Tracker {
         this.node = node;
     }
 
-    public Tracker(Node node) {
+    public Overlay getOverlay() {
+        return overlay;
+    }
+
+    public void setOverlay(Overlay overlay) {
+        this.overlay = overlay;
+    }
+
+    public Tracker(Node node, Overlay overlay) {
         this.setNode(node);
+        this.setOverlay(overlay);
     }
 
     private Map<UUID, AbstractMessage> getPendingMessages() {
@@ -73,7 +84,8 @@ public class Tracker {
     public void initProgress(AbstractMessage message) {
         this.getPendingMessages().put(message.getUuid(), message);
         List<Integer> nodeList = new ArrayList<>();
-        for (NodeMetadata metadata : this.getNode().getNodeList()) {
+        List<NodeMetadata> toCollect = this.getOverlay().calculateNodesToCollectAck(message);
+        for (NodeMetadata metadata : toCollect) {
             nodeList.add(metadata.getId());
         }
         this.getNode().getStorage().getAckService().initAck(message.getUuid(), nodeList);

@@ -1,5 +1,6 @@
 package ripple.server.core.overlay;
 
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
 
 import java.util.List;
@@ -10,5 +11,7 @@ import java.util.List;
 public interface Overlay {
     void buildOverlay(List<NodeMetadata> nodeList);
 
-    List<NodeMetadata> calculateNodesToSync(NodeMetadata source, NodeMetadata current);
+    List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current);
+
+    List<NodeMetadata> calculateNodesToCollectAck(AbstractMessage message);
 }
