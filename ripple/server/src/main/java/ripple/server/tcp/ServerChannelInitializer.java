@@ -11,6 +11,9 @@ import ripple.common.tcp.MessageHandler;
 import ripple.common.tcp.MessageType;
 import ripple.common.tcp.decoder.DeleteRequestDecoder;
 import ripple.common.tcp.decoder.DeleteResponseDecoder;
+import ripple.common.tcp.decoder.DispatchRequestDecoder;
+import ripple.common.tcp.decoder.GetClientListRequestDecoder;
+import ripple.common.tcp.decoder.GetClientListResponseDecoder;
 import ripple.common.tcp.decoder.GetRequestDecoder;
 import ripple.common.tcp.decoder.GetResponseDecoder;
 import ripple.common.tcp.decoder.HeartbeatRequestDecoder;
@@ -27,6 +30,10 @@ import ripple.common.tcp.decoder.UnsubscribeRequestDecoder;
 import ripple.common.tcp.decoder.UnsubscribeResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
 import ripple.common.tcp.encoder.DeleteResponseEncoder;
+import ripple.common.tcp.encoder.DispatchRequestEncoder;
+import ripple.common.tcp.encoder.DispatchResponseEncoder;
+import ripple.common.tcp.encoder.GetClientListRequestEncoder;
+import ripple.common.tcp.encoder.GetClientListResponseEncoder;
 import ripple.common.tcp.encoder.GetRequestEncoder;
 import ripple.common.tcp.encoder.GetResponseEncoder;
 import ripple.common.tcp.encoder.HeartbeatRequestEncoder;
@@ -49,6 +56,8 @@ import ripple.server.tcp.encoder.AckResponseEncoder;
 import ripple.server.tcp.handler.AckRequestHandler;
 import ripple.server.tcp.handler.AckResponseHandler;
 import ripple.server.tcp.handler.DeleteRequestHandler;
+import ripple.server.tcp.handler.DispatchResponseHandler;
+import ripple.server.tcp.handler.GetClientListRequestHandler;
 import ripple.server.tcp.handler.GetRequestHandler;
 import ripple.server.tcp.handler.HeartbeatResponseHandler;
 import ripple.server.tcp.handler.IncrementalUpdateRequestHandler;
@@ -155,5 +164,19 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseEncoder());
         messageDecoder.registerDecoder(MessageType.UNSUBSCRIBE_RESPONSE, new UnsubscribeResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.DISPATCH_REQUEST, new DispatchRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.DISPATCH_REQUEST, new DispatchRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.DISPATCH_RESPONSE, new DispatchResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.DISPATCH_RESPONSE, new DispatchRequestDecoder());
+        messageHandler.registerHandler(MessageType.DISPATCH_RESPONSE, new DispatchResponseHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.GET_CLIENT_LIST_REQUEST, new GetClientListRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.GET_CLIENT_LIST_REQUEST, new GetClientListRequestDecoder());
+        messageHandler.registerHandler(MessageType.GET_CLIENT_LIST_REQUEST, new GetClientListRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseDecoder());
     }
 }

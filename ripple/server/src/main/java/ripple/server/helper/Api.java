@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
+import ripple.common.tcp.message.DispatchRequest;
 import ripple.common.tcp.message.HeartbeatRequest;
 import ripple.common.tcp.message.SyncRequest;
 import ripple.server.tcp.message.AckRequest;
@@ -81,5 +82,37 @@ public class Api {
                 , remoteAddress.getPort(), ackRequest.getUuid(), ackRequest.getMessageUuid()
                 , ackRequest.getSourceId(), ackRequest.getNodeId());
         channel.writeAndFlush(ackRequest);
+    }
+
+    public static void dispatch(Channel channel, String clientListSignature, AbstractMessage message) {
+        DispatchRequest dispatchRequest = new DispatchRequest();
+        dispatchRequest.setUuid(UUID.randomUUID());
+        dispatchRequest.setClientListSignature(clientListSignature);
+        dispatchRequest.setMessageUuid(message.getUuid());
+        dispatchRequest.setOperationType(message.getType());
+        dispatchRequest.setApplicationName(message.getApplicationName());
+        dispatchRequest.setKey(message.getKey());
+        if (message instanceof UpdateMessage) {
+            dispatchRequest.setValue(((UpdateMessage) message).getValue());
+        } else if (message instanceof IncrementalUpdateMessage) {
+            dispatchRequest.setBaseMessageUuid(((IncrementalUpdateMessage) message).getBaseMessageUuid());
+            dispatchRequest.setAtomicOperation(((IncrementalUpdateMessage) message).getAtomicOperation());
+            dispatchRequest.setValue(((IncrementalUpdateMessage) message).getValue());
+        }
+        dispatchRequest.setLastUpdate(message.getLastUpdate());
+        dispatchRequest.setLastUpdateServerId(message.getLastUpdateServerId());
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send DISPATCH request. UUID = {}, Client List Signature = {}, Message UUID = {}" +
+                        ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
+                        ", Atomic Operation = {}, Value = {}, Last Update = {}" +
+                        ", Last Update Server Id = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), dispatchRequest.getUuid(), dispatchRequest.getClientListSignature(), dispatchRequest.getMessageUuid()
+                , dispatchRequest.getOperationType(), dispatchRequest.getApplicationName(), dispatchRequest.getKey()
+                , dispatchRequest.getBaseMessageUuid(), dispatchRequest.getAtomicOperation()
+                , dispatchRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(dispatchRequest.getLastUpdate())
+                , dispatchRequest.getLastUpdateServerId());
+        channel.writeAndFlush(dispatchRequest);
     }
 }

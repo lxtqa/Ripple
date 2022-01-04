@@ -4,11 +4,11 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.NodeMetadata;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.message.HeartbeatResponse;
 import ripple.server.core.Node;
-import ripple.common.entity.NodeMetadata;
 
 import java.net.InetSocketAddress;
 

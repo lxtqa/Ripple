@@ -27,6 +27,7 @@ import ripple.client.core.ui.RemoveSubscriptionServlet;
 import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
+import ripple.common.ClientListCache;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.hashing.ModHashing;
@@ -55,6 +56,7 @@ public class RippleClient {
     private Map<Item, NodeMetadata> subscriptions;
     private Map<NodeMetadata, Channel> connections;
     private NodeSelector nodeSelector;
+    private ClientListCache clientListCache;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
         this.setStorage(new Storage(storageLocation));
@@ -64,6 +66,7 @@ public class RippleClient {
         this.setSubscriptions(new HashMap<>());
         this.setConnections(new HashMap<>());
         this.setNodeSelector(nodeSelector);
+        this.setClientListCache(new ClientListCache());
     }
 
     public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
@@ -157,6 +160,14 @@ public class RippleClient {
 
     public void setNodeSelector(NodeSelector nodeSelector) {
         this.nodeSelector = nodeSelector;
+    }
+
+    public ClientListCache getClientListCache() {
+        return clientListCache;
+    }
+
+    public void setClientListCache(ClientListCache clientListCache) {
+        this.clientListCache = clientListCache;
     }
 
     public Item get(String applicationName, String key) {

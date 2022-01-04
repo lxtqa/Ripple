@@ -5,6 +5,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.tcp.message.DeleteRequest;
+import ripple.common.tcp.message.GetClientListRequest;
 import ripple.common.tcp.message.GetRequest;
 import ripple.common.tcp.message.IncrementalUpdateRequest;
 import ripple.common.tcp.message.PutRequest;
@@ -115,5 +116,17 @@ public final class Api {
                 , remoteAddress.getPort(), unsubscribeRequest.getUuid(), unsubscribeRequest.getApplicationName()
                 , unsubscribeRequest.getKey(), unsubscribeRequest.getCallbackAddress(), unsubscribeRequest.getCallbackPort());
         channel.writeAndFlush(unsubscribeRequest);
+    }
+
+    public static void getClientListAsync(Channel channel, String clientListSignature) {
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        GetClientListRequest getClientListRequest = new GetClientListRequest();
+        getClientListRequest.setUuid(UUID.randomUUID());
+        getClientListRequest.setClientListSignature(clientListSignature);
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send GET_CLIENT_LIST request. UUID = {}, Client List Signature = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), getClientListRequest.getUuid(), getClientListRequest.getClientListSignature());
+        channel.writeAndFlush(getClientListRequest);
     }
 }

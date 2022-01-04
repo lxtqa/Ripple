@@ -3,10 +3,10 @@ package ripple.server.ui;
 import org.eclipse.jetty.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
-import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.server.core.Node;
 

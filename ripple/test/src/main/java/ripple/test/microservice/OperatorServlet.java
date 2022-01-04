@@ -2,9 +2,9 @@ package ripple.test.microservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.eclipse.jetty.http.HttpStatus;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.Item;
-import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.UpdateMessage;
 
 import javax.servlet.http.HttpServlet;

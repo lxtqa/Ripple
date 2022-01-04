@@ -8,6 +8,7 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.ClientListCache;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.DeleteMessage;
@@ -64,6 +65,7 @@ public class Node {
     private HealthManager healthManager;
     private Worker worker;
     private Thread workingThread;
+    private ClientListCache clientListCache;
 
     private String address;
     private int uiPort;
@@ -90,6 +92,7 @@ public class Node {
         this.setApiPort(apiPort);
         this.setUiPort(uiPort);
         this.setConnectedClients(new HashSet<>());
+        this.setClientListCache(new ClientListCache());
     }
 
     public Tracker getTracker() {
@@ -170,6 +173,14 @@ public class Node {
 
     public void setConnectedClients(Set<ClientMetadata> connectedClients) {
         this.connectedClients = connectedClients;
+    }
+
+    public ClientListCache getClientListCache() {
+        return clientListCache;
+    }
+
+    public void setClientListCache(ClientListCache clientListCache) {
+        this.clientListCache = clientListCache;
     }
 
     public String getAddress() {

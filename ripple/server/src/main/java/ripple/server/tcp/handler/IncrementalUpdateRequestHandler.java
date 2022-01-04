@@ -8,7 +8,6 @@ import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.message.IncrementalUpdateRequest;
 import ripple.common.tcp.message.IncrementalUpdateResponse;
-import ripple.common.tcp.message.PutResponse;
 import ripple.server.core.Node;
 
 import java.net.InetSocketAddress;

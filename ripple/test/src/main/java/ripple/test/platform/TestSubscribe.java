@@ -1,8 +1,8 @@
 package ripple.test.platform;
 
 import ripple.client.RippleClient;
-import ripple.server.RippleServer;
 import ripple.common.entity.NodeMetadata;
+import ripple.server.RippleServer;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
