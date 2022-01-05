@@ -1,11 +1,14 @@
 package ripple.client.core.tcp.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.client.helper.Api;
 import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
@@ -18,6 +21,7 @@ import ripple.common.tcp.message.DispatchResponse;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * @author Zhen Tang
@@ -52,8 +56,6 @@ public class DispatchRequestHandler implements Handler {
 
     @Override
     public Message handle(ChannelHandlerContext channelHandlerContext, Message message) {
-        // TODO: Get client list and dispatch messages
-
         DispatchRequest dispatchRequest = (DispatchRequest) message;
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
@@ -95,6 +97,17 @@ public class DispatchRequestHandler implements Handler {
         }
 
         this.applyMessage(msg);
+
+        // TODO: Get client list and dispatch messages
+        List<ClientMetadata> clientList = this.getRippleClient().getClientListCache().get(dispatchRequest.getClientListSignature());
+        if (clientList == null) {
+            Channel channel = this.getRippleClient().findOrConnect(dispatchRequest.getApplicationName(), dispatchRequest.getKey());
+            Api.getClientListAsync(channel, dispatchRequest.getClientListSignature());
+        } else {
+            for(ClientMetadata clientMetadata:clientList){
+                // Sync here
+            }
+        }
 
         DispatchResponse dispatchResponse = new DispatchResponse();
         dispatchResponse.setUuid(dispatchRequest.getUuid());

@@ -1,10 +1,11 @@
-package ripple.server.core;
+package ripple.server.core.dispatcher;
 
 import io.netty.channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
+import ripple.server.core.Node;
 import ripple.server.helper.Api;
 
 import java.util.Set;

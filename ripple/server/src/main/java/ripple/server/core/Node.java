@@ -17,6 +17,8 @@ import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
+import ripple.server.core.dispatcher.ClientDispatcher;
+import ripple.server.core.dispatcher.EqualDivisionClientDispatcher;
 import ripple.server.core.overlay.Overlay;
 import ripple.server.helper.Api;
 import ripple.server.tcp.NettyServer;
@@ -247,7 +249,7 @@ public class Node {
         this.setUiPort(uiPort);
         this.setConnectedClients(new HashSet<>());
         this.setClientListCache(new ClientListCache());
-        this.setClientDispatcher(new DefaultClientDispatcher(this));
+        this.setClientDispatcher(new EqualDivisionClientDispatcher(this));
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {

@@ -52,6 +52,7 @@ public class ServerMessageHandler extends MessageHandler {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         InetSocketAddress localAddress = ((NioSocketChannel) ctx.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) ctx.channel()).remoteAddress();
+        cause.printStackTrace();
         LOGGER.info("[ServerMessageHandler] [{}:{}<-->{}:{}] Exception caught: {}."
                 , localAddress.getHostString(), localAddress.getPort()
                 , remoteAddress.getHostString(), remoteAddress.getPort()

@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * @author Zhen Tang
  */
-public class ClientMetadata {
+public class ClientMetadata implements Comparable<ClientMetadata> {
     private String address;
     private int port;
 
@@ -50,5 +50,14 @@ public class ClientMetadata {
                 "address='" + address + '\'' +
                 ", port='" + port + '\'' +
                 '}';
+    }
+
+    @Override
+    public int compareTo(ClientMetadata o) {
+        int result = this.getAddress().compareTo(o.getAddress());
+        if (result == 0) {
+            result = Integer.compare(this.getPort(), o.getPort());
+        }
+        return result;
     }
 }

@@ -263,7 +263,7 @@ public class RippleClient {
         this.registerServlet(servletContextHandler, new ServerInfoServlet(this), Endpoint.UI_SERVER_INFO);
     }
 
-    private Channel findOrConnect(String applicationName, String key) {
+    public Channel findOrConnect(String applicationName, String key) {
         Item item = new Item(applicationName, key);
 
         // Double check

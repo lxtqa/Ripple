@@ -19,6 +19,7 @@ import java.util.UUID;
  */
 public class Main {
     private static final int SERVER_COUNT = 10;
+    private static final int CLIENTS_PER_SERVER = 2;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -26,6 +27,7 @@ public class Main {
             Files.createDirectories(Paths.get(DATABASE_PATH));
 
             List<RippleServer> serverList = new ArrayList<>();
+            List<RippleClient> clientList = new ArrayList<>();
             List<NodeMetadata> nodeList = new ArrayList<>();
 
             int branch = 3;
@@ -46,14 +48,27 @@ public class Main {
 
             Thread.sleep(1000);
 
-            RippleClient client = new RippleClient(nodeList, DATABASE_PATH + "\\server-" + serverList.get(0).getId() + "-client-" + "1" + ".db");
-            client.start();
-            System.out.println("Client UI: " + client.getUiAddress() + ":" + client.getUiPort());
+            int j = 0;
+            for (i = 0; i < SERVER_COUNT; i++) {
+                for (j = 0; j < CLIENTS_PER_SERVER; j++) {
+                    RippleServer rippleServer = serverList.get(i);
+                    String storageLocation = DATABASE_PATH + "\\server-" + rippleServer.getId() + "-client-" + (j + 1) + ".db";
+                    RippleClient rippleClient = new RippleClient(nodeList, storageLocation);
+                    rippleClient.start();
+                    clientList.add(rippleClient);
+                    System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
+                            + rippleClient.getUiAddress() + ":" + rippleClient.getUiPort());
+                }
+            }
+
+            for (RippleClient client : clientList) {
+                client.subscribe("testApp", "test");
+            }
+
             Thread.sleep(1000);
             UUID baseMessageUuid = UUID.randomUUID();
             System.out.println("Test incremental update, uuid = " + baseMessageUuid);
-            client.subscribe("testApp", "test");
-            client.incrementalUpdate("testApp", "test", baseMessageUuid, Constants.ATOMIC_OPERATION_ADD_ENTRY, "test");
+            clientList.get(0).incrementalUpdate("testApp", "test", baseMessageUuid, Constants.ATOMIC_OPERATION_ADD_ENTRY, "test");
 
 //            Thread.sleep(2000);
 //            GetRequest getRequest = new GetRequest();
@@ -64,6 +79,10 @@ public class Main {
 
             System.out.println("Press any key to stop.");
             System.in.read();
+
+            for (RippleClient rippleClient : clientList) {
+                rippleClient.stop();
+            }
 
             for (RippleServer rippleServer : serverList) {
                 rippleServer.stop();

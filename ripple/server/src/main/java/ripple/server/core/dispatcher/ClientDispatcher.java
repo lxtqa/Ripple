@@ -1,4 +1,4 @@
-package ripple.server.core;
+package ripple.server.core.dispatcher;
 
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
