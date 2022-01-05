@@ -12,6 +12,7 @@ import ripple.common.tcp.MessageType;
 import ripple.common.tcp.decoder.DeleteRequestDecoder;
 import ripple.common.tcp.decoder.DeleteResponseDecoder;
 import ripple.common.tcp.decoder.DispatchRequestDecoder;
+import ripple.common.tcp.decoder.DispatchResponseDecoder;
 import ripple.common.tcp.decoder.GetClientListRequestDecoder;
 import ripple.common.tcp.decoder.GetClientListResponseDecoder;
 import ripple.common.tcp.decoder.GetRequestDecoder;
@@ -169,7 +170,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageDecoder.registerDecoder(MessageType.DISPATCH_REQUEST, new DispatchRequestDecoder());
 
         messageEncoder.registerEncoder(MessageType.DISPATCH_RESPONSE, new DispatchResponseEncoder());
-        messageDecoder.registerDecoder(MessageType.DISPATCH_RESPONSE, new DispatchRequestDecoder());
+        messageDecoder.registerDecoder(MessageType.DISPATCH_RESPONSE, new DispatchResponseDecoder());
         messageHandler.registerHandler(MessageType.DISPATCH_RESPONSE, new DispatchResponseHandler(this.getNettyServer().getNode()));
 
         messageEncoder.registerEncoder(MessageType.GET_CLIENT_LIST_REQUEST, new GetClientListRequestEncoder());
