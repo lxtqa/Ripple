@@ -54,6 +54,8 @@ public class Node {
     private static final Logger LOGGER = LoggerFactory.getLogger(Node.class);
 
     private ExecutorService executorService;
+    private Worker worker;
+    private Thread workingThread;
 
     private int id;
     private Overlay overlay;
@@ -61,11 +63,11 @@ public class Node {
     private List<NodeMetadata> nodeList;
     private ConcurrentHashMap<Item, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
+
     private Tracker tracker;
     private HealthManager healthManager;
-    private Worker worker;
-    private Thread workingThread;
     private ClientListCache clientListCache;
+    private ClientDispatcher clientDispatcher;
 
     private String address;
     private int uiPort;
@@ -74,41 +76,12 @@ public class Node {
     private NettyServer apiServer;
     private boolean running;
 
-    public Node(int id, Overlay overlay, String storageLocation) {
-        this(id, overlay, storageLocation, 0, 0);
+    public ExecutorService getExecutorService() {
+        return executorService;
     }
 
-    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort) {
-        this.setExecutorService(Executors.newCachedThreadPool());
-        this.setId(id);
-        this.setOverlay(overlay);
-        this.setTracker(new Tracker(this, overlay));
-        this.setStorage(new Storage(storageLocation));
-        this.setHealthManager(new HealthManager(this));
-        this.setWorker(new Worker(this));
-
-        this.setNodeList(new ArrayList<>());
-        this.setSubscription(new ConcurrentHashMap<>());
-        this.setApiPort(apiPort);
-        this.setUiPort(uiPort);
-        this.setConnectedClients(new HashSet<>());
-        this.setClientListCache(new ClientListCache());
-    }
-
-    public Tracker getTracker() {
-        return tracker;
-    }
-
-    private void setTracker(Tracker tracker) {
-        this.tracker = tracker;
-    }
-
-    public HealthManager getHealthManager() {
-        return healthManager;
-    }
-
-    private void setHealthManager(HealthManager healthManager) {
-        this.healthManager = healthManager;
+    public void setExecutorService(ExecutorService executorService) {
+        this.executorService = executorService;
     }
 
     public Worker getWorker() {
@@ -175,12 +148,36 @@ public class Node {
         this.connectedClients = connectedClients;
     }
 
+    public Tracker getTracker() {
+        return tracker;
+    }
+
+    private void setTracker(Tracker tracker) {
+        this.tracker = tracker;
+    }
+
+    public HealthManager getHealthManager() {
+        return healthManager;
+    }
+
+    private void setHealthManager(HealthManager healthManager) {
+        this.healthManager = healthManager;
+    }
+
     public ClientListCache getClientListCache() {
         return clientListCache;
     }
 
     public void setClientListCache(ClientListCache clientListCache) {
         this.clientListCache = clientListCache;
+    }
+
+    public ClientDispatcher getClientDispatcher() {
+        return clientDispatcher;
+    }
+
+    public void setClientDispatcher(ClientDispatcher clientDispatcher) {
+        this.clientDispatcher = clientDispatcher;
     }
 
     public String getAddress() {
@@ -231,12 +228,26 @@ public class Node {
         this.running = running;
     }
 
-    public ExecutorService getExecutorService() {
-        return executorService;
+    public Node(int id, Overlay overlay, String storageLocation) {
+        this(id, overlay, storageLocation, 0, 0);
     }
 
-    public void setExecutorService(ExecutorService executorService) {
-        this.executorService = executorService;
+    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort) {
+        this.setExecutorService(Executors.newCachedThreadPool());
+        this.setId(id);
+        this.setOverlay(overlay);
+        this.setTracker(new Tracker(this, overlay));
+        this.setStorage(new Storage(storageLocation));
+        this.setHealthManager(new HealthManager(this));
+        this.setWorker(new Worker(this));
+
+        this.setNodeList(new ArrayList<>());
+        this.setSubscription(new ConcurrentHashMap<>());
+        this.setApiPort(apiPort);
+        this.setUiPort(uiPort);
+        this.setConnectedClients(new HashSet<>());
+        this.setClientListCache(new ClientListCache());
+        this.setClientDispatcher(new DefaultClientDispatcher(this));
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -367,12 +378,7 @@ public class Node {
         Item item = new Item(message.getApplicationName(), message.getKey());
         if (this.getSubscription().containsKey(item)) {
             Set<ClientMetadata> clients = this.getSubscription().get(item);
-            for (ClientMetadata metadata : clients) {
-                LOGGER.info("[Node-{}] Notify {} to client {}:{}."
-                        , this.getId(), message.getType(), metadata.getAddress(), metadata.getPort());
-                Channel channel = this.getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
-                Api.sync(channel, message);
-            }
+            this.getClientDispatcher().notifyClients(clients, message);
         }
     }
 
