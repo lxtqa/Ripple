@@ -1,10 +1,13 @@
 package ripple.client.core.tcp.handler;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.client.helper.Api;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
@@ -14,6 +17,7 @@ import ripple.common.tcp.message.GetClientListResponseItem;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 /**
  * @author Zhen Tang
@@ -53,6 +57,17 @@ public class GetClientListResponseHandler implements Handler {
         }
 
         this.getRippleClient().getClientListCache().put(getClientListResponse.getClientListSignature(), clientList);
+        Queue<AbstractMessage> pendingMessages = this.getRippleClient().getPendingMessages().get(getClientListResponse.getClientListSignature());
+        if (pendingMessages != null) {
+            while (!pendingMessages.isEmpty()) {
+                AbstractMessage toSend = pendingMessages.poll();
+                for (ClientMetadata clientMetadata : clientList) {
+                    Channel channel = this.getRippleClient().findOrConnectToClient(clientMetadata);
+                    Api.syncAsync(channel, toSend);
+                }
+            }
+        }
+
         return null;
     }
 }

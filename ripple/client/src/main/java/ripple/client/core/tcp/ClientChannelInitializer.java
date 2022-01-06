@@ -14,6 +14,7 @@ import ripple.client.core.tcp.handler.IncrementalUpdateResponseHandler;
 import ripple.client.core.tcp.handler.PutResponseHandler;
 import ripple.client.core.tcp.handler.SubscribeResponseHandler;
 import ripple.client.core.tcp.handler.SyncRequestHandler;
+import ripple.client.core.tcp.handler.SyncResponseHandler;
 import ripple.client.core.tcp.handler.UnsubscribeResponseHandler;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
@@ -102,6 +103,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.SYNC_RESPONSE, new SyncResponseEncoder());
         messageDecoder.registerDecoder(MessageType.SYNC_RESPONSE, new SyncResponseDecoder());
+        messageHandler.registerHandler(MessageType.SYNC_RESPONSE, new SyncResponseHandler(this.getRippleClient()));
 
         messageEncoder.registerEncoder(MessageType.GET_REQUEST, new GetRequestEncoder());
         messageDecoder.registerDecoder(MessageType.GET_REQUEST, new GetRequestDecoder());

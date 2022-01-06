@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class OperatorServlet extends HttpServlet {
     private static final ObjectMapper MAPPER = new ObjectMapper();
@@ -56,7 +56,7 @@ public class OperatorServlet extends HttpServlet {
 
     private int doGetNumber(String address) {
         try {
-            Map<String, String> headers = new HashMap<>(3);
+            Map<String, String> headers = new ConcurrentHashMap<>(3);
             String url = "http://" + address + "/";
             String returnValue = Http.post(url, headers);
             return MAPPER.readValue(returnValue, Integer.class);

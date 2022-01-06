@@ -7,9 +7,9 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Formatter;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -26,7 +26,7 @@ public class ClientListCache {
     }
 
     public ClientListCache() {
-        this.setMap(new HashMap<>());
+        this.setMap(new ConcurrentHashMap<>());
     }
 
     public List<ClientMetadata> get(String signature) {

@@ -46,17 +46,17 @@ public class TestStarOverlay {
             NumberService one = new NumberService(numberOne, nodeList, DATABASE_PATH + "\\number-service-1.db");
             one.start();
             System.out.println("[Number Service 1] " + one.getAddress() + ":" + one.getPort()
-                    + ", Client = " + one.getClient().getUiAddress() + ":" + one.getClient().getUiPort());
+                    + ", Client = " + one.getClient().getAddress() + ":" + one.getClient().getUiPort());
 
             NumberService two = new NumberService(numberTwo, nodeList, DATABASE_PATH + "\\number-service-2.db");
             two.start();
             System.out.println("[Number Service 2] " + two.getAddress() + ":" + two.getPort()
-                    + ", Client = " + two.getClient().getUiAddress() + ":" + two.getClient().getUiPort());
+                    + ", Client = " + two.getClient().getAddress() + ":" + two.getClient().getUiPort());
 
             OperatorService operator = new OperatorService(nodeList, DATABASE_PATH + "\\operator-service.db");
             operator.start();
             System.out.println("[Operator Service] " + operator.getAddress() + ":" + operator.getPort()
-                    + ", Client = " + operator.getClient().getUiAddress() + ":" + operator.getClient().getUiPort());
+                    + ", Client = " + operator.getClient().getAddress() + ":" + operator.getClient().getUiPort());
 
             one.getClient().put("testApp", "oneAddress", one.getAddress() + ":" + one.getPort());
             one.getClient().put("testApp", "twoAddress", two.getAddress() + ":" + two.getPort());

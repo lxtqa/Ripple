@@ -42,7 +42,7 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                        <th>键</th>\n");
             stringBuilder.append("                        <th>服务器ID</th>\n");
             stringBuilder.append("                        <th>服务器IP地址</th>\n");
-            stringBuilder.append("                        <th>服务器端口号</th>\n");
+            stringBuilder.append("                        <th>服务器API端口号</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");

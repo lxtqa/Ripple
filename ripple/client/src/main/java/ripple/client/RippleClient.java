@@ -1,11 +1,16 @@
 package ripple.client;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.logging.LogLevel;
+import io.netty.handler.logging.LoggingHandler;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -28,6 +33,7 @@ import ripple.client.core.ui.ServerInfoServlet;
 import ripple.client.core.ui.StyleServlet;
 import ripple.client.helper.Api;
 import ripple.common.ClientListCache;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
@@ -36,10 +42,12 @@ import ripple.common.storage.Storage;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -47,9 +55,15 @@ import java.util.concurrent.CountDownLatch;
  */
 public class RippleClient {
     private Storage storage;
-    private String uiAddress;
+    private String address;
     private int uiPort;
-    private NioEventLoopGroup eventLoopGroup;
+    private int apiPort;
+
+    private EventLoopGroup bossGroup;
+    private EventLoopGroup workerGroup;
+    private Channel serverChannel;
+    private List<Channel> connectedNodes;
+
     private Server server;
     private boolean running;
     private List<NodeMetadata> nodeList;
@@ -59,17 +73,19 @@ public class RippleClient {
     private Map<ClientMetadata, Channel> clientConnections;
     private NodeSelector nodeSelector;
     private ClientListCache clientListCache;
+    private Map<String, Queue<AbstractMessage>> pendingMessages;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
         this.setStorage(new Storage(storageLocation));
         this.setRunning(false);
         this.setNodeList(nodeList);
-        this.setMappingCache(new HashMap<>());
-        this.setSubscriptions(new HashMap<>());
-        this.setServerConnections(new HashMap<>());
-        this.setClientConnections(new HashMap<>());
+        this.setMappingCache(new ConcurrentHashMap<>());
+        this.setSubscriptions(new ConcurrentHashMap<>());
+        this.setServerConnections(new ConcurrentHashMap<>());
+        this.setClientConnections(new ConcurrentHashMap<>());
         this.setNodeSelector(nodeSelector);
         this.setClientListCache(new ClientListCache());
+        this.setPendingMessages(new ConcurrentHashMap<>());
     }
 
     public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
@@ -84,12 +100,12 @@ public class RippleClient {
         this.storage = storage;
     }
 
-    public String getUiAddress() {
-        return uiAddress;
+    public String getAddress() {
+        return address;
     }
 
-    private void setUiAddress(String uiAddress) {
-        this.uiAddress = uiAddress;
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public int getUiPort() {
@@ -100,12 +116,44 @@ public class RippleClient {
         this.uiPort = uiPort;
     }
 
-    private NioEventLoopGroup getEventLoopGroup() {
-        return eventLoopGroup;
+    public int getApiPort() {
+        return apiPort;
     }
 
-    private void setEventLoopGroup(NioEventLoopGroup eventLoopGroup) {
-        this.eventLoopGroup = eventLoopGroup;
+    public void setApiPort(int apiPort) {
+        this.apiPort = apiPort;
+    }
+
+    public EventLoopGroup getBossGroup() {
+        return bossGroup;
+    }
+
+    public void setBossGroup(EventLoopGroup bossGroup) {
+        this.bossGroup = bossGroup;
+    }
+
+    public EventLoopGroup getWorkerGroup() {
+        return workerGroup;
+    }
+
+    public void setWorkerGroup(EventLoopGroup workerGroup) {
+        this.workerGroup = workerGroup;
+    }
+
+    public Channel getServerChannel() {
+        return serverChannel;
+    }
+
+    public void setServerChannel(Channel serverChannel) {
+        this.serverChannel = serverChannel;
+    }
+
+    public List<Channel> getConnectedNodes() {
+        return connectedNodes;
+    }
+
+    public void setConnectedNodes(List<Channel> connectedNodes) {
+        this.connectedNodes = connectedNodes;
     }
 
     public Server getServer() {
@@ -180,6 +228,14 @@ public class RippleClient {
         this.clientListCache = clientListCache;
     }
 
+    public Map<String, Queue<AbstractMessage>> getPendingMessages() {
+        return pendingMessages;
+    }
+
+    public void setPendingMessages(Map<String, Queue<AbstractMessage>> pendingMessages) {
+        this.pendingMessages = pendingMessages;
+    }
+
     public Item get(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
@@ -242,7 +298,7 @@ public class RippleClient {
         Channel channel = this.findOrConnectToServer(applicationName, key);
         Item item = new Item(applicationName, key);
         this.getSubscriptions().put(item, this.getMappingCache().get(item));
-        Api.subscribeAsync(channel, applicationName, key);
+        Api.subscribeAsync(channel, applicationName, key, this.getAddress(), this.getApiPort());
     }
 
     public void unsubscribe(String applicationName, String key) {
@@ -251,7 +307,7 @@ public class RippleClient {
         }
         Channel channel = this.findOrConnectToServer(applicationName, key);
         this.getSubscriptions().remove(new Item(applicationName, key));
-        Api.unsubscribeAsync(channel, applicationName, key);
+        Api.unsubscribeAsync(channel, applicationName, key, this.getAddress(), this.getApiPort());
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -288,25 +344,29 @@ public class RippleClient {
         NodeMetadata nodeMetadata = this.getMappingCache().get(item);
         Channel channel = this.getServerConnections().get(nodeMetadata);
         if (channel == null) {
-            this.getServerConnections().put(nodeMetadata, this.doConnectToServer(nodeMetadata));
+            this.getServerConnections().put(nodeMetadata, this.doConnect(nodeMetadata.getAddress(), nodeMetadata.getPort()));
         }
         return this.getServerConnections().get(nodeMetadata);
     }
 
-    public Channel findOrConnectToClient() {
-        return null;
+    public Channel findOrConnectToClient(ClientMetadata clientMetadata) {
+        Channel channel = this.getClientConnections().get(clientMetadata);
+        if (channel == null) {
+            this.getClientConnections().put(clientMetadata, this.doConnect(clientMetadata.getAddress(), clientMetadata.getPort()));
+        }
+        return this.getClientConnections().get(clientMetadata);
     }
 
-    private Channel doConnectToServer(NodeMetadata server) {
+    private Channel doConnect(String address, int port) {
         try {
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(this.getEventLoopGroup())
+            bootstrap.group(this.getWorkerGroup())
                     .channel(NioSocketChannel.class)
                     .option(ChannelOption.TCP_NODELAY, Boolean.TRUE)
                     .option(ChannelOption.SO_REUSEADDR, true) // TODO: Trick
                     .handler(new ClientChannelInitializer(this));
 
-            ChannelFuture future = bootstrap.connect(server.getAddress(), server.getPort()).sync();
+            ChannelFuture future = bootstrap.connect(address, port).sync();
             return future.channel();
         } catch (InterruptedException exception) {
             exception.printStackTrace();
@@ -319,21 +379,36 @@ public class RippleClient {
             return true;
         }
         try {
+            this.setConnectedNodes(new ArrayList<>());
+            this.setBossGroup(new NioEventLoopGroup());
+            this.setWorkerGroup(new NioEventLoopGroup());
+
+            ServerBootstrap serverBootstrap = new ServerBootstrap();
+            serverBootstrap.group(this.getBossGroup(), this.getWorkerGroup())
+                    .channel(NioServerSocketChannel.class)
+                    .option(ChannelOption.SO_BACKLOG, 1024)
+                    .option(ChannelOption.SO_REUSEADDR, true) // Trick
+                    .handler(new LoggingHandler(LogLevel.INFO))
+                    .childHandler(new ClientChannelInitializer(this));
+
+            ChannelFuture future = serverBootstrap.bind(this.getApiPort()).sync();
+            if (this.getApiPort() == 0) {
+                this.setApiPort(((NioServerSocketChannel) future.channel()).localAddress().getPort());
+            }
+            this.setServerChannel(future.channel());
+
             this.setServer(new Server());
             ServerConnector serverConnector = new ServerConnector(this.getServer());
             serverConnector.setPort(0);
             this.getServer().setConnectors(new Connector[]{serverConnector});
-
             ServletContextHandler servletContextHandler = new ServletContextHandler();
-
             this.registerHandlers(servletContextHandler);
-
             this.getServer().setHandler(servletContextHandler);
             this.getServer().start();
-            this.setUiAddress(InetAddress.getLocalHost().getHostAddress());
+
+            this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setUiPort(serverConnector.getLocalPort());
 
-            this.setEventLoopGroup(new NioEventLoopGroup());
 
             this.setRunning(true);
             return true;
@@ -349,8 +424,11 @@ public class RippleClient {
         }
         try {
             this.getServer().stop();
-            CountDownLatch lock = new CountDownLatch(1);
-            this.getEventLoopGroup().shutdownGracefully().addListener(e -> {
+            CountDownLatch lock = new CountDownLatch(2);
+            this.getBossGroup().shutdownGracefully().addListener(e -> {
+                lock.countDown();
+            });
+            this.getWorkerGroup().shutdownGracefully().addListener(e -> {
                 lock.countDown();
             });
             lock.await();

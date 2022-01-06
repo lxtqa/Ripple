@@ -48,14 +48,20 @@ public class ClientMessageHandler extends MessageHandler {
                 break;
             }
         }
+        boolean found = false;
         if (!isServer) {
             for (ClientMetadata clientMetadata : this.getRippleClient().getClientConnections().keySet()) {
                 if (clientMetadata.getAddress().equals(remoteAddress.getHostString())
                         && clientMetadata.getPort() == remoteAddress.getPort()) {
                     this.getRippleClient().getClientConnections().put(clientMetadata, ctx.channel());
+                    found = true;
                     break;
                 }
             }
+        }
+        if (!found) {
+            this.getRippleClient().getClientConnections().put(
+                    new ClientMetadata(remoteAddress.getHostString(), remoteAddress.getPort()), ctx.channel());
         }
     }
 

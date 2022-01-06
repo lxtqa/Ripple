@@ -48,7 +48,7 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                        <th>应用名称</th>\n");
             stringBuilder.append("                        <th>键</th>\n");
             stringBuilder.append("                        <th>客户端地址</th>\n");
-            stringBuilder.append("                        <th>客户端端口号</th>\n");
+            stringBuilder.append("                        <th>客户端API端口号</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");

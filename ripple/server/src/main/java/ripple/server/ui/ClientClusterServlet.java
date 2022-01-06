@@ -38,7 +38,7 @@ public class ClientClusterServlet extends BaseServlet {
             stringBuilder.append("                    <tr>\n");
             stringBuilder.append("                        <th>序号</th>\n");
             stringBuilder.append("                        <th>客户端地址</th>\n");
-            stringBuilder.append("                        <th>客户端端口号</th>\n");
+            stringBuilder.append("                        <th>客户端API端口号</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");

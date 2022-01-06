@@ -56,7 +56,7 @@ public class TestDataPushing {
                     rippleClient.start();
                     clientList.add(rippleClient);
                     System.out.println("Client " + (j + 1) + " for Server " + rippleServer.getId() + ":"
-                            + rippleClient.getUiAddress() + ":" + rippleClient.getUiPort());
+                            + rippleClient.getAddress() + ":" + rippleClient.getUiPort());
                 }
             }
 

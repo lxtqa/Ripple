@@ -6,8 +6,8 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -26,7 +26,7 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
     }
 
     public MessageEncoder() {
-        this.setEncoders(new HashMap<>());
+        this.setEncoders(new ConcurrentHashMap<>());
     }
 
     public void registerEncoder(MessageType type, Encoder encoder) {

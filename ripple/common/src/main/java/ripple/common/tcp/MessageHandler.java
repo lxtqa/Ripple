@@ -5,8 +5,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -25,7 +25,7 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
     }
 
     public MessageHandler() {
-        this.setHandlers(new HashMap<>());
+        this.setHandlers(new ConcurrentHashMap<>());
     }
 
     @Override

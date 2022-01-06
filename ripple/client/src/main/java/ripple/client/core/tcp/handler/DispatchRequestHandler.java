@@ -22,6 +22,7 @@ import ripple.common.tcp.message.DispatchResponse;
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * @author Zhen Tang
@@ -103,9 +104,19 @@ public class DispatchRequestHandler implements Handler {
         if (clientList == null) {
             Channel channel = this.getRippleClient().findOrConnectToServer(dispatchRequest.getApplicationName(), dispatchRequest.getKey());
             Api.getClientListAsync(channel, dispatchRequest.getClientListSignature());
+            // Double check
+            if (this.getRippleClient().getPendingMessages().get(dispatchRequest.getClientListSignature()) == null) {
+                synchronized (this.getRippleClient().getPendingMessages()) {
+                    if (this.getRippleClient().getPendingMessages().get(dispatchRequest.getClientListSignature()) == null) {
+                        this.getRippleClient().getPendingMessages().put(dispatchRequest.getClientListSignature(), new ConcurrentLinkedQueue<>());
+                    }
+                }
+            }
+            this.getRippleClient().getPendingMessages().get(dispatchRequest.getClientListSignature()).offer(msg);
         } else {
-            for(ClientMetadata clientMetadata:clientList){
-                // Sync here
+            for (ClientMetadata clientMetadata : clientList) {
+                Channel channel = this.getRippleClient().findOrConnectToClient(clientMetadata);
+                Api.syncAsync(channel, msg);
             }
         }
 

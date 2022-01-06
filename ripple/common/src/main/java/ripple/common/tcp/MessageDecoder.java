@@ -6,9 +6,9 @@ import io.netty.handler.codec.ByteToMessageDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -27,7 +27,7 @@ public class MessageDecoder extends ByteToMessageDecoder {
     }
 
     public MessageDecoder() {
-        this.setDecoders(new HashMap<>());
+        this.setDecoders(new ConcurrentHashMap<>());
     }
 
     public void registerDecoder(MessageType type, Decoder decoder) {

@@ -4,15 +4,20 @@ import io.netty.channel.Channel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
+import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.message.DeleteRequest;
 import ripple.common.tcp.message.GetClientListRequest;
 import ripple.common.tcp.message.GetRequest;
 import ripple.common.tcp.message.IncrementalUpdateRequest;
 import ripple.common.tcp.message.PutRequest;
 import ripple.common.tcp.message.SubscribeRequest;
+import ripple.common.tcp.message.SyncRequest;
 import ripple.common.tcp.message.UnsubscribeRequest;
 
 import java.net.InetSocketAddress;
+import java.text.SimpleDateFormat;
 import java.util.UUID;
 
 /**
@@ -86,15 +91,15 @@ public final class Api {
         channel.writeAndFlush(incrementalUpdateRequest);
     }
 
-    public static void subscribeAsync(Channel channel, String applicationName, String key) {
+    public static void subscribeAsync(Channel channel, String applicationName, String key, String callbackAddress, int callbackPort) {
         InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
         SubscribeRequest subscribeRequest = new SubscribeRequest();
         subscribeRequest.setUuid(UUID.randomUUID());
         subscribeRequest.setApplicationName(applicationName);
         subscribeRequest.setKey(key);
-        subscribeRequest.setCallbackAddress(localAddress.getHostString());
-        subscribeRequest.setCallbackPort(localAddress.getPort());
+        subscribeRequest.setCallbackAddress(callbackAddress);
+        subscribeRequest.setCallbackPort(callbackPort);
         LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), subscribeRequest.getUuid(), subscribeRequest.getApplicationName()
@@ -102,15 +107,15 @@ public final class Api {
         channel.writeAndFlush(subscribeRequest);
     }
 
-    public static void unsubscribeAsync(Channel channel, String applicationName, String key) {
+    public static void unsubscribeAsync(Channel channel, String applicationName, String key, String callbackAddress, int callbackPort) {
         InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
         UnsubscribeRequest unsubscribeRequest = new UnsubscribeRequest();
         unsubscribeRequest.setUuid(UUID.randomUUID());
         unsubscribeRequest.setApplicationName(applicationName);
         unsubscribeRequest.setKey(key);
-        unsubscribeRequest.setCallbackAddress(localAddress.getHostString());
-        unsubscribeRequest.setCallbackPort(localAddress.getPort());
+        unsubscribeRequest.setCallbackAddress(callbackAddress);
+        unsubscribeRequest.setCallbackPort(callbackPort);
         LOGGER.info("[Api] [{}:{}<-->{}:{}] Send UNSUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), unsubscribeRequest.getUuid(), unsubscribeRequest.getApplicationName()
@@ -128,5 +133,36 @@ public final class Api {
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), getClientListRequest.getUuid(), getClientListRequest.getClientListSignature());
         channel.writeAndFlush(getClientListRequest);
+    }
+
+    public static void syncAsync(Channel channel, AbstractMessage message) {
+        SyncRequest syncRequest = new SyncRequest();
+        syncRequest.setUuid(UUID.randomUUID());
+        syncRequest.setMessageUuid(message.getUuid());
+        syncRequest.setOperationType(message.getType());
+        syncRequest.setApplicationName(message.getApplicationName());
+        syncRequest.setKey(message.getKey());
+        if (message instanceof UpdateMessage) {
+            syncRequest.setValue(((UpdateMessage) message).getValue());
+        } else if (message instanceof IncrementalUpdateMessage) {
+            syncRequest.setBaseMessageUuid(((IncrementalUpdateMessage) message).getBaseMessageUuid());
+            syncRequest.setAtomicOperation(((IncrementalUpdateMessage) message).getAtomicOperation());
+            syncRequest.setValue(((IncrementalUpdateMessage) message).getValue());
+        }
+        syncRequest.setLastUpdate(message.getLastUpdate());
+        syncRequest.setLastUpdateServerId(message.getLastUpdateServerId());
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SYNC request. UUID = {}, Message UUID = {}" +
+                        ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
+                        ", Atomic Operation = {}, Value = {}, Last Update = {}" +
+                        ", Last Update Server Id = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), syncRequest.getUuid(), syncRequest.getMessageUuid()
+                , syncRequest.getOperationType(), syncRequest.getApplicationName(), syncRequest.getKey()
+                , syncRequest.getBaseMessageUuid(), syncRequest.getAtomicOperation()
+                , syncRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate())
+                , syncRequest.getLastUpdateServerId());
+        channel.writeAndFlush(syncRequest);
     }
 }

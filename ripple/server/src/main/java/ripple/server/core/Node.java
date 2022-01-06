@@ -458,6 +458,7 @@ public class Node {
         if (!subscribers.contains(clientMetadata)) {
             subscribers.add(clientMetadata);
         }
+        this.getApiServer().connect(clientMetadata.getAddress(), clientMetadata.getPort());
         this.getConnectedClients().add(clientMetadata);
     }
 
