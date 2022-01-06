@@ -101,7 +101,7 @@ public class DispatchRequestHandler implements Handler {
         // TODO: Get client list and dispatch messages
         List<ClientMetadata> clientList = this.getRippleClient().getClientListCache().get(dispatchRequest.getClientListSignature());
         if (clientList == null) {
-            Channel channel = this.getRippleClient().findOrConnect(dispatchRequest.getApplicationName(), dispatchRequest.getKey());
+            Channel channel = this.getRippleClient().findOrConnectToServer(dispatchRequest.getApplicationName(), dispatchRequest.getKey());
             Api.getClientListAsync(channel, dispatchRequest.getClientListSignature());
         } else {
             for(ClientMetadata clientMetadata:clientList){

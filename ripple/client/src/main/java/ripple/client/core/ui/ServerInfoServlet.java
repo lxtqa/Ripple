@@ -28,7 +28,7 @@ public class ServerInfoServlet extends BaseServlet {
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
                 .append("当前客户端节点共连接到了 <strong>")
-                .append(this.getClient().getConnections().size())
+                .append(this.getClient().getServerConnections().size())
                 .append("</strong> 台服务器。")
                 .append("\n");
         stringBuilder.append("                </p>\n");
@@ -45,7 +45,7 @@ public class ServerInfoServlet extends BaseServlet {
             stringBuilder.append("                    <tbody>\n");
 
             int i = 0;
-            for (NodeMetadata nodeMetadata : this.getClient().getConnections().keySet()) {
+            for (NodeMetadata nodeMetadata : this.getClient().getServerConnections().keySet()) {
                 stringBuilder.append("                    <tr>\n");
                 stringBuilder.append("                        <td>")
                         .append(i + 1)
