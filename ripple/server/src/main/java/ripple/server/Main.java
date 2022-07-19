@@ -19,34 +19,38 @@ public class Main {
 
         String storageLocation = System.getProperty("storageLocation");
         if (storageLocation == null) {
-            storageLocation = "database.sqlite";
+            String defaultStorageLocation = "database.sqlite";
+            LOGGER.info("[Main] Missing parameter: storageLocation (-DstorageLocation). Using default: " + defaultStorageLocation);
+            storageLocation = defaultStorageLocation;
         }
 
         String apiPort = System.getProperty("apiPort");
         if (apiPort == null) {
+            LOGGER.info("[Main] Missing parameter: API port (-DapiPort). Using random port.");
             apiPort = "0";
         }
 
         String uiPort = System.getProperty("uiPort");
         if (uiPort == null) {
+            LOGGER.info("[Main] Missing parameter: UI port (-DuiPort). Using random port.");
             uiPort = "0";
         }
 
         String protocol = System.getProperty("protocol");
         if (protocol == null) {
-            LOGGER.info("[Main] Missing parameter: protocol.");
-            return;
+            LOGGER.info("[Main] Missing parameter: protocol (-Dprotocol). Using STAR protocol.");
+            protocol = "star";
         }
 
         String id = System.getProperty("id");
         if (id == null) {
-            LOGGER.info("[Main] Missing parameter: id.");
+            LOGGER.info("[Main] Missing parameter: id (-Did).");
             return;
         }
 
         String nodes = System.getProperty("nodes");
         if (nodes == null) {
-            LOGGER.info("[Main] Missing parameter: nodes.");
+            LOGGER.info("[Main] Missing parameter: nodes (-Dnodes).");
             return;
         }
 
@@ -54,8 +58,9 @@ public class Main {
         if (protocol.equals("tree")) {
             String branch = System.getProperty("branch");
             if (branch == null) {
-                LOGGER.info("[Main] Missing parameter: branch for protocol tree.");
-                return;
+                String defaultBranch = "3";
+                LOGGER.info("[Main] Missing parameter: branch for TREE protocol (-Dbranch). Using default: " + defaultBranch);
+                branch = defaultBranch;
             }
             server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort), Integer.parseInt(branch));
         } else if (protocol.equals("star")) {
@@ -74,6 +79,11 @@ public class Main {
             server.start();
             LOGGER.info("[Main] Ripple Server started. The API port is {}. The UI port is {}. The storage location is {}."
                     , server.getApiPort(), server.getUiPort(), server.getNode().getStorage().getFileName());
+            LOGGER.info("[Main] Nodes in the cluster:");
+            for (NodeMetadata nodeMetadata : server.getNode().getNodeList()) {
+                LOGGER.info("[Main] --> Id = {}, Address = {}, API port = {}", nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
+            }
+            server.initCluster(server.getNode().getNodeList());
         }
     }
 }
