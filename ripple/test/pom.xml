@@ -51,5 +51,6 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>ripple-test</finalName>
     </build>
 </project>
