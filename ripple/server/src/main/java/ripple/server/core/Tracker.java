@@ -88,6 +88,8 @@ public class Tracker {
         List<Integer> nodeList = new ArrayList<>();
         List<NodeMetadata> toCollect = this.getOverlay().calculateNodesToCollectAck(message);
         for (NodeMetadata metadata : toCollect) {
+            LOGGER.info("[Tracker] Attempting to collect ACK of message {} from server {}({}:{})."
+                    , message.getUuid(), metadata.getId(), metadata.getAddress(), metadata.getPort());
             nodeList.add(metadata.getId());
         }
         this.getNode().getStorage().getAckService().initAck(message.getUuid(), nodeList);
