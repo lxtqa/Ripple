@@ -496,13 +496,22 @@ public class Node {
         this.getOverlay().buildOverlay(this.getNodeList());
         this.setWorkingThread(new Thread(this.getWorker()));
         this.getWorkingThread().start();
-        this.initConnections(nodeList);
+        this.reconnect(nodeList);
     }
 
-    private void initConnections(List<NodeMetadata> nodeList) {
+    public synchronized void reconnect(List<NodeMetadata> nodeList) {
         for (NodeMetadata metadata : nodeList) {
             // if (metadata.getId() > this.getId()) {
-            this.getApiServer().connect(metadata.getAddress(), metadata.getPort());
+            Channel channel = this.getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
+            if (channel == null) {
+                try {
+                    LOGGER.info("[Node-{}] Reconnecting to Node-{} ({}:{})."
+                            , this.getId(), metadata.getId(), metadata.getAddress(), metadata.getPort());
+                    this.getApiServer().connect(metadata.getAddress(), metadata.getPort());
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
             // }
         }
     }

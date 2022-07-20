@@ -26,17 +26,21 @@ public class Worker implements Runnable {
 
     @Override
     public void run() {
-        try {
-            while (this.getNode().isRunning() && !Thread.currentThread().isInterrupted()) {
+        while (this.getNode().isRunning() && !Thread.currentThread().isInterrupted()) {
+            try {
+                LOGGER.info("[Worker] Reconnecting.");
+                this.getNode().reconnect(this.getNode().getNodeList());
                 LOGGER.info("[Worker] Check health.");
                 this.getNode().getHealthManager().checkHealth();
                 LOGGER.info("[Worker] Sending pending messages.");
                 this.getNode().getTracker().retry();
                 Thread.sleep(INTERVAL);
+            } catch (InterruptedException exception) {
+                LOGGER.info("[Worker] Interrupted.");
+                return;
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
-            LOGGER.info("[Worker] Interrupted.");
-        } catch (Exception exception) {
-
         }
     }
 }
