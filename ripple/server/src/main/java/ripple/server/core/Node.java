@@ -493,10 +493,10 @@ public class Node {
 
     public void initCluster(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
-        this.initConnections(nodeList);
         this.getOverlay().buildOverlay(this.getNodeList());
         this.setWorkingThread(new Thread(this.getWorker()));
         this.getWorkingThread().start();
+        this.initConnections(nodeList);
     }
 
     private void initConnections(List<NodeMetadata> nodeList) {

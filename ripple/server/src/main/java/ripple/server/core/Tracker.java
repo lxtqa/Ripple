@@ -82,6 +82,8 @@ public class Tracker {
     }
 
     public void initProgress(AbstractMessage message) {
+        LOGGER.info("[Tracker] Initialize ACK progress of message {} (application name = {}, key = {})."
+                , message.getUuid(), message.getApplicationName(), message.getKey());
         this.getPendingMessages().put(message.getUuid(), message);
         List<Integer> nodeList = new ArrayList<>();
         List<NodeMetadata> toCollect = this.getOverlay().calculateNodesToCollectAck(message);
