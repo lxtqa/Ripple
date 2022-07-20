@@ -72,9 +72,13 @@ public class Tracker {
                 NodeMetadata metadata = this.getNode().findServerById(id);
                 LOGGER.info("[Tracker] Retry sync {} with server {}:{}.", message.getType(), metadata.getAddress(), metadata.getPort());
                 Channel channel = this.getNode().getApiServer().findChannel(metadata.getAddress(), metadata.getPort());
-                Api.sync(channel, message);
-                LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
-                this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
+                if (channel == null) {
+                    LOGGER.info("[Tracker] Node-{} ({}:{}) is unreachable, skipping.", metadata.getId(), metadata.getAddress(), metadata.getPort());
+                } else {
+                    Api.sync(channel, message);
+                    LOGGER.info("[Tracker] Record ACK of message {} from server {} to server {}.", message.getUuid(), metadata.getId(), message.getLastUpdateServerId());
+                    this.recordAck(message.getUuid(), message.getLastUpdateServerId(), metadata.getId());
+                }
             }
         } catch (Exception exception) {
             exception.printStackTrace();

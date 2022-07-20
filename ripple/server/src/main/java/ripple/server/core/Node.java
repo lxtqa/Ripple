@@ -364,9 +364,14 @@ public class Node {
             if (this.getHealthManager().isAlive(nodeMetadata)) {
                 LOGGER.info("[Node-{}] Sync {} with server {}:{}.", this.getId(), message.getType(), nodeMetadata.getAddress(), nodeMetadata.getPort());
                 Channel channel = this.getApiServer().findChannel(nodeMetadata.getAddress(), nodeMetadata.getPort());
-                Api.sync(channel, message);
-                LOGGER.info("[Node-{}] Record ACK of message {} from server {}.", this.getId(), message.getUuid(), nodeMetadata.getId());
-                this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
+                if (channel == null) {
+                    LOGGER.info("[Node-{}] Node-{} ({}:{}) is unreachable, skipping."
+                            , this.getId(), nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
+                } else {
+                    Api.sync(channel, message);
+                    LOGGER.info("[Node-{}] Record ACK of message {} from server {}.", this.getId(), message.getUuid(), nodeMetadata.getId());
+                    this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
+                }
             } else {
                 LOGGER.info("[Node-{}] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
                         , this.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
