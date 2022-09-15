@@ -170,7 +170,8 @@ public class NettyServer {
     }
 
     public Channel findChannel(String address, int port) {
-        for (Channel channel : this.getConnectedNodes()) {
+        List<Channel> toIter = new ArrayList<>(this.getConnectedNodes());
+        for (Channel channel : toIter) {
             InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
             if (remoteAddress.getHostString().equals(address) && remoteAddress.getPort() == port) {
                 return channel;

@@ -55,6 +55,9 @@ public class EqualDivisionClientDispatcher implements ClientDispatcher {
 
         List<List<ClientMetadata>> dividedList = this.averageDivide(sourceList, this.getParts());
         for (List<ClientMetadata> list : dividedList) {
+            if (list.size() == 0) {
+                continue;
+            }
             if (list.size() == 1) {
                 ClientMetadata metadata = list.get(0);
                 LOGGER.info("[EqualDivisionClientDispatcher] Node-{}: Sync {} message ({}) to client {}:{}."

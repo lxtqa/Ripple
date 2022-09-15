@@ -498,6 +498,7 @@ public class Node {
 
     public void initCluster(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
+        this.getHealthManager().init();
         this.getOverlay().buildOverlay(this.getNodeList());
         this.setWorkingThread(new Thread(this.getWorker()));
         this.getWorkingThread().start();
