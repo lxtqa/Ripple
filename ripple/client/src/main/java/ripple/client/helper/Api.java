@@ -1,6 +1,8 @@
 package ripple.client.helper;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,11 +102,19 @@ public final class Api {
         subscribeRequest.setKey(key);
         subscribeRequest.setCallbackAddress(callbackAddress);
         subscribeRequest.setCallbackPort(callbackPort);
-        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Start sending SUBSCRIBE request. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), subscribeRequest.getUuid(), subscribeRequest.getApplicationName()
                 , subscribeRequest.getKey(), subscribeRequest.getCallbackAddress(), subscribeRequest.getCallbackPort());
-        channel.writeAndFlush(subscribeRequest);
+        channel.writeAndFlush(subscribeRequest).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SUBSCRIBE request complete. UUID = {}, Application Name = {}, Key = {}, Callback Address = {}, Callback Port = {}."
+                        , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                        , remoteAddress.getPort(), subscribeRequest.getUuid(), subscribeRequest.getApplicationName()
+                        , subscribeRequest.getKey(), subscribeRequest.getCallbackAddress(), subscribeRequest.getCallbackPort());
+            }
+        });
     }
 
     public static void unsubscribeAsync(Channel channel, String applicationName, String key, String callbackAddress, int callbackPort) {

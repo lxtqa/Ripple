@@ -2,10 +2,7 @@ package ripple.server.tcp;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -158,13 +155,17 @@ public class NettyServer {
                     .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new ServerChannelInitializer(this));
 
-            ChannelFuture future = bootstrap.connect(address, port).sync();
-            InetSocketAddress remoteAddress = ((NioSocketChannel) future.channel()).remoteAddress();
-            LOGGER.info("[NettyServer] [Server-{}] connect(): Connected to {}:{}."
-                    , this.getNode().getId(), remoteAddress.getHostString(), remoteAddress.getPort());
+            ChannelFuture future = bootstrap.connect(address, port).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    InetSocketAddress remoteAddress = ((NioSocketChannel) channelFuture.channel()).remoteAddress();
+                    LOGGER.info("[NettyServer] [Server-{}] connect(): Connected to {}:{}."
+                            , getNode().getId(), remoteAddress.getHostString(), remoteAddress.getPort());
+                }
+            });
             return future.channel();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        } catch (Exception exception) {
+            exception.printStackTrace();
             return null;
         }
     }

@@ -1,5 +1,7 @@
 package ripple.common.tcp;
 
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.slf4j.Logger;
@@ -34,7 +36,12 @@ public class MessageHandler extends SimpleChannelInboundHandler<Message> {
         if (handler != null) {
             Message result = handler.handle(channelHandlerContext, message);
             if (result != null) {
-                channelHandlerContext.writeAndFlush(result);
+                channelHandlerContext.writeAndFlush(result).addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                        LOGGER.info("[MessageHandler] channelRead0(): Complete sending message: {}.", message.getType());
+                    }
+                });
             }
         } else {
             LOGGER.info("[MessageHandler] channelRead0(): Cannot find the handler for the message type: {}.", message.getType());
