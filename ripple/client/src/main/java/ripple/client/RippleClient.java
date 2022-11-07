@@ -2,10 +2,7 @@ package ripple.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -16,9 +13,12 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ripple.client.core.HashingBasedSelector;
 import ripple.client.core.NodeSelector;
 import ripple.client.core.tcp.ClientChannelInitializer;
+import ripple.client.core.tcp.handler.SyncRequestHandler;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
 import ripple.client.core.ui.Endpoint;
@@ -54,6 +54,7 @@ import java.util.concurrent.CountDownLatch;
  * @author Zhen Tang
  */
 public class RippleClient {
+    private static final Logger LOGGER = LoggerFactory.getLogger(RippleClient.class);
     private Storage storage;
     private String address;
     private int uiPort;
@@ -366,9 +367,17 @@ public class RippleClient {
                     .option(ChannelOption.SO_REUSEADDR, true) // TODO: Trick
                     .handler(new ClientChannelInitializer(this));
 
-            ChannelFuture future = bootstrap.connect(address, port).sync();
+            CountDownLatch latch = new CountDownLatch(1);
+            ChannelFuture future = bootstrap.connect(address, port).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    LOGGER.info("[RippleClient] doConnect: Completed.");
+                    latch.countDown();
+                }
+            });
+            latch.await();
             return future.channel();
-        } catch (InterruptedException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
             return null;
         }
@@ -390,8 +399,16 @@ public class RippleClient {
                     .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ClientChannelInitializer(this));
+            CountDownLatch latch = new CountDownLatch(1);
 
-            ChannelFuture future = serverBootstrap.bind(this.getApiPort()).sync();
+            ChannelFuture future = serverBootstrap.bind(this.getApiPort()).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    LOGGER.info("[RippleClient] Started.");
+                    latch.countDown();
+                }
+            });
+            latch.await();
             if (this.getApiPort() == 0) {
                 this.setApiPort(((NioServerSocketChannel) future.channel()).localAddress().getPort());
             }

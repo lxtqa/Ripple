@@ -23,8 +23,11 @@ public class TestSubscribe {
 
     public static void testSubscribe(RippleClient rippleClient) throws IOException {
         long startTime = System.nanoTime();
-        rippleClient.subscribe("testApp", "test");
-        rippleClient.unsubscribe("testApp", "test");
+        int i;
+        for (i = 0; i < 10; i++) {
+            rippleClient.subscribe("testApp", "test");
+            rippleClient.unsubscribe("testApp", "test");
+        }
         long endTime = System.nanoTime();
         long time = endTime - startTime;
         System.out.println("Subscribe: " + time + " ns.");

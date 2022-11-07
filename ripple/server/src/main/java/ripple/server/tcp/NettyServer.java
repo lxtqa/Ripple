@@ -112,7 +112,12 @@ public class NettyServer {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ServerChannelInitializer(this));
 
-            ChannelFuture future = serverBootstrap.bind(this.getPort()).sync();
+            ChannelFuture future = serverBootstrap.bind(this.getPort()).addListener(new ChannelFutureListener() {
+                @Override
+                public void operationComplete(ChannelFuture channelFuture) throws Exception {
+                    LOGGER.info("[NettyServer] [Server-{}] start(): Completed.", getNode().getId());
+                }
+            });
             if (this.getPort() == 0) {
                 this.setPort(((NioServerSocketChannel) future.channel()).localAddress().getPort());
             }
