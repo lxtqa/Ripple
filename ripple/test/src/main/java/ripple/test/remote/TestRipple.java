@@ -14,14 +14,14 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class TestSubscribe {
+public class TestRipple {
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
     private static final List<NodeMetadata> VM_CLUSTER = new ArrayList<>(Arrays.asList(
             new NodeMetadata(1, "192.168.2.21", 3000)
             , new NodeMetadata(2, "192.168.2.21", 3000)
             , new NodeMetadata(3, "192.168.2.21", 3000)));
 
-    public static void testSubscribe(RippleClient rippleClient) throws IOException {
+    public static void testSubscribeAndUnsubscribe(RippleClient rippleClient) throws IOException {
         long startTime = System.nanoTime();
         int i;
         for (i = 0; i < 10; i++) {
@@ -39,7 +39,7 @@ public class TestSubscribe {
             String storageLocation = DATABASE_PATH + "\\" + UUID.randomUUID().toString();
             RippleClient rippleClient = new RippleClient(VM_CLUSTER, storageLocation);
             rippleClient.start();
-            testSubscribe(rippleClient);
+            testSubscribeAndUnsubscribe(rippleClient);
             System.in.read();
             rippleClient.stop();
         } catch (IOException exception) {
