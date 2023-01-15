@@ -153,6 +153,7 @@ public class NettyServer {
 
     public synchronized Channel connect(String address, int port) {
         try {
+            LOGGER.info("[NettyServer] [Server-{}] Connecting to {}:{}.", getNode().getId(), address, port);
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(this.getWorkerGroup())
                     .channel(NioSocketChannel.class)
@@ -160,12 +161,11 @@ public class NettyServer {
                     .option(ChannelOption.SO_REUSEADDR, true) // Trick
                     .handler(new ServerChannelInitializer(this));
 
+            // Do not wait for connecting as the client may not be ready.
             ChannelFuture future = bootstrap.connect(address, port).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
-                    InetSocketAddress remoteAddress = ((NioSocketChannel) channelFuture.channel()).remoteAddress();
-                    LOGGER.info("[NettyServer] [Server-{}] connect(): Connected to {}:{}."
-                            , getNode().getId(), remoteAddress.getHostString(), remoteAddress.getPort());
+                    LOGGER.info("[NettyServer] [Server-{}] connect: Connected.", getNode().getId());
                 }
             });
             return future.channel();

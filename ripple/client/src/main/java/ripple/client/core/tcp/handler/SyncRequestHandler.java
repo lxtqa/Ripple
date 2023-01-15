@@ -18,6 +18,7 @@ import ripple.common.tcp.message.SyncResponse;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @author Zhen Tang
@@ -56,9 +57,11 @@ public class SyncRequestHandler implements Handler {
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
 
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         AbstractMessage msg = null;
         if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
-            LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
+            LOGGER.info("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                            + "] [SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}" +
                             ", Last Update Server Id = {}."
                     , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
@@ -69,7 +72,8 @@ public class SyncRequestHandler implements Handler {
             msg = new UpdateMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
                     , syncRequest.getKey(), syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         } else if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_DELETE)) {
-            LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
+            LOGGER.info("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                            + "] [SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Last Update = {}" +
                             ", Last Update Server Id = {}."
                     , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
@@ -79,7 +83,8 @@ public class SyncRequestHandler implements Handler {
             msg = new DeleteMessage(syncRequest.getMessageUuid(), syncRequest.getApplicationName()
                     , syncRequest.getKey(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         } else if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
-            LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
+            LOGGER.info("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                            + "] SyncRequestHandler] [{}:{}<-->{}:{}] Receive SYNC request. UUID = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
                             ", Atomic Operation = {}, Value = {}, Last Update = {}, Last Update Server Id = {}."
                     , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
