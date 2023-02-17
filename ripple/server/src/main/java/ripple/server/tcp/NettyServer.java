@@ -117,7 +117,7 @@ public class NettyServer {
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
                     LOGGER.info("[NettyServer] [Server-{}] start(): Completed.", getNode().getId());
                 }
-            });
+            }).sync();
             if (this.getPort() == 0) {
                 this.setPort(((NioServerSocketChannel) future.channel()).localAddress().getPort());
             }
