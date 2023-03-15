@@ -1,3 +1,10 @@
+// ===============================================================
+// Copyright(c) Institute of Software, Chinese Academy of Sciences
+// Copyright(c) Nanjing Institute of Software Technology
+// ===============================================================
+// Author : Zhen Tang <tangzhen12@otcaix.iscas.ac.cn>
+// Date   : 2021-11-26
+
 package ripple.client.core.tcp.handler;
 
 import io.netty.channel.ChannelHandlerContext;
@@ -11,9 +18,6 @@ import ripple.common.tcp.message.DeleteResponse;
 
 import java.net.InetSocketAddress;
 
-/**
- * @author Zhen Tang
- */
 public class DeleteResponseHandler implements Handler {
     private static final Logger LOGGER = LoggerFactory.getLogger(DeleteResponseHandler.class);
     private RippleClient rippleClient;

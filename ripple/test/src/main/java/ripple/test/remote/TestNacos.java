@@ -4,9 +4,8 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.concurrent.Executor;
 
 /**
@@ -24,25 +23,63 @@ public class TestNacos {
         startTime = System.nanoTime();
     }
 
+    private static final String LIMIT_TIME_PROPERTY = "limitTime";
+
+    private static final String[] CLUSTER_VM_LOCAL = {
+            "192.168.2.21"
+            , "192.168.2.22"
+            , "192.168.2.23"};
+    private static final String[] CLUSTER_LAB = {
+            "133.133.135.154"
+            , "133.133.135.155"
+            , "133.133.135.156"
+            , "133.133.135.157"};
+    private static final String[] CLUSTER_VM_LAB = {
+            "192.168.2.11"
+            , "192.168.2.12"
+            , "192.168.2.13"
+            , "192.168.2.14"
+            , "192.168.2.15"
+            , "192.168.2.16"
+            , "192.168.2.17"
+            , "192.168.2.18"
+            , "192.168.2.19"
+            , "192.168.2.20"
+            , "192.168.2.21"
+            , "192.168.2.22"
+            , "192.168.2.23"
+            , "192.168.2.24"
+            , "192.168.2.25"
+            , "192.168.2.26"};
+
+
+    private static int responseCount = 0;
+
     public static void main(String[] args) {
         try {
-            String serverAddr = "192.168.2.21";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
             String dataId = "nacos.cfg.dataId";
             String group = "test";
 
-            int count = 100;
+            // Nacos限流，默认每秒5次
+            System.setProperty(LIMIT_TIME_PROPERTY, String.valueOf(Integer.MAX_VALUE));
+
+            int totalClientCount = 2500;
+            int clusterSize = 4;
             List<ConfigService> clients = new ArrayList<>();
 
-            // Nacos限流，默认每秒5次
             int i = 0;
-            for (i = 0; i < count; i++) {
-                ConfigService configService = NacosFactory.createConfigService(serverAddr);
+            for (i = 0; i < totalClientCount; i++) {
+                String address = CLUSTER_VM_LAB[i % clusterSize];
+                ConfigService configService = NacosFactory.createConfigService(address);
+                long startTime = System.nanoTime();
                 configService.addListener(dataId, group, new Listener() {
                     @Override
                     public void receiveConfigInfo(String configInfo) {
                         long endTime = System.nanoTime();
-                        System.out.println("recieve: dataId = " + dataId + ", group = " + group + ", content = " + configInfo
-                                + ", time = " + (endTime - getStartTime() + 0.00) / 1000 / 1000 + "ms");
+                        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                                + "] Received: " + (endTime - getStartTime() + 0.00) / 1000 / 1000 + "ms. Response Count = " + (++responseCount));
                     }
 
                     @Override
@@ -50,18 +87,30 @@ public class TestNacos {
                         return null;
                     }
                 });
+                long endTime = System.nanoTime();
+                System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                        + "] Subscribed: " + (endTime - startTime + 0.00) / 1000 / 1000 + "ms");
+                Thread.sleep(200);
                 clients.add(configService);
             }
 
-            Thread.sleep(30000);
+            System.out.println("Subscribe: Done.");
 
-            boolean isPublishOk = clients.get(0).publishConfig(dataId, group, UUID.randomUUID().toString());
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
             setStartTime();
-            System.out.println(isPublishOk);
+            int publishCount = 1;
+            for (i = 0; i < publishCount; i++) {
+                clients.get(i).publishConfig(dataId, group, UUID.randomUUID().toString());
+            }
+            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                    + "] Publishing.");
 
-            String content = clients.get(1).getConfig(dataId, group, 5000);
-            System.out.println(content);
-            System.in.read();
+            scanner.nextLine();
+            for (i = 0; i < totalClientCount; i++) {
+                clients.get(i).shutDown();
+            }
+            System.out.println("Done.");
         } catch (Exception exception) {
             exception.printStackTrace();
         }

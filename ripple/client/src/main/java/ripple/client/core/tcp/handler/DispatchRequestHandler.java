@@ -1,3 +1,10 @@
+// ===============================================================
+// Copyright(c) Institute of Software, Chinese Academy of Sciences
+// Copyright(c) Nanjing Institute of Software Technology
+// ===============================================================
+// Author : Zhen Tang <tangzhen12@otcaix.iscas.ac.cn>
+// Date   : 2022-01-06
+
 package ripple.client.core.tcp.handler;
 
 import io.netty.channel.Channel;
@@ -21,13 +28,16 @@ import ripple.common.tcp.message.DispatchResponse;
 
 import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-/**
- * @author Zhen Tang
- */
 public class DispatchRequestHandler implements Handler {
+    // For logging
+    public static long StartTime;
     private static final Logger LOGGER = LoggerFactory.getLogger(DispatchRequestHandler.class);
     private RippleClient rippleClient;
 
@@ -61,7 +71,9 @@ public class DispatchRequestHandler implements Handler {
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
 
-        AbstractMessage msg = null;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+
         if (dispatchRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
             LOGGER.info("[DispatchRequestHandler] [{}:{}<-->{}:{}] Receive DISPATCH request. UUID = {}, Client List Signature = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Value = {}, Last Update = {}" +
@@ -71,8 +83,10 @@ public class DispatchRequestHandler implements Handler {
                     , dispatchRequest.getOperationType(), dispatchRequest.getApplicationName(), dispatchRequest.getKey()
                     , dispatchRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(dispatchRequest.getLastUpdate())
                     , dispatchRequest.getLastUpdateServerId());
-            msg = new UpdateMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
+            AbstractMessage msg = new UpdateMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
                     , dispatchRequest.getKey(), dispatchRequest.getValue(), dispatchRequest.getLastUpdate(), dispatchRequest.getLastUpdateServerId());
+            this.applyMessage(msg);
+            this.dispatchMessage(dispatchRequest, msg);
         } else if (dispatchRequest.getOperationType().equals(Constants.MESSAGE_TYPE_DELETE)) {
             LOGGER.info("[DispatchRequestHandler] [{}:{}<-->{}:{}] Receive DISPATCH request. UUID = {}, Client List Signature = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Last Update = {}" +
@@ -81,8 +95,10 @@ public class DispatchRequestHandler implements Handler {
                     , remoteAddress.getPort(), dispatchRequest.getUuid(), dispatchRequest.getClientListSignature(), dispatchRequest.getMessageUuid()
                     , dispatchRequest.getOperationType(), dispatchRequest.getApplicationName(), dispatchRequest.getKey()
                     , SimpleDateFormat.getDateTimeInstance().format(dispatchRequest.getLastUpdate()), dispatchRequest.getLastUpdateServerId());
-            msg = new DeleteMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
+            AbstractMessage msg = new DeleteMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
                     , dispatchRequest.getKey(), dispatchRequest.getLastUpdate(), dispatchRequest.getLastUpdateServerId());
+            this.applyMessage(msg);
+            this.dispatchMessage(dispatchRequest, msg);
         } else if (dispatchRequest.getOperationType().equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
             LOGGER.info("[DispatchRequestHandler] [{}:{}<-->{}:{}] Receive DISPATCH request. UUID = {}, Client List Signature = {}, Message UUID = {}" +
                             ", Operation Type = {}, Application Name = {}, Key = {}, Base Message UUID = {}" +
@@ -92,14 +108,29 @@ public class DispatchRequestHandler implements Handler {
                     , dispatchRequest.getOperationType(), dispatchRequest.getApplicationName(), dispatchRequest.getKey()
                     , dispatchRequest.getBaseMessageUuid(), dispatchRequest.getAtomicOperation(), dispatchRequest.getValue()
                     , SimpleDateFormat.getDateTimeInstance().format(dispatchRequest.getLastUpdate()), dispatchRequest.getLastUpdateServerId());
-            msg = new IncrementalUpdateMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
+            AbstractMessage msg = new IncrementalUpdateMessage(dispatchRequest.getMessageUuid(), dispatchRequest.getApplicationName()
                     , dispatchRequest.getKey(), dispatchRequest.getBaseMessageUuid(), dispatchRequest.getAtomicOperation()
                     , dispatchRequest.getValue(), dispatchRequest.getLastUpdate(), dispatchRequest.getLastUpdateServerId());
+            this.applyMessage(msg);
+            this.dispatchMessage(dispatchRequest, msg);
         }
 
-        this.applyMessage(msg);
+        // For logging
+        long endTime = System.nanoTime();
+        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                + "] Received: " + (endTime - StartTime + 0.00) / 1000 / 1000 + "ms. From DISPATCH.");
 
-        // TODO: Get client list and dispatch messages
+        DispatchResponse dispatchResponse = new DispatchResponse();
+        dispatchResponse.setUuid(dispatchRequest.getUuid());
+        dispatchResponse.setSuccess(true);
+        LOGGER.info("[DispatchRequestHandler] [{}:{}<-->{}:{}] Send DISPATCH response. UUID = {}, Success = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), dispatchResponse.getUuid(), dispatchResponse.isSuccess());
+        return dispatchResponse;
+    }
+
+    private void dispatchMessage(DispatchRequest dispatchRequest, AbstractMessage msg) {
+        // Get client list and dispatch messages
         List<ClientMetadata> clientList = this.getRippleClient().getClientListCache().get(dispatchRequest.getClientListSignature());
         if (clientList == null) {
             Channel channel = this.getRippleClient().findOrConnectToServer(dispatchRequest.getApplicationName(), dispatchRequest.getKey());
@@ -114,18 +145,19 @@ public class DispatchRequestHandler implements Handler {
             }
             this.getRippleClient().getPendingMessages().get(dispatchRequest.getClientListSignature()).offer(msg);
         } else {
+            ExecutorService pool = Executors.newFixedThreadPool(clientList.size());
             for (ClientMetadata clientMetadata : clientList) {
-                Channel channel = this.getRippleClient().findOrConnectToClient(clientMetadata);
-                Api.syncAsync(channel, msg);
+                Callable<Void> task = new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        Channel channel = getRippleClient().findOrConnectToClient(clientMetadata);
+                        Api.syncAsync(channel, msg);
+                        return null;
+                    }
+                };
+                pool.submit(task);
             }
+            pool.shutdown();
         }
-
-        DispatchResponse dispatchResponse = new DispatchResponse();
-        dispatchResponse.setUuid(dispatchRequest.getUuid());
-        dispatchResponse.setSuccess(true);
-        LOGGER.info("[DispatchRequestHandler] [{}:{}<-->{}:{}] Send DISPATCH response. UUID = {}, Success = {}."
-                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
-                , remoteAddress.getPort(), dispatchResponse.getUuid(), dispatchResponse.isSuccess());
-        return dispatchResponse;
     }
 }

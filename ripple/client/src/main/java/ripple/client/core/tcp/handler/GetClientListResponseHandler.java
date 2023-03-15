@@ -18,6 +18,7 @@ import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.*;
 
 /**
  * @author Zhen Tang
@@ -57,17 +58,27 @@ public class GetClientListResponseHandler implements Handler {
         }
 
         this.getRippleClient().getClientListCache().put(getClientListResponse.getClientListSignature(), clientList);
+
+        ExecutorService pool = Executors.newFixedThreadPool(clientList.size());
+
         Queue<AbstractMessage> pendingMessages = this.getRippleClient().getPendingMessages().get(getClientListResponse.getClientListSignature());
         if (pendingMessages != null) {
             while (!pendingMessages.isEmpty()) {
                 AbstractMessage toSend = pendingMessages.poll();
                 for (ClientMetadata clientMetadata : clientList) {
-                    Channel channel = this.getRippleClient().findOrConnectToClient(clientMetadata);
-                    Api.syncAsync(channel, toSend);
+                    Callable<Void> task = new Callable<Void>() {
+                        @Override
+                        public Void call() throws Exception {
+                            Channel channel = getRippleClient().findOrConnectToClient(clientMetadata);
+                            Api.syncAsync(channel, toSend);
+                            return null;
+                        }
+                    };
+                    pool.submit(task);
                 }
             }
         }
-
+        pool.shutdown();
         return null;
     }
 }
