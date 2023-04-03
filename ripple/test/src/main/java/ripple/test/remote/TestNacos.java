@@ -3,6 +3,7 @@ package ripple.test.remote;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
+import ripple.test.tools.WorkloadGenerator;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -101,7 +102,7 @@ public class TestNacos {
             setStartTime();
             int publishCount = 1;
             for (i = 0; i < publishCount; i++) {
-                clients.get(i).publishConfig(dataId, group, UUID.randomUUID().toString());
+                clients.get(i).publishConfig(dataId, group, WorkloadGenerator.generateKeyValuePair(16, 64));
             }
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                     + "] Publishing.");
