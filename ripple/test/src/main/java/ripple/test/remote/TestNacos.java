@@ -4,6 +4,7 @@ import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
 import ripple.test.tools.PayloadGenerator;
+import ripple.test.tools.WorkloadGenerator;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -13,16 +14,6 @@ import java.util.concurrent.Executor;
  * @author Zhen Tang
  */
 public class TestNacos {
-
-    private static long startTime;
-
-    public static long getStartTime() {
-        return startTime;
-    }
-
-    public static void setStartTime() {
-        startTime = System.nanoTime();
-    }
 
     private static final String LIMIT_TIME_PROPERTY = "limitTime";
 
@@ -53,20 +44,17 @@ public class TestNacos {
             , "192.168.2.25"
             , "192.168.2.26"};
 
-
-    private static int responseCount = 0;
-
     public static void main(String[] args) {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-            String dataId = "nacos.cfg.dataId";
+            String dataId = "testApp";
             String group = "test";
 
             // Nacos限流，默认每秒5次
             System.setProperty(LIMIT_TIME_PROPERTY, String.valueOf(Integer.MAX_VALUE));
 
-            int totalClientCount = 2500;
+            int totalClientCount = 100;
             int clusterSize = 4;
             List<ConfigService> clients = new ArrayList<>();
 
@@ -78,11 +66,15 @@ public class TestNacos {
                 configService.addListener(dataId, group, new Listener() {
                     @Override
                     public void receiveConfigInfo(String configInfo) {
-                        long endTime = System.nanoTime();
-                        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                                + "] Received: " + (endTime - getStartTime() + 0.00) / 1000 / 1000 + "ms. Response Count = " + (++responseCount));
+                        // For logging
+                        boolean loadTestEnabled = true;
+                        if (loadTestEnabled) {
+                            long endTime = System.currentTimeMillis();
+                            long startTime = Long.parseLong(configInfo.substring(0, configInfo.indexOf(" ")));
+                            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                                    + "] Received: " + (endTime - startTime) + "ms. From DISPATCH.");
+                        }
                     }
-
                     @Override
                     public Executor getExecutor() {
                         return null;
@@ -91,7 +83,6 @@ public class TestNacos {
                 long endTime = System.nanoTime();
                 System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                         + "] Subscribed: " + (endTime - startTime + 0.00) / 1000 / 1000 + "ms");
-                Thread.sleep(200);
                 clients.add(configService);
             }
 
@@ -99,15 +90,9 @@ public class TestNacos {
 
             Scanner scanner = new Scanner(System.in);
             scanner.nextLine();
-            setStartTime();
-            int publishCount = 1;
-            for (i = 0; i < publishCount; i++) {
-                clients.get(i).publishConfig(dataId, group, PayloadGenerator.generateKeyValuePair(16, 64));
-            }
-            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                    + "] Publishing.");
-
+            WorkloadGenerator.runNacosLoadTest(10, 10, 1024, 100, clients);
             scanner.nextLine();
+
             for (i = 0; i < totalClientCount; i++) {
                 clients.get(i).shutDown();
             }

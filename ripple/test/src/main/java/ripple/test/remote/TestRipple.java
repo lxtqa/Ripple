@@ -1,8 +1,6 @@
 package ripple.test.remote;
 
 import ripple.client.RippleClient;
-import ripple.client.core.tcp.handler.DispatchRequestHandler;
-import ripple.client.core.tcp.handler.SyncRequestHandler;
 import ripple.common.entity.*;
 import ripple.test.tools.PayloadGenerator;
 import ripple.test.tools.WorkloadGenerator;
@@ -152,7 +150,7 @@ public class TestRipple {
             System.out.println("Subscribe done.");
             scanner.nextLine();
 
-            WorkloadGenerator.runLoadTest(10, 10, 1024, 100, CLUSTER_VM_LAB_8_NODES, rippleClients);
+            WorkloadGenerator.runRippleLoadTest(10, 10, 1024, 100, rippleClients);
             scanner.nextLine();
 
 //            int publishCount = 20;
