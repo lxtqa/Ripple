@@ -11,7 +11,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TestPadresClient extends Client {
-    public static long startTime;
 
     public TestPadresClient(String id) throws ClientException {
         super(id);
@@ -28,17 +27,24 @@ public class TestPadresClient extends Client {
     public void processMessage(Message msg) {
         super.processMessage(msg);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        long endTime = System.nanoTime();
         if (msg instanceof PublicationMessage) {
             Publication pub = ((PublicationMessage) msg).getPublication();
             if (pub.getClassVal().equals("ERROR")) {
                 System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                         + "] Client " + this.getClientID() + " Received an Error from " + msg.getLastHopID());
-                System.out.println(pub.getPairMap().get("message"));
                 return;
+            }
+            // For logging
+            boolean loadTestEnabled = true;
+            if (loadTestEnabled) {
+                String content = pub.getPairMap().get("content").toString();
+                long endTime = System.currentTimeMillis();
+                long startTime = Long.parseLong(content.substring(0, content.indexOf(" ")));
+                System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                        + "] Received: " + (endTime - startTime) + "ms.");
             }
         }
 
-        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Received: " + (endTime - startTime + 0.00) / 1000 / 1000 + "ms");
+
     }
 }

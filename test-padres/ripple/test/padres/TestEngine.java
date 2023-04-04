@@ -6,10 +6,7 @@ import ca.utoronto.msrg.padres.common.message.SubscriptionMessage;
 import ca.utoronto.msrg.padres.common.message.parser.MessageFactory;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class TestEngine {
     private static final String[] CLUSTER_VM_LOCAL = {
@@ -43,7 +40,7 @@ public class TestEngine {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-            int totalClientCount = 25;
+            int totalClientCount = 100;
             int clusterSize = 4;
             List<TestPadresClient> clients = new ArrayList<>();
 
@@ -64,26 +61,21 @@ public class TestEngine {
                 TestPadresClient client = clients.get(i);
                 long startTime = System.nanoTime();
                 client.subscribe(MessageFactory
-                        .createSubscriptionFromString("[class,eq,'temp'],[area,eq,'tor'],[value,<,0]"));
+                        .createSubscriptionFromString("[class,eq,'temp'],[content,str-contains,' '],[value,<,0]"));
                 long endTime = System.nanoTime();
                 System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                         + "] Subscribed: " + (endTime - startTime + 0.00) / 1000 / 1000 + "ms");
             }
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Subscribed.");
 
-            TestPadresClient.startTime = System.nanoTime();
+            Scanner scanner = new Scanner(System.in);
+            scanner.nextLine();
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                     + "] Publishing.");
+            WorkloadGenerator.runPadresLoadTest(10, 10, 1024, 100, clients);
+            scanner.nextLine();
 
-            int publishCount = 10;
-            for (i = 0; i < publishCount; i++) {
-                clients.get(i).advertise(MessageFactory
-                        .createAdvertisementFromString("[class,eq,'temp'],[area,eq,'tor'],[value,<,0]"));
-                clients.get(i).publish(MessageFactory
-                        .createPublicationFromString("[class,'temp'],[area,'tor'],[value,-" + (i + 1) + "]"));
-            }
 
-            System.in.read();
             for (i = 0; i < totalClientCount; i++) {
                 clients.get(i).disconnectAll();
             }
