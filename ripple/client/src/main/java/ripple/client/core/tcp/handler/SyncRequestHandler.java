@@ -103,9 +103,13 @@ public class SyncRequestHandler implements Handler {
 
 
         // For logging
-        long endTime = System.nanoTime();
-        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                + "] Received: " + (endTime - StartTime + 0.00) / 1000 / 1000 + "ms. From SYNC.");
+        boolean loadTestEnabled = true;
+        if (loadTestEnabled) {
+            long endTime = System.currentTimeMillis();
+            long startTime = Long.parseLong(syncRequest.getValue().substring(0, syncRequest.getValue().indexOf(" ")));
+            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                    + "] Received: " + (endTime - startTime) + "ms. From SYNC.");
+        }
 
         SyncResponse syncResponse = new SyncResponse();
         syncResponse.setUuid(syncRequest.getUuid());

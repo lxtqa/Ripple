@@ -36,8 +36,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class DispatchRequestHandler implements Handler {
-    // For logging
-    public static long StartTime;
     private static final Logger LOGGER = LoggerFactory.getLogger(DispatchRequestHandler.class);
     private RippleClient rippleClient;
 
@@ -116,9 +114,13 @@ public class DispatchRequestHandler implements Handler {
         }
 
         // For logging
-        long endTime = System.nanoTime();
-        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                + "] Received: " + (endTime - StartTime + 0.00) / 1000 / 1000 + "ms. From DISPATCH.");
+        boolean loadTestEnabled = true;
+        if (loadTestEnabled) {
+            long endTime = System.currentTimeMillis();
+            long startTime = Long.parseLong(dispatchRequest.getValue().substring(0, dispatchRequest.getValue().indexOf(" ")));
+            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                    + "] Received: " + (endTime - startTime) + "ms. From DISPATCH.");
+        }
 
         DispatchResponse dispatchResponse = new DispatchResponse();
         dispatchResponse.setUuid(dispatchRequest.getUuid());

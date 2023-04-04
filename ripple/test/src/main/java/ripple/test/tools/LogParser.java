@@ -10,8 +10,8 @@ import java.util.List;
 public class LogParser {
     public static void main(String[] args) {
         try {
-            String dir = "D:\\SynologyDrive\\GitHub\\Ripple\\test-results\\original";
-            String outputDir = "D:\\SynologyDrive\\GitHub\\Ripple\\test-results\\clean";
+            String dir = "D:\\test-results";
+            String outputDir = "D:\\test-results\\clean";
             List<Path> fileList = Files.list(Path.of(dir)).toList();
             for (Path path : fileList) {
                 if (path.getFileName().toString().endsWith("txt")) {

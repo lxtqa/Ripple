@@ -1,11 +1,10 @@
 package ripple.test.remote;
 
-import io.netty.channel.Channel;
 import ripple.client.RippleClient;
 import ripple.client.core.tcp.handler.DispatchRequestHandler;
 import ripple.client.core.tcp.handler.SyncRequestHandler;
-import ripple.client.helper.Api;
 import ripple.common.entity.*;
+import ripple.test.tools.PayloadGenerator;
 import ripple.test.tools.WorkloadGenerator;
 
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * @author Zhen Tang
@@ -68,7 +66,7 @@ public class TestRipple {
             , new NodeMetadata(15, "192.168.2.25", 3000)
             , new NodeMetadata(16, "192.168.2.26", 3000)));
 
-    public static void testSubscribe(int publishCount, List<RippleClient> rippleClients) throws IOException {
+    public static void testSubscribe(List<RippleClient> rippleClients) throws IOException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         int i = 0;
         for (i = 0; i < rippleClients.size(); i++) {
@@ -83,7 +81,7 @@ public class TestRipple {
         }
     }
 
-    public static void testUnsubscribe(int publishCount, List<RippleClient> rippleClients) throws IOException {
+    public static void testUnsubscribe(List<RippleClient> rippleClients) throws IOException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         int i = 0;
         for (i = 0; i < rippleClients.size(); i++) {
@@ -103,23 +101,17 @@ public class TestRipple {
         System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Publishing.");
         for (i = 0; i < publishCount; i++) {
             // clients.get(i).put("testApp", "test-" + i, WorkloadGenerator.generateKeyValuePair(16, 64));
-            clients.get(i).put("testApp", "test", WorkloadGenerator.generateKeyValuePair(16, 64));
+            clients.get(i).put("testApp", "test", PayloadGenerator.generateKeyValuePair(16, 64));
         }
     }
 
-    public static UUID initIncrementalUpdate(int publishCount, List<RippleClient> clients) {
-        int i = 0;
+    public static void initIncrementalUpdate(List<RippleClient> clients) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
         System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Publishing.");
-        for (i = 0; i < publishCount; i++) {
-            // 1KB value
-            String value = WorkloadGenerator.generateKeyValuePair(16, 64);
-            // clients.get(i).put("testApp", "test-" + i, WorkloadGenerator.generateKeyValuePair(16, 64));
-            clients.get(i).put("testApp", "test", value);
-        }
-        Item item = clients.get(i).get("testApp", "test");
-        List<AbstractMessage> list = clients.get(i).getStorage().getMessageService().findMessages(item.getApplicationName(), item.getKey());
-        return list.get(0).getUuid();
+        // 1KB value
+        String value = PayloadGenerator.generateKeyValuePair(16, 64);
+        // clients.get(i).put("testApp", "test-" + i, WorkloadGenerator.generateKeyValuePair(16, 64));
+        clients.get(0).put("testApp", "test", value);
     }
 
     public static void testIncrementalUpdate(UUID baseUuid, int publishCount, List<RippleClient> clients) {
@@ -128,7 +120,7 @@ public class TestRipple {
         System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Publishing.");
         for (i = 0; i < publishCount; i++) {
             // 128 bytes
-            String value = WorkloadGenerator.generateKeyValuePair(2, 64);
+            String value = PayloadGenerator.generateKeyValuePair(2, 64);
             clients.get(i).incrementalUpdate("testApp", "test", baseUuid
                     , Constants.ATOMIC_OPERATION_ADD_ENTRY, value);
         }
@@ -137,8 +129,7 @@ public class TestRipple {
     public static void main(String[] args) {
         try {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "ERROR");
-            int totalClientCount = 2500;
-            int publishCount = 40;
+            int totalClientCount = 100;
 
             int i = 0;
             List<RippleClient> rippleClients = new ArrayList<>();
@@ -147,7 +138,7 @@ public class TestRipple {
             for (i = 0; i < totalClientCount; i++) {
                 Files.createDirectories(Paths.get(DATABASE_PATH));
                 String storageLocation = DATABASE_PATH + "\\" + UUID.randomUUID().toString() + ".db";
-                RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB_16_NODES, storageLocation);
+                RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB_8_NODES, storageLocation);
                 pool.submit(new StartTask(rippleClient, i + 1));
                 rippleClients.add(rippleClient);
             }
@@ -157,24 +148,40 @@ public class TestRipple {
             Scanner scanner = new Scanner(System.in);
             scanner.nextLine();
 
-            testSubscribe(publishCount, rippleClients);
+            testSubscribe(rippleClients);
             System.out.println("Subscribe done.");
             scanner.nextLine();
 
-            UUID baseUuid = initIncrementalUpdate(publishCount, rippleClients);
+            WorkloadGenerator.runLoadTest(10, 10, 1024, 100, CLUSTER_VM_LAB_8_NODES, rippleClients);
             scanner.nextLine();
-            int loops = 12;
-            for (i = 0; i < loops; i++) {
-                long startTime = System.nanoTime();
-                DispatchRequestHandler.StartTime = startTime;
-                SyncRequestHandler.StartTime = startTime;
-                // testPutAndGet(publishCount, rippleClients);
-                testIncrementalUpdate(baseUuid, publishCount, rippleClients);
-                System.out.println("Loop " + (i + 1) + " done.");
-                scanner.nextLine();
-            }
 
-            testUnsubscribe(publishCount, rippleClients);
+//            int publishCount = 20;
+//            long startTime = System.nanoTime();
+//            DispatchRequestHandler.StartTime = startTime;
+//            SyncRequestHandler.StartTime = startTime;
+//            initIncrementalUpdate(rippleClients);
+//            scanner.nextLine();
+//
+//            Item item = rippleClients.get(0).get("testApp", "test");
+//            List<AbstractMessage> list = rippleClients.get(0).getStorage().getMessageService().findMessages(item.getApplicationName(), item.getKey());
+//            UUID baseUuid = list.get(0).getUuid();
+//
+//            System.out.println("Base uuid is: " + baseUuid);
+//            scanner.nextLine();
+//
+//            int loops = 12;
+//            for (i = 0; i < loops; i++) {
+//                System.out.println("Loop " + (i + 1) + " start.");
+//                startTime = System.nanoTime();
+//                DispatchRequestHandler.StartTime = startTime;
+//                SyncRequestHandler.StartTime = startTime;
+//                // testPutAndGet(publishCount, rippleClients);
+//                testIncrementalUpdate(baseUuid, publishCount, rippleClients);
+//                System.out.println("Loop " + (i + 1) + " done.");
+//                scanner.nextLine();
+//            }
+
+            testUnsubscribe(rippleClients);
             System.out.println("Unsubscribe done.");
             scanner.nextLine();
 
