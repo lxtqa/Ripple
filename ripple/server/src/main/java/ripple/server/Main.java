@@ -3,6 +3,7 @@ package ripple.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.common.entity.NodeMetadata;
+import ripple.common.hashing.ModHashing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,6 +66,21 @@ public class Main {
             server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort), Integer.parseInt(branch));
         } else if (protocol.equals("star")) {
             server = RippleServer.starProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort));
+        } else if (protocol.equals("hashing")) {
+            String divisor = System.getProperty("divisor");
+            String candidateCount = System.getProperty("candidateCount");
+            if (divisor == null) {
+                String defaultDivisor = "200";
+                LOGGER.info("[Main] Missing parameter: divisor for HASHING protocol (-Ddivisor). Using default: " + defaultDivisor);
+                divisor = defaultDivisor;
+            }
+            if (candidateCount == null) {
+                String defaultCandidateCount = "3";
+                LOGGER.info("[Main] Missing parameter: candidateCount for HASHING protocol (-DcandidateCount). Using default: " + defaultCandidateCount);
+                candidateCount = defaultCandidateCount;
+            }
+            server = RippleServer.hashingBasedProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort)
+                    , Integer.parseInt(uiPort), new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor)));
         }
 
         if (server != null) {
