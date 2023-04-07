@@ -9,15 +9,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestEngine {
-    private static final String[] CLUSTER_VM_LOCAL = {
-            "socket://192.168.2.21:1100/BrokerA"
-            , "socket://192.168.2.22:1100/BrokerB"
-            , "socket://192.168.2.23:1100/BrokerC"};
-    private static final String[] CLUSTER_LAB = {
-            "socket://133.133.135.154:1100/BrokerA"
-            , "socket://133.133.135.155:1100/BrokerB"
-            , "socket://133.133.135.156:1100/BrokerC"
-            , "socket://133.133.135.157:1100/BrokerD"};
     private static final String[] CLUSTER_VM_LAB = {
             "socket://192.168.2.11:1100/Broker1"
             , "socket://192.168.2.12:1100/Broker2"
@@ -34,21 +25,30 @@ public class TestEngine {
             , "socket://192.168.2.23:1100/Broker13"
             , "socket://192.168.2.24:1100/Broker14"
             , "socket://192.168.2.25:1100/Broker15"
-            , "socket://192.168.2.26:1100/Broker16"};
+            , "socket://192.168.2.26:1100/Broker16"
+            , "socket://192.168.2.27:1100/Broker17"
+            , "socket://192.168.2.28:1100/Broker18"
+            , "socket://192.168.2.29:1100/Broker19"
+            , "socket://192.168.2.30:1100/Broker20"};
 
     public static void main(String[] args) {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-            int totalClientCount = 100;
-            int clusterSize = 4;
+            int serverClusterSize = 10;
+            int clientClusterSize = 100;
+            int qps = 10;
+            int payloadSize = 10 * 1024;
+            int topicSize = 1000;
+            int duration = 120;
+
             List<TestPadresClient> clients = new ArrayList<>();
 
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Connecting.");
 
             int i = 0;
-            for (i = 0; i < totalClientCount; i++) {
-                String brokerURI = CLUSTER_VM_LAB[i % clusterSize];
+            for (i = 0; i < clientClusterSize; i++) {
+                String brokerURI = CLUSTER_VM_LAB[i % serverClusterSize];
                 String clientId = UUID.randomUUID().toString().replace("-", "");
                 TestPadresClient client = new TestPadresClient(clientId);
                 client.connect(brokerURI);
@@ -57,7 +57,7 @@ public class TestEngine {
 
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Subscribing.");
 
-            for (i = 0; i < totalClientCount; i++) {
+            for (i = 0; i < clientClusterSize; i++) {
                 TestPadresClient client = clients.get(i);
                 long startTime = System.nanoTime();
                 client.subscribe(MessageFactory
@@ -72,11 +72,11 @@ public class TestEngine {
             scanner.nextLine();
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                     + "] Publishing.");
-            WorkloadGenerator.runPadresLoadTest(10, 10, 1024, 100, clients);
+            WorkloadGenerator.runPadresLoadTest(qps, duration, payloadSize, topicSize, clients);
             scanner.nextLine();
 
 
-            for (i = 0; i < totalClientCount; i++) {
+            for (i = 0; i < clientClusterSize; i++) {
                 clients.get(i).disconnectAll();
             }
             System.out.println("Done.");

@@ -15,6 +15,7 @@ public class WorkloadGenerator {
         try {
             Random random = new Random();
             // Prepare
+            System.out.println("Preparing");
             int i = 0;
             for (i = 0; i < existingKeyCount; i++) {
                 TestPadresClient client = clientCluster.get(random.nextInt(clientCluster.size()));
