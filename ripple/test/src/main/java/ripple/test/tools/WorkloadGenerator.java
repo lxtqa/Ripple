@@ -5,6 +5,7 @@ import ripple.client.RippleClient;
 
 import java.util.List;
 import java.util.Random;
+import java.util.Scanner;
 
 public class WorkloadGenerator {
     private WorkloadGenerator() {
@@ -15,12 +16,15 @@ public class WorkloadGenerator {
         try {
             Random random = new Random();
             // Prepare
+            System.out.println("Preparing");
             int i = 0;
             for (i = 0; i < existingKeyCount; i++) {
                 RippleClient client = clientCluster.get(random.nextInt(clientCluster.size()));
                 // 1KB per entry
                 client.put("testApp", "testKey-" + (i + 1), PayloadGenerator.generateKeyValuePair(16, 64));
             }
+            System.out.println("Prepare done.");
+            new Scanner(System.in).nextLine();
 
             int sleepTime = 1000 / qps;
             for (i = 0; i < duration * qps; i++) {
@@ -29,6 +33,7 @@ public class WorkloadGenerator {
                 client.put("testApp", "test", value);
                 Thread.sleep(sleepTime);
             }
+            System.out.println("Done.");
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -38,6 +43,7 @@ public class WorkloadGenerator {
         try {
             Random random = new Random();
             // Prepare
+            System.out.println("Preparing");
             int i = 0;
             for (i = 0; i < existingKeyCount; i++) {
                 ConfigService client = clientCluster.get(random.nextInt(clientCluster.size()));

@@ -1,7 +1,9 @@
 package ripple.test.remote;
 
 import ripple.client.RippleClient;
+import ripple.client.core.HashingBasedSelector;
 import ripple.common.entity.*;
+import ripple.common.hashing.ModHashing;
 import ripple.test.tools.PayloadGenerator;
 import ripple.test.tools.WorkloadGenerator;
 
@@ -19,34 +21,7 @@ import java.util.concurrent.Executors;
  */
 public class TestRipple {
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
-    private static final List<NodeMetadata> CLUSTER_VM_LOCAL = new ArrayList<>(Arrays.asList(
-            new NodeMetadata(1, "192.168.2.21", 3000)
-            , new NodeMetadata(2, "192.168.2.22", 3000)
-            , new NodeMetadata(3, "192.168.2.23", 3000)));
-
-    private static final List<NodeMetadata> CLUSTER_LAB = new ArrayList<>(Arrays.asList(
-            new NodeMetadata(1, "133.133.135.154", 3000)
-            , new NodeMetadata(2, "133.133.135.155", 3000)
-            , new NodeMetadata(3, "133.133.135.156", 3000)
-            , new NodeMetadata(4, "133.133.135.157", 3000)));
-
-    private static final List<NodeMetadata> CLUSTER_VM_LAB_4_NODES = new ArrayList<>(Arrays.asList(
-            new NodeMetadata(1, "192.168.2.11", 3000)
-            , new NodeMetadata(2, "192.168.2.12", 3000)
-            , new NodeMetadata(3, "192.168.2.13", 3000)
-            , new NodeMetadata(4, "192.168.2.14", 3000)));
-
-    private static final List<NodeMetadata> CLUSTER_VM_LAB_8_NODES = new ArrayList<>(Arrays.asList(
-            new NodeMetadata(1, "192.168.2.11", 3000)
-            , new NodeMetadata(2, "192.168.2.12", 3000)
-            , new NodeMetadata(3, "192.168.2.13", 3000)
-            , new NodeMetadata(4, "192.168.2.14", 3000)
-            , new NodeMetadata(5, "192.168.2.15", 3000)
-            , new NodeMetadata(6, "192.168.2.16", 3000)
-            , new NodeMetadata(7, "192.168.2.17", 3000)
-            , new NodeMetadata(8, "192.168.2.18", 3000)));
-
-    private static final List<NodeMetadata> CLUSTER_VM_LAB_16_NODES = new ArrayList<>(Arrays.asList(
+    private static final List<NodeMetadata> CLUSTER_VM_LAB = new ArrayList<>(Arrays.asList(
             new NodeMetadata(1, "192.168.2.11", 3000)
             , new NodeMetadata(2, "192.168.2.12", 3000)
             , new NodeMetadata(3, "192.168.2.13", 3000)
@@ -62,7 +37,11 @@ public class TestRipple {
             , new NodeMetadata(13, "192.168.2.23", 3000)
             , new NodeMetadata(14, "192.168.2.24", 3000)
             , new NodeMetadata(15, "192.168.2.25", 3000)
-            , new NodeMetadata(16, "192.168.2.26", 3000)));
+            , new NodeMetadata(16, "192.168.2.26", 3000)
+            , new NodeMetadata(17, "192.168.2.27", 3000)
+            , new NodeMetadata(18, "192.168.2.28", 3000)
+            , new NodeMetadata(19, "192.168.2.29", 3000)
+            , new NodeMetadata(20, "192.168.2.30", 3000)));
 
     public static void testSubscribe(List<RippleClient> rippleClients) throws IOException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
@@ -127,16 +106,21 @@ public class TestRipple {
     public static void main(String[] args) {
         try {
             System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "ERROR");
-            int totalClientCount = 100;
+            int serverClusterSize = 10;
+            int clientClusterSize = 1000;
+            int qps = 10;
+            int payloadSize = 10 * 1024;
+            int topicSize = 1000;
+            int duration = 120;
 
             int i = 0;
             List<RippleClient> rippleClients = new ArrayList<>();
 
-            ExecutorService pool = Executors.newFixedThreadPool(totalClientCount);
-            for (i = 0; i < totalClientCount; i++) {
+            ExecutorService pool = Executors.newFixedThreadPool(clientClusterSize);
+            for (i = 0; i < clientClusterSize; i++) {
                 Files.createDirectories(Paths.get(DATABASE_PATH));
                 String storageLocation = DATABASE_PATH + "\\" + UUID.randomUUID().toString() + ".db";
-                RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB_8_NODES, storageLocation);
+                RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB.subList(0, serverClusterSize), new HashingBasedSelector(new ModHashing(6, 200)), storageLocation);
                 pool.submit(new StartTask(rippleClient, i + 1));
                 rippleClients.add(rippleClient);
             }
@@ -150,7 +134,7 @@ public class TestRipple {
             System.out.println("Subscribe done.");
             scanner.nextLine();
 
-            WorkloadGenerator.runRippleLoadTest(10, 10, 1024, 100, rippleClients);
+            WorkloadGenerator.runRippleLoadTest(qps, duration, payloadSize, topicSize, rippleClients);
             scanner.nextLine();
 
 //            int publishCount = 20;
@@ -185,8 +169,8 @@ public class TestRipple {
 
             System.out.println("Stopping clients.");
 
-            pool = Executors.newFixedThreadPool(totalClientCount);
-            for (i = 0; i < totalClientCount; i++) {
+            pool = Executors.newFixedThreadPool(clientClusterSize);
+            for (i = 0; i < clientClusterSize; i++) {
                 RippleClient rippleClient = rippleClients.get(i);
                 pool.submit(new StopTask(rippleClient, i + 1));
             }

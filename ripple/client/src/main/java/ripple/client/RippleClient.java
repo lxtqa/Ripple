@@ -270,7 +270,7 @@ public class RippleClient {
         }
         Channel channel = this.findOrConnectToServer(applicationName, key);
         Api.putAsync(channel, applicationName, key, value);
-        this.refreshItem(applicationName, key);
+        // this.refreshItem(applicationName, key);
     }
 
     public void delete(String applicationName, String key) {
@@ -279,7 +279,7 @@ public class RippleClient {
         }
         Channel channel = this.findOrConnectToServer(applicationName, key);
         Api.deleteAsync(channel, applicationName, key);
-        this.refreshItem(applicationName, key);
+        // this.refreshItem(applicationName, key);
     }
 
     public void incrementalUpdate(String applicationName, String key, UUID baseMessageUuid
@@ -289,7 +289,7 @@ public class RippleClient {
         }
         Channel channel = this.findOrConnectToServer(applicationName, key);
         Api.incrementalUpdateAsync(channel, applicationName, key, baseMessageUuid, atomicOperation, value);
-        this.refreshItem(applicationName, key);
+        // this.refreshItem(applicationName, key);
     }
 
     public void subscribe(String applicationName, String key) {

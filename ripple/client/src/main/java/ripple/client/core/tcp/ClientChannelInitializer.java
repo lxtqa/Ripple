@@ -81,7 +81,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(8192, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024*1024, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
         MessageEncoder messageEncoder = new MessageEncoder();
         MessageDecoder messageDecoder = new MessageDecoder();
