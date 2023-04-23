@@ -17,15 +17,6 @@ public class TestNacos {
 
     private static final String LIMIT_TIME_PROPERTY = "limitTime";
 
-    private static final String[] CLUSTER_VM_LOCAL = {
-            "192.168.2.21"
-            , "192.168.2.22"
-            , "192.168.2.23"};
-    private static final String[] CLUSTER_LAB = {
-            "133.133.135.154"
-            , "133.133.135.155"
-            , "133.133.135.156"
-            , "133.133.135.157"};
     private static final String[] CLUSTER_VM_LAB = {
             "192.168.2.11"
             , "192.168.2.12"
@@ -42,11 +33,22 @@ public class TestNacos {
             , "192.168.2.23"
             , "192.168.2.24"
             , "192.168.2.25"
-            , "192.168.2.26"};
+            , "192.168.2.26"
+            , "192.168.2.27"
+            , "192.168.2.28"
+            , "192.168.2.29"
+            , "192.168.2.30"};
 
     public static void main(String[] args) {
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+            System.setProperty("org.slf4j.simpleLogger.defaultLogLevel", "ERROR");
+            int serverClusterSize = 10;
+            int clientClusterSize = 100;
+            int qps = 10;
+            int topicSize = 1000;
+            int payloadSize = 10 * 1024;
+            int duration = 120;
 
             String dataId = "testApp";
             String group = "test";
@@ -54,27 +56,28 @@ public class TestNacos {
             // Nacos限流，默认每秒5次
             System.setProperty(LIMIT_TIME_PROPERTY, String.valueOf(Integer.MAX_VALUE));
 
-            int totalClientCount = 100;
-            int clusterSize = 4;
             List<ConfigService> clients = new ArrayList<>();
 
             int i = 0;
-            for (i = 0; i < totalClientCount; i++) {
-                String address = CLUSTER_VM_LAB[i % clusterSize];
+            for (i = 0; i < clientClusterSize; i++) {
+                String address = CLUSTER_VM_LAB[i % serverClusterSize];
                 ConfigService configService = NacosFactory.createConfigService(address);
                 long startTime = System.nanoTime();
                 configService.addListener(dataId, group, new Listener() {
                     @Override
                     public void receiveConfigInfo(String configInfo) {
-                        // For logging
-                        boolean loadTestEnabled = true;
-                        if (loadTestEnabled) {
-                            long endTime = System.currentTimeMillis();
-                            long startTime = Long.parseLong(configInfo.substring(0, configInfo.indexOf(" ")));
-                            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                                    + "] Received: " + (endTime - startTime) + "ms. From DISPATCH.");
+                        if (configInfo != null) {
+                            // For logging
+                            boolean loadTestEnabled = true;
+                            if (loadTestEnabled) {
+                                long endTime = System.currentTimeMillis();
+                                long startTime = Long.parseLong(configInfo.substring(0, configInfo.indexOf(" ")));
+                                System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                                        + "] Received: " + (endTime - startTime) + "ms.");
+                            }
                         }
                     }
+
                     @Override
                     public Executor getExecutor() {
                         return null;
@@ -90,10 +93,10 @@ public class TestNacos {
 
             Scanner scanner = new Scanner(System.in);
             scanner.nextLine();
-            WorkloadGenerator.runNacosLoadTest(10, 10, 1024, 100, clients);
+            WorkloadGenerator.runNacosLoadTest(qps, duration, payloadSize, topicSize, clients);
             scanner.nextLine();
 
-            for (i = 0; i < totalClientCount; i++) {
+            for (i = 0; i < clientClusterSize; i++) {
                 clients.get(i).shutDown();
             }
             System.out.println("Done.");

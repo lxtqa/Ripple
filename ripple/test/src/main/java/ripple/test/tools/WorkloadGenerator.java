@@ -2,10 +2,14 @@ package ripple.test.tools;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import ripple.client.RippleClient;
+import ripple.test.remote.TestRipple;
 
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WorkloadGenerator {
     private WorkloadGenerator() {
@@ -39,6 +43,22 @@ public class WorkloadGenerator {
         }
     }
 
+    static class TestTask implements Callable<Void> {
+        private ConfigService client;
+        private String payload;
+
+        public TestTask(ConfigService client, String payload) {
+            this.client = client;
+            this.payload = payload;
+        }
+
+        @Override
+        public Void call() throws Exception {
+            this.client.publishConfig("testApp", "test", this.payload);
+            return null;
+        }
+    }
+
     public static void runNacosLoadTest(int qps, int duration, int payloadSize, int existingKeyCount, List<ConfigService> clientCluster) {
         try {
             Random random = new Random();
@@ -51,13 +71,15 @@ public class WorkloadGenerator {
                 client.publishConfig("testApp", "testKey-" + (i + 1), PayloadGenerator.generateKeyValuePair(16, 64));
             }
 
+            ExecutorService pool = Executors.newFixedThreadPool(clientCluster.size());
             int sleepTime = 1000 / qps;
             for (i = 0; i < duration * qps; i++) {
                 ConfigService client = clientCluster.get(random.nextInt(clientCluster.size()));
-                String value = System.currentTimeMillis() + " " + PayloadGenerator.generateKeyValuePair(16, payloadSize / 16);
-                client.publishConfig("testApp", "test", value);
+                String payload = System.currentTimeMillis() + " " + PayloadGenerator.generateKeyValuePair(16, payloadSize / 16);
+                pool.submit(new TestTask(client, payload));
                 Thread.sleep(sleepTime);
             }
+            pool.shutdown();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
