@@ -34,6 +34,9 @@ public class Worker implements Runnable {
                 this.getNode().getHealthManager().checkHealth();
                 LOGGER.info("[Worker] Sending pending messages.");
                 this.getNode().getTracker().retry();
+                LOGGER.info("[Worker] Monitor CPU load.");
+                this.getNode().updateCpuLoad(1000);
+                LOGGER.info("[Worker] Current CPU load is {}.", this.getNode().getCurrentCpuLoad());
                 Thread.sleep(INTERVAL);
             } catch (InterruptedException exception) {
                 LOGGER.info("[Worker] Interrupted.");

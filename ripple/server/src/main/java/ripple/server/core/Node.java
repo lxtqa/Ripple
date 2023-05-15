@@ -8,6 +8,9 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
+import oshi.hardware.HardwareAbstractionLayer;
 import ripple.common.ClientListCache;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.ClientMetadata;
@@ -77,6 +80,8 @@ public class Node {
     private Server uiServer;
     private NettyServer apiServer;
     private boolean running;
+
+    private double currentCpuLoad;
 
     public ExecutorService getExecutorService() {
         return executorService;
@@ -228,6 +233,14 @@ public class Node {
 
     public void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public double getCurrentCpuLoad() {
+        return currentCpuLoad;
+    }
+
+    public void setCurrentCpuLoad(double currentCpuLoad) {
+        this.currentCpuLoad = currentCpuLoad;
     }
 
     public Node(int id, Overlay overlay, String storageLocation) {
@@ -521,4 +534,13 @@ public class Node {
             // }
         }
     }
+
+    public void updateCpuLoad(long delay) {
+        SystemInfo si = new SystemInfo();
+        HardwareAbstractionLayer hal = si.getHardware();
+        CentralProcessor cpu = hal.getProcessor();
+        double load = cpu.getSystemCpuLoad(delay);
+        this.setCurrentCpuLoad(load);
+    }
+
 }
