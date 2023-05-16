@@ -15,6 +15,7 @@ import ripple.client.core.tcp.handler.PutResponseHandler;
 import ripple.client.core.tcp.handler.SubscribeResponseHandler;
 import ripple.client.core.tcp.handler.SyncRequestHandler;
 import ripple.client.core.tcp.handler.SyncResponseHandler;
+import ripple.client.core.tcp.handler.SystemInfoResponseHandler;
 import ripple.client.core.tcp.handler.UnsubscribeResponseHandler;
 import ripple.common.tcp.MessageDecoder;
 import ripple.common.tcp.MessageEncoder;
@@ -36,6 +37,8 @@ import ripple.common.tcp.decoder.SubscribeRequestDecoder;
 import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
+import ripple.common.tcp.decoder.SystemInfoRequestDecoder;
+import ripple.common.tcp.decoder.SystemInfoResponseDecoder;
 import ripple.common.tcp.decoder.UnsubscribeRequestDecoder;
 import ripple.common.tcp.decoder.UnsubscribeResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -56,6 +59,8 @@ import ripple.common.tcp.encoder.SubscribeRequestEncoder;
 import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
+import ripple.common.tcp.encoder.SystemInfoRequestEncoder;
+import ripple.common.tcp.encoder.SystemInfoResponseEncoder;
 import ripple.common.tcp.encoder.UnsubscribeRequestEncoder;
 import ripple.common.tcp.encoder.UnsubscribeResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -81,7 +86,7 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024*1024, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024 * 1024, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
         MessageEncoder messageEncoder = new MessageEncoder();
         MessageDecoder messageDecoder = new MessageDecoder();
@@ -160,5 +165,12 @@ public class ClientChannelInitializer extends ChannelInitializer<SocketChannel> 
         messageEncoder.registerEncoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseDecoder());
         messageHandler.registerHandler(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseHandler(this.getRippleClient()));
+
+        messageEncoder.registerEncoder(MessageType.SYSTEM_INFO_REQUEST, new SystemInfoRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.SYSTEM_INFO_REQUEST, new SystemInfoRequestDecoder());
+
+        messageEncoder.registerEncoder(MessageType.SYSTEM_INFO_RESPONSE, new SystemInfoResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.SYSTEM_INFO_RESPONSE, new SystemInfoResponseDecoder());
+        messageHandler.registerHandler(MessageType.SYSTEM_INFO_RESPONSE, new SystemInfoResponseHandler(this.getRippleClient()));
     }
 }

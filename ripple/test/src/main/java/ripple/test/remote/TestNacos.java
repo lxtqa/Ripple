@@ -3,11 +3,13 @@ package ripple.test.remote;
 import com.alibaba.nacos.api.NacosFactory;
 import com.alibaba.nacos.api.config.ConfigService;
 import com.alibaba.nacos.api.config.listener.Listener;
-import ripple.test.tools.PayloadGenerator;
 import ripple.test.tools.WorkloadGenerator;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Scanner;
 import java.util.concurrent.Executor;
 
 /**

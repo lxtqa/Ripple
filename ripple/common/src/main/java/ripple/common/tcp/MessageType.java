@@ -25,7 +25,9 @@ public enum MessageType {
     DISPATCH_REQUEST((byte) 18),
     DISPATCH_RESPONSE((byte) 19),
     GET_CLIENT_LIST_REQUEST((byte) 20),
-    GET_CLIENT_LIST_RESPONSE((byte) 21);
+    GET_CLIENT_LIST_RESPONSE((byte) 21),
+    SYSTEM_INFO_REQUEST((byte) 22),
+    SYSTEM_INFO_RESPONSE((byte) 23);
 
     private byte value;
 

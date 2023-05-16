@@ -2,7 +2,6 @@ package ripple.test.tools;
 
 import com.alibaba.nacos.api.config.ConfigService;
 import ripple.client.RippleClient;
-import ripple.test.remote.TestRipple;
 
 import java.util.List;
 import java.util.Random;

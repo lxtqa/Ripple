@@ -2,7 +2,11 @@ package ripple.client;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
@@ -18,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import ripple.client.core.HashingBasedSelector;
 import ripple.client.core.NodeSelector;
 import ripple.client.core.tcp.ClientChannelInitializer;
-import ripple.client.core.tcp.handler.SyncRequestHandler;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
 import ripple.client.core.ui.Endpoint;
@@ -311,6 +314,14 @@ public class RippleClient {
         Api.unsubscribeAsync(channel, applicationName, key, this.getAddress(), this.getApiPort());
     }
 
+    public void systemInfo(int serverId) {
+        if (!this.isRunning()) {
+            this.start();
+        }
+        Channel channel = this.findOrConnectToServer(serverId);
+        Api.systemInfoAsync(channel);
+    }
+
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
         servletContextHandler.addServlet(new ServletHolder(servlet), endpoint);
     }
@@ -343,6 +354,24 @@ public class RippleClient {
             }
         }
         NodeMetadata nodeMetadata = this.getMappingCache().get(item);
+        Channel channel = this.getServerConnections().get(nodeMetadata);
+        if (channel == null) {
+            this.getServerConnections().put(nodeMetadata, this.doConnect(nodeMetadata.getAddress(), nodeMetadata.getPort()));
+        }
+        return this.getServerConnections().get(nodeMetadata);
+    }
+
+    public Channel findOrConnectToServer(int serverId) {
+        NodeMetadata nodeMetadata = null;
+        for (NodeMetadata metadata : this.getNodeList()) {
+            if (metadata.getId() == serverId) {
+                nodeMetadata = metadata;
+                break;
+            }
+        }
+        if (nodeMetadata == null) {
+            return null;
+        }
         Channel channel = this.getServerConnections().get(nodeMetadata);
         if (channel == null) {
             this.getServerConnections().put(nodeMetadata, this.doConnect(nodeMetadata.getAddress(), nodeMetadata.getPort()));

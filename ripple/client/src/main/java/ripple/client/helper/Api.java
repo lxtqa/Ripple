@@ -16,6 +16,7 @@ import ripple.common.tcp.message.IncrementalUpdateRequest;
 import ripple.common.tcp.message.PutRequest;
 import ripple.common.tcp.message.SubscribeRequest;
 import ripple.common.tcp.message.SyncRequest;
+import ripple.common.tcp.message.SystemInfoRequest;
 import ripple.common.tcp.message.UnsubscribeRequest;
 
 import java.net.InetSocketAddress;
@@ -174,5 +175,16 @@ public final class Api {
                 , syncRequest.getValue(), SimpleDateFormat.getDateTimeInstance().format(syncRequest.getLastUpdate())
                 , syncRequest.getLastUpdateServerId());
         channel.writeAndFlush(syncRequest);
+    }
+
+    public static void systemInfoAsync(Channel channel) {
+        SystemInfoRequest systemInfoRequest = new SystemInfoRequest();
+        systemInfoRequest.setUuid(UUID.randomUUID());
+        InetSocketAddress localAddress = ((NioSocketChannel) channel).localAddress();
+        InetSocketAddress remoteAddress = ((NioSocketChannel) channel).remoteAddress();
+        LOGGER.info("[Api] [{}:{}<-->{}:{}] Send SYSTEM_INFO request. UUID = {}."
+                , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                , remoteAddress.getPort(), systemInfoRequest.getUuid());
+        channel.writeAndFlush(systemInfoRequest);
     }
 }

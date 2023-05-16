@@ -263,6 +263,7 @@ public class Node {
         this.setConnectedClients(new HashSet<>());
         this.setClientListCache(new ClientListCache());
         this.setClientDispatcher(new EqualDivisionClientDispatcher(this));
+        this.updateCpuLoad(1000);
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {

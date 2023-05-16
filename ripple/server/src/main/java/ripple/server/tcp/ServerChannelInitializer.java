@@ -27,6 +27,8 @@ import ripple.common.tcp.decoder.SubscribeRequestDecoder;
 import ripple.common.tcp.decoder.SubscribeResponseDecoder;
 import ripple.common.tcp.decoder.SyncRequestDecoder;
 import ripple.common.tcp.decoder.SyncResponseDecoder;
+import ripple.common.tcp.decoder.SystemInfoRequestDecoder;
+import ripple.common.tcp.decoder.SystemInfoResponseDecoder;
 import ripple.common.tcp.decoder.UnsubscribeRequestDecoder;
 import ripple.common.tcp.decoder.UnsubscribeResponseDecoder;
 import ripple.common.tcp.encoder.DeleteRequestEncoder;
@@ -47,6 +49,8 @@ import ripple.common.tcp.encoder.SubscribeRequestEncoder;
 import ripple.common.tcp.encoder.SubscribeResponseEncoder;
 import ripple.common.tcp.encoder.SyncRequestEncoder;
 import ripple.common.tcp.encoder.SyncResponseEncoder;
+import ripple.common.tcp.encoder.SystemInfoRequestEncoder;
+import ripple.common.tcp.encoder.SystemInfoResponseEncoder;
 import ripple.common.tcp.encoder.UnsubscribeRequestEncoder;
 import ripple.common.tcp.encoder.UnsubscribeResponseEncoder;
 import ripple.common.tcp.handler.HeartbeatRequestHandler;
@@ -66,6 +70,7 @@ import ripple.server.tcp.handler.PutRequestHandler;
 import ripple.server.tcp.handler.SubscribeRequestHandler;
 import ripple.server.tcp.handler.SyncRequestHandler;
 import ripple.server.tcp.handler.SyncResponseHandler;
+import ripple.server.tcp.handler.SystemInfoRequestHandler;
 import ripple.server.tcp.handler.UnsubscribeRequestHandler;
 
 /**
@@ -89,7 +94,7 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
     @Override
     protected void initChannel(SocketChannel socketChannel) {
         ChannelPipeline pipeline = socketChannel.pipeline();
-        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024*1024, 0, 4, 0, 4));
+        pipeline.addLast(new LengthFieldBasedFrameDecoder(1024 * 1024, 0, 4, 0, 4));
         pipeline.addLast(new LengthFieldPrepender(4));
 
         MessageEncoder messageEncoder = new MessageEncoder();
@@ -179,5 +184,12 @@ public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> 
 
         messageEncoder.registerEncoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseEncoder());
         messageDecoder.registerDecoder(MessageType.GET_CLIENT_LIST_RESPONSE, new GetClientListResponseDecoder());
+
+        messageEncoder.registerEncoder(MessageType.SYSTEM_INFO_REQUEST, new SystemInfoRequestEncoder());
+        messageDecoder.registerDecoder(MessageType.SYSTEM_INFO_REQUEST, new SystemInfoRequestDecoder());
+        messageHandler.registerHandler(MessageType.SYSTEM_INFO_REQUEST, new SystemInfoRequestHandler(this.getNettyServer().getNode()));
+
+        messageEncoder.registerEncoder(MessageType.SYSTEM_INFO_RESPONSE, new SystemInfoResponseEncoder());
+        messageDecoder.registerDecoder(MessageType.SYSTEM_INFO_RESPONSE, new SystemInfoResponseDecoder());
     }
 }
