@@ -15,6 +15,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.RippleClient;
+import ripple.common.entity.NodeMetadata;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.message.SystemInfoResponse;
@@ -48,6 +49,17 @@ public class SystemInfoResponseHandler implements Handler {
         LOGGER.info("[SystemInfoResponseHandler] [{}:{}<-->{}:{}] Receive SYSTEM_INFO response. UUID = {}, CPU Usage = {}"
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
                 , remoteAddress.getPort(), systemInfoResponse.getUuid(), systemInfoResponse.getCpuUsage());
+        NodeMetadata metadata = this.getRippleClient().findServerByAddress(channelHandlerContext.channel());
+        if (metadata == null) {
+            LOGGER.error("[SystemInfoResponseHandler] [{}:{}<-->{}:{}] Cannot find node metadata for channel."
+                    , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                    , remoteAddress.getPort());
+        } else {
+            LOGGER.info("[SystemInfoResponseHandler] [{}:{}<-->{}:{}] CPU Usage of {} is {}."
+                    , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
+                    , remoteAddress.getPort(), metadata.getId(), systemInfoResponse.getCpuUsage());
+            this.getRippleClient().getServerCpuUsage().put(metadata, systemInfoResponse.getCpuUsage());
+        }
         return null;
     }
 }

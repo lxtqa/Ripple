@@ -8,45 +8,42 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.server.core;
+package ripple.client.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.client.RippleClient;
+import ripple.common.entity.NodeMetadata;
 
 /**
  * @author Zhen Tang
  */
 public class Worker implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Worker.class);
-    private static final int INTERVAL = 10000;
+    private static final int INTERVAL = 1000;
 
-    private Node node;
+    private RippleClient rippleClient;
 
-    public Node getNode() {
-        return node;
+    public RippleClient getRippleClient() {
+        return rippleClient;
     }
 
-    public void setNode(Node node) {
-        this.node = node;
+    public void setRippleClient(RippleClient rippleClient) {
+        this.rippleClient = rippleClient;
     }
 
-    public Worker(Node node) {
-        this.setNode(node);
+    public Worker(RippleClient rippleClient) {
+        this.setRippleClient(rippleClient);
     }
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted() && this.getNode().isRunning()) {
+        while (!Thread.currentThread().isInterrupted() && this.getRippleClient().isRunning()) {
             try {
-                LOGGER.info("[Worker] Reconnecting.");
-                this.getNode().reconnect(this.getNode().getNodeList());
-                LOGGER.info("[Worker] Check health.");
-                this.getNode().getHealthManager().checkHealth();
-                LOGGER.info("[Worker] Sending pending messages.");
-                this.getNode().getTracker().retry();
-                LOGGER.info("[Worker] Monitor CPU load.");
-                this.getNode().updateCpuLoad(1000);
-                LOGGER.info("[Worker] Current CPU load is {}.", this.getNode().getCurrentCpuLoad());
+                LOGGER.info("[Worker] Gathering CPU usage.");
+                for (NodeMetadata nodeMetadata : this.getRippleClient().getNodeList()) {
+                    this.getRippleClient().systemInfo(nodeMetadata.getId());
+                }
                 Thread.sleep(INTERVAL);
             } catch (InterruptedException exception) {
                 LOGGER.info("[Worker] Interrupted.");

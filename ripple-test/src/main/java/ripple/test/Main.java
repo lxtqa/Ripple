@@ -21,13 +21,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * @author Zhen Tang
  */
 public class Main {
-    private static final int SERVER_COUNT = 1;
-    private static final int CLIENTS_PER_SERVER = 5;
+    private static final int SERVER_COUNT = 3;
+    private static final int CLIENTS_PER_SERVER = 1;
     private static final String DATABASE_PATH = "D:\\ripple-test-dir";
 
     public static void main(String[] args) {
@@ -54,7 +55,9 @@ public class Main {
                 serverList.get(i).initCluster(nodeList);
             }
 
-            Thread.sleep(1000);
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Complete creating servers. Press any key to continue.");
+            scanner.nextLine();
 
             int j = 0;
             for (i = 0; i < SERVER_COUNT; i++) {
@@ -85,10 +88,8 @@ public class Main {
 //            getRequest.setKey("test");
 //            serverList.get(0).getNode().getApiServer().sendMessage(serverList.get(1).getAddress(), serverList.get(1).getApiPort(), getRequest);
 
-            clientList.get(0).systemInfo(1);
-
             System.out.println("Press any key to stop.");
-            System.in.read();
+            scanner.nextLine();
 
             for (RippleClient rippleClient : clientList) {
                 rippleClient.stop();

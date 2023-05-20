@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.core.HashingBasedSelector;
 import ripple.client.core.NodeSelector;
+import ripple.client.core.Worker;
 import ripple.client.core.tcp.ClientChannelInitializer;
 import ripple.client.core.ui.AddConfigServlet;
 import ripple.client.core.ui.AddSubscriptionServlet;
@@ -68,6 +69,8 @@ import java.util.concurrent.CountDownLatch;
  */
 public class RippleClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(RippleClient.class);
+    private Worker worker;
+    private Thread workingThread;
     private Storage storage;
     private String address;
     private int uiPort;
@@ -88,6 +91,7 @@ public class RippleClient {
     private NodeSelector nodeSelector;
     private ClientListCache clientListCache;
     private Map<String, Queue<AbstractMessage>> pendingMessages;
+    private Map<NodeMetadata, Double> serverCpuUsage;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
         this.setStorage(new Storage(storageLocation));
@@ -100,6 +104,8 @@ public class RippleClient {
         this.setNodeSelector(nodeSelector);
         this.setClientListCache(new ClientListCache());
         this.setPendingMessages(new ConcurrentHashMap<>());
+        this.setWorker(new Worker(this));
+        this.setServerCpuUsage(new ConcurrentHashMap<>());
     }
 
     public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
@@ -250,6 +256,30 @@ public class RippleClient {
         this.pendingMessages = pendingMessages;
     }
 
+    public Worker getWorker() {
+        return worker;
+    }
+
+    private void setWorker(Worker worker) {
+        this.worker = worker;
+    }
+
+    public Thread getWorkingThread() {
+        return workingThread;
+    }
+
+    private void setWorkingThread(Thread workingThread) {
+        this.workingThread = workingThread;
+    }
+
+    public Map<NodeMetadata, Double> getServerCpuUsage() {
+        return serverCpuUsage;
+    }
+
+    private void setServerCpuUsage(Map<NodeMetadata, Double> serverCpuUsage) {
+        this.serverCpuUsage = serverCpuUsage;
+    }
+
     public Item get(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
@@ -330,6 +360,15 @@ public class RippleClient {
         }
         Channel channel = this.findOrConnectToServer(serverId);
         Api.systemInfoAsync(channel);
+    }
+
+    public NodeMetadata findServerByAddress(Channel channel) {
+        for (NodeMetadata metadata : this.getServerConnections().keySet()) {
+            if (this.getServerConnections().get(metadata) == channel) {
+                return metadata;
+            }
+        }
+        return null;
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -465,6 +504,8 @@ public class RippleClient {
             this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setUiPort(serverConnector.getLocalPort());
 
+            this.setWorkingThread(new Thread(this.getWorker()));
+            this.getWorkingThread().start();
 
             this.setRunning(true);
             return true;
@@ -479,6 +520,7 @@ public class RippleClient {
             return true;
         }
         try {
+            this.getWorkingThread().interrupt();
             this.getServer().stop();
             CountDownLatch lock = new CountDownLatch(2);
             this.getBossGroup().shutdownGracefully().addListener(e -> {
