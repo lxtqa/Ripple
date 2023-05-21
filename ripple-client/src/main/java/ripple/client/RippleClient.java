@@ -30,6 +30,7 @@ import org.eclipse.jetty.servlet.ServletHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ripple.client.core.HashingBasedSelector;
+import ripple.client.core.LoadBalancedSelector;
 import ripple.client.core.NodeSelector;
 import ripple.client.core.Worker;
 import ripple.client.core.tcp.ClientChannelInitializer;
@@ -403,6 +404,19 @@ public class RippleClient {
             }
         }
         NodeMetadata nodeMetadata = this.getMappingCache().get(item);
+
+        // TODO: Need refactoring
+        // For load balance
+        if (this.getNodeSelector() instanceof LoadBalancedSelector) {
+            double threshold = ((LoadBalancedSelector) this.getNodeSelector()).getCpuThreshold();
+            if (this.getServerCpuUsage().get(nodeMetadata) > threshold) {
+                synchronized (this) {
+                    this.getMappingCache().put(item
+                            , this.getNodeSelector().selectNodeToConnect(applicationName, key, this.getNodeList()));
+                }
+            }
+        }
+
         Channel channel = this.getServerConnections().get(nodeMetadata);
         if (channel == null) {
             this.getServerConnections().put(nodeMetadata, this.doConnect(nodeMetadata.getAddress(), nodeMetadata.getPort()));

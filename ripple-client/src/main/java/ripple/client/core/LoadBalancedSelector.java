@@ -40,7 +40,7 @@ public class LoadBalancedSelector implements NodeSelector {
         return rippleClient;
     }
 
-    private void setRippleClient(RippleClient rippleClient) {
+    public void setRippleClient(RippleClient rippleClient) {
         this.rippleClient = rippleClient;
     }
 
