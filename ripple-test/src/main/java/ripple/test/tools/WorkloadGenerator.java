@@ -13,6 +13,7 @@ package ripple.test.tools;
 import com.alibaba.nacos.api.config.ConfigService;
 import ripple.client.RippleClient;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -27,29 +28,58 @@ public class WorkloadGenerator {
 
     public static void runRippleLoadTest(int qps, int duration, int payloadSize, int existingKeyCount, List<RippleClient> clientCluster) {
         try {
+            long startTime = System.currentTimeMillis();
             Random random = new Random();
             // Prepare
             System.out.println("Preparing");
-            int i = 0;
-            for (i = 0; i < existingKeyCount; i++) {
+            int j = 0;
+            for (j = 0; j < existingKeyCount; j++) {
                 RippleClient client = clientCluster.get(random.nextInt(clientCluster.size()));
                 // 1KB per entry
-                client.put("testApp", "testKey-" + (i + 1), PayloadGenerator.generateKeyValuePair(16, 64));
+                client.put("testApp", "testKey-" + (j + 1), PayloadGenerator.generateKeyValuePair(16, 64));
             }
             System.out.println("Prepare done.");
             new Scanner(System.in).nextLine();
 
-            int sleepTime = 1000 / qps;
-            for (i = 0; i < duration * qps; i++) {
-                RippleClient client = clientCluster.get(random.nextInt(clientCluster.size()));
-                String value = System.currentTimeMillis() + " " + PayloadGenerator.generateKeyValuePair(16, payloadSize / 16);
-                client.put("testApp", "test", value);
-                Thread.sleep(sleepTime);
-            }
-            System.out.println("Done.");
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
+    }
+
+    public static void runRippleAdaptiveLoadTest(int payloadSize, List<RippleClient> clientCluster) {
+        try {
+            long startTime = System.currentTimeMillis();
+            Random random = new Random();
+
+            int qps = 5;
+            int duration = 30;
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
+            qps = 10;
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
+            qps = 20;
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
+            qps = 5;
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
+            qps = 15;
+            doRunLoadTest(payloadSize, clientCluster, startTime, random, qps, duration);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    private static void doRunLoadTest(int payloadSize, List<RippleClient> clientCluster, long startTime, Random random, int qps, int duration) throws InterruptedException {
+        int sleepTime = 1000 / qps;
+        int i = 0;
+        for (i = 0; i < duration * qps; i++) {
+            RippleClient client = clientCluster.get(random.nextInt(clientCluster.size()));
+            long currentTime = System.currentTimeMillis();
+            String value = (currentTime - startTime) + " " + (int) Math.floor((currentTime - startTime + 0.0) / 1000) + " "
+                    + currentTime + " " + PayloadGenerator.generateKeyValuePair(16, payloadSize / 16);
+            client.put("testApp", "test", value);
+            Thread.sleep(sleepTime);
+        }
+        System.out.println("Done.");
     }
 
     static class TestTask implements Callable<Void> {

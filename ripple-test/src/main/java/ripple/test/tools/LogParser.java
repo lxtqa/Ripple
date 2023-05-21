@@ -20,8 +20,8 @@ import java.util.List;
 public class LogParser {
     public static void main(String[] args) {
         try {
-            String dir = "D:\\test-results";
-            String outputDir = "D:\\test-results\\clean";
+            String dir = "D:\\new-test-results";
+            String outputDir = "D:\\new-test-results\\clean";
             List<Path> fileList = Files.list(Path.of(dir)).toList();
             for (Path path : fileList) {
                 if (path.getFileName().toString().endsWith("txt")) {
@@ -34,6 +34,7 @@ public class LogParser {
                     }
                     List<String> subscribing = new ArrayList<>();
                     List<String> pushing = new ArrayList<>();
+                    pushing.add("timestamp,second,latency");
                     for (String line : content) {
                         if (line.contains("] Subscribed:") ||
                                 line.contains("] Unsubscribed:")) {
@@ -51,7 +52,7 @@ public class LogParser {
                     Path subscribingPath = Path.of(outputDir, originalFileName.substring(0, originalFileName.lastIndexOf(".txt")) + "-sub.txt");
                     System.out.println("Saving to " + subscribingPath);
                     Files.write(subscribingPath, subscribing);
-                    Path pushingPath = Path.of(outputDir, originalFileName.substring(0, originalFileName.lastIndexOf(".txt")) + "-pushing.txt");
+                    Path pushingPath = Path.of(outputDir, originalFileName.substring(0, originalFileName.lastIndexOf(".txt")) + "-pushing.csv");
                     System.out.println("Saving to " + pushingPath);
                     Files.write(pushingPath, pushing);
                 }

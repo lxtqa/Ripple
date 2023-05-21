@@ -120,9 +120,10 @@ public class DispatchRequestHandler implements Handler {
         boolean loadTestEnabled = true;
         if (loadTestEnabled) {
             long endTime = System.currentTimeMillis();
-            long startTime = Long.parseLong(dispatchRequest.getValue().substring(0, dispatchRequest.getValue().indexOf(" ")));
+            String[] source = dispatchRequest.getValue().split(" ");
+            long startTime = Long.parseLong(source[2]);
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                    + "] Received: " + (endTime - startTime) + "ms. From DISPATCH.");
+                    + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
         }
 
         DispatchResponse dispatchResponse = new DispatchResponse();

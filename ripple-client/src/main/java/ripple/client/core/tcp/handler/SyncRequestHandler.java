@@ -116,9 +116,10 @@ public class SyncRequestHandler implements Handler {
         boolean loadTestEnabled = true;
         if (loadTestEnabled) {
             long endTime = System.currentTimeMillis();
-            long startTime = Long.parseLong(syncRequest.getValue().substring(0, syncRequest.getValue().indexOf(" ")));
+            String[] source = syncRequest.getValue().split(" ");
+            long startTime = Long.parseLong(source[2]);
             System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                    + "] Received: " + (endTime - startTime) + "ms. From SYNC.");
+                    + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From SYNC.");
         }
 
         SyncResponse syncResponse = new SyncResponse();
