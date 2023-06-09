@@ -10,6 +10,7 @@
 
 package ripple.common;
 
+import org.apache.commons.collections4.map.LRUMap;
 import ripple.common.entity.ClientMetadata;
 
 import java.nio.charset.StandardCharsets;
@@ -19,7 +20,6 @@ import java.util.Collections;
 import java.util.Formatter;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -36,7 +36,7 @@ public class ClientListCache {
     }
 
     public ClientListCache() {
-        this.setMap(new ConcurrentHashMap<>());
+        this.setMap(new LRUMap<>(100));
     }
 
     public List<ClientMetadata> get(String signature) {
