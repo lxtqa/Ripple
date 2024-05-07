@@ -13,7 +13,6 @@
         <module>ripple-common</module>
         <module>ripple-server</module>
         <module>ripple-client</module>
-        <module>ripple-test</module>
     </modules>
 
 </project>
