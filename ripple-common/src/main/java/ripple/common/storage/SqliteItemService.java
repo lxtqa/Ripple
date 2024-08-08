@@ -23,18 +23,18 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class ItemService {
-    private Storage storage;
+public class SqliteItemService {
+    private SqliteStorage storage;
 
-    public Storage getStorage() {
+    public SqliteStorage getStorage() {
         return storage;
     }
 
-    public void setStorage(Storage storage) {
+    public void setStorage(SqliteStorage storage) {
         this.storage = storage;
     }
 
-    public ItemService(Storage storage) {
+    public SqliteItemService(SqliteStorage storage) {
         this.setStorage(storage);
     }
 

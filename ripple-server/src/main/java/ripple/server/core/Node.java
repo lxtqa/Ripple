@@ -29,7 +29,7 @@ import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.entity.UpdateMessage;
-import ripple.common.storage.Storage;
+import ripple.common.storage.SqliteStorage;
 import ripple.server.core.dispatcher.ClientDispatcher;
 import ripple.server.core.dispatcher.EqualDivisionClientDispatcher;
 import ripple.server.core.overlay.Overlay;
@@ -74,7 +74,7 @@ public class Node {
 
     private int id;
     private Overlay overlay;
-    private Storage storage;
+    private SqliteStorage storage;
     private List<NodeMetadata> nodeList;
     private ConcurrentHashMap<Item, Set<ClientMetadata>> subscription;
     private Set<ClientMetadata> connectedClients;
@@ -133,11 +133,11 @@ public class Node {
         this.overlay = overlay;
     }
 
-    public Storage getStorage() {
+    public SqliteStorage getStorage() {
         return storage;
     }
 
-    private void setStorage(Storage storage) {
+    private void setStorage(SqliteStorage storage) {
         this.storage = storage;
     }
 
@@ -262,7 +262,7 @@ public class Node {
         this.setId(id);
         this.setOverlay(overlay);
         this.setTracker(new Tracker(this, overlay));
-        this.setStorage(new Storage(storageLocation));
+        this.setStorage(new SqliteStorage(storageLocation));
         this.setHealthManager(new HealthManager(this));
         this.setWorker(new Worker(this));
 

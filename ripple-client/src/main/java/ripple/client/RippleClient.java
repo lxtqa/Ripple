@@ -53,7 +53,7 @@ import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.hashing.ModHashing;
-import ripple.common.storage.Storage;
+import ripple.common.storage.SqliteStorage;
 
 import javax.servlet.Servlet;
 import java.net.InetAddress;
@@ -72,7 +72,7 @@ public class RippleClient {
     private static final Logger LOGGER = LoggerFactory.getLogger(RippleClient.class);
     private Worker worker;
     private Thread workingThread;
-    private Storage storage;
+    private SqliteStorage storage;
     private String address;
     private int uiPort;
     private int apiPort;
@@ -95,7 +95,7 @@ public class RippleClient {
     private Map<NodeMetadata, Double> serverCpuUsage;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
-        this.setStorage(new Storage(storageLocation));
+        this.setStorage(new SqliteStorage(storageLocation));
         this.setRunning(false);
         this.setNodeList(nodeList);
         this.setMappingCache(new ConcurrentHashMap<>());
@@ -113,11 +113,11 @@ public class RippleClient {
         this(nodeList, new HashingBasedSelector(new ModHashing()), storageLocation);
     }
 
-    public Storage getStorage() {
+    public SqliteStorage getStorage() {
         return storage;
     }
 
-    public void setStorage(Storage storage) {
+    public void setStorage(SqliteStorage storage) {
         this.storage = storage;
     }
 

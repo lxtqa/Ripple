@@ -28,18 +28,18 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class MessageService {
-    private Storage storage;
+public class SqliteMessageService {
+    private SqliteStorage storage;
 
-    public Storage getStorage() {
+    public SqliteStorage getStorage() {
         return storage;
     }
 
-    public void setStorage(Storage storage) {
+    public void setStorage(SqliteStorage storage) {
         this.storage = storage;
     }
 
-    public MessageService(Storage storage) {
+    public SqliteMessageService(SqliteStorage storage) {
         this.setStorage(storage);
     }
 

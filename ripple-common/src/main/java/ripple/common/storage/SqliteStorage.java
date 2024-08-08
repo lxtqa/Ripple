@@ -18,12 +18,12 @@ import java.sql.Statement;
 /**
  * @author Zhen Tang
  */
-public class Storage {
+public class SqliteStorage {
     private String fileName;
     private Connection connection;
-    private ItemService itemService;
-    private MessageService messageService;
-    private AckService ackService;
+    private SqliteItemService itemService;
+    private SqliteMessageService messageService;
+    private SqliteAckService ackService;
 
     public String getFileName() {
         return fileName;
@@ -41,35 +41,35 @@ public class Storage {
         this.connection = connection;
     }
 
-    public ItemService getItemService() {
+    public SqliteItemService getItemService() {
         return itemService;
     }
 
-    private void setItemService(ItemService itemService) {
+    private void setItemService(SqliteItemService itemService) {
         this.itemService = itemService;
     }
 
-    public MessageService getMessageService() {
+    public SqliteMessageService getMessageService() {
         return messageService;
     }
 
-    private void setMessageService(MessageService messageService) {
+    private void setMessageService(SqliteMessageService messageService) {
         this.messageService = messageService;
     }
 
-    public AckService getAckService() {
+    public SqliteAckService getAckService() {
         return ackService;
     }
 
-    private void setAckService(AckService ackService) {
+    private void setAckService(SqliteAckService ackService) {
         this.ackService = ackService;
     }
 
-    public Storage(String fileName) {
+    public SqliteStorage(String fileName) {
         this.setFileName(fileName);
-        this.setItemService(new ItemService(this));
-        this.setMessageService(new MessageService(this));
-        this.setAckService(new AckService(this));
+        this.setItemService(new SqliteItemService(this));
+        this.setMessageService(new SqliteMessageService(this));
+        this.setAckService(new SqliteAckService(this));
         this.init();
     }
 

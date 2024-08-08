@@ -28,16 +28,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Zhen Tang
  */
-public class AckService {
+public class SqliteAckService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private Storage storage;
+    private SqliteStorage storage;
     private ConcurrentHashMap<UUID, Object> locks;
 
-    public Storage getStorage() {
+    public SqliteStorage getStorage() {
         return storage;
     }
 
-    private void setStorage(Storage storage) {
+    private void setStorage(SqliteStorage storage) {
         this.storage = storage;
     }
 
@@ -49,7 +49,7 @@ public class AckService {
         this.locks = locks;
     }
 
-    public AckService(Storage storage) {
+    public SqliteAckService(SqliteStorage storage) {
         this.setStorage(storage);
         this.setLocks(new ConcurrentHashMap<>());
     }
