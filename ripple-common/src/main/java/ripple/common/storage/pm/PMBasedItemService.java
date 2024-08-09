@@ -10,9 +10,31 @@
 
 package ripple.common.storage.pm;
 
+import ripple.common.entity.Item;
+import ripple.common.storage.ItemService;
+
+import java.util.Collections;
+import java.util.List;
+
 /**
  * @author Zhen Tang
  */
-public class PersistentMemoryBasedStorage {
+public class PMBasedItemService implements ItemService {
+    @Override
+    public Item getItem(String applicationName, String key) {
+        // TODO
+        return null;
+    }
 
+    @Override
+    public List<Item> getAllItems() {
+        // TODO
+        return Collections.emptyList();
+    }
+
+    @Override
+    public boolean newItem(String applicationName, String key) {
+        // TODO
+        return false;
+    }
 }

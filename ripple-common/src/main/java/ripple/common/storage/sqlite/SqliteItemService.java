@@ -39,6 +39,7 @@ public class SqliteItemService implements ItemService {
         this.setStorage(storage);
     }
 
+    @Override
     public Item getItem(String applicationName, String key) {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -61,6 +62,7 @@ public class SqliteItemService implements ItemService {
         }
     }
 
+    @Override
     public List<Item> getAllItems() {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -82,6 +84,7 @@ public class SqliteItemService implements ItemService {
         }
     }
 
+    @Override
     public synchronized boolean newItem(String applicationName, String key) {
         Item item = this.getItem(applicationName, key);
         if (item != null) {

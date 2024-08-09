@@ -62,6 +62,7 @@ public class SqliteAckService implements AckService {
         return this.getLocks().get(messageUuid);
     }
 
+    @Override
     public boolean initAck(UUID messageUuid, List<Integer> nodeList) {
         synchronized (this.getLock(messageUuid)) {
             try {
@@ -82,6 +83,7 @@ public class SqliteAckService implements AckService {
         }
     }
 
+    @Override
     public Ack getAck(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -112,6 +114,7 @@ public class SqliteAckService implements AckService {
         return ack;
     }
 
+    @Override
     public List<Ack> getAllAcks() {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -130,6 +133,7 @@ public class SqliteAckService implements AckService {
         }
     }
 
+    @Override
     public boolean recordAck(UUID messageUuid, int serverId) {
         synchronized (this.getLock(messageUuid)) {
             try {

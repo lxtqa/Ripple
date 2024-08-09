@@ -8,19 +8,17 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.common.storage.dir;
+package ripple.common.storage.pm;
 
 import ripple.common.storage.AckService;
 import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
 import ripple.common.storage.Storage;
 
-import java.sql.Connection;
-
 /**
  * @author Zhen Tang
  */
-public class DirectoryBasedStorage implements Storage {
+public class PMBasedStorage implements Storage {
     private String location;
     private ItemService itemService;
     private MessageService messageService;

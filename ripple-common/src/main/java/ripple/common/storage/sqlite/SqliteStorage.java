@@ -30,6 +30,7 @@ public class SqliteStorage implements Storage {
     private MessageService messageService;
     private AckService ackService;
 
+    @Override
     public String getLocation() {
         return location;
     }
@@ -46,6 +47,7 @@ public class SqliteStorage implements Storage {
         this.connection = connection;
     }
 
+    @Override
     public ItemService getItemService() {
         return itemService;
     }
@@ -54,6 +56,7 @@ public class SqliteStorage implements Storage {
         this.itemService = itemService;
     }
 
+    @Override
     public MessageService getMessageService() {
         return messageService;
     }
@@ -62,6 +65,7 @@ public class SqliteStorage implements Storage {
         this.messageService = messageService;
     }
 
+    @Override
     public AckService getAckService() {
         return ackService;
     }

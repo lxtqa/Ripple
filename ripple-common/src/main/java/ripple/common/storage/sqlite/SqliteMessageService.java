@@ -44,6 +44,7 @@ public class SqliteMessageService implements MessageService {
         this.setStorage(storage);
     }
 
+    @Override
     public boolean newMessage(AbstractMessage message) {
         if (message instanceof UpdateMessage) {
             return this.newUpdateMessage((UpdateMessage) message);
@@ -55,6 +56,7 @@ public class SqliteMessageService implements MessageService {
         return false;
     }
 
+    @Override
     public boolean exist(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -157,6 +159,7 @@ public class SqliteMessageService implements MessageService {
         }
     }
 
+    @Override
     public AbstractMessage getMessageByUuid(UUID messageUuid) {
         try {
             Connection connection = this.getStorage().getConnection();
@@ -176,6 +179,7 @@ public class SqliteMessageService implements MessageService {
         }
     }
 
+    @Override
     public List<AbstractMessage> findMessages(String applicationName, String key) {
         try {
             Connection connection = this.getStorage().getConnection();
