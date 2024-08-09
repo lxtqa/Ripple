@@ -8,13 +8,14 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.common.storage;
+package ripple.common.storage.sqlite;
 
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.Constants;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
+import ripple.common.storage.MessageService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class SqliteMessageService {
+public class SqliteMessageService implements MessageService {
     private SqliteStorage storage;
 
     public SqliteStorage getStorage() {

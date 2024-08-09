@@ -8,12 +8,13 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.common.storage;
+package ripple.common.storage.sqlite;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.entity.Ack;
+import ripple.common.storage.AckService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -28,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author Zhen Tang
  */
-public class SqliteAckService {
+public class SqliteAckService implements AckService {
     private static final ObjectMapper MAPPER = new ObjectMapper();
     private SqliteStorage storage;
     private ConcurrentHashMap<UUID, Object> locks;

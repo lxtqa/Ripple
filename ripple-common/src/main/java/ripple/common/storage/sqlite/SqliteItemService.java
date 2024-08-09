@@ -8,9 +8,10 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.common.storage;
+package ripple.common.storage.sqlite;
 
 import ripple.common.entity.Item;
+import ripple.common.storage.ItemService;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * @author Zhen Tang
  */
-public class SqliteItemService {
+public class SqliteItemService implements ItemService {
     private SqliteStorage storage;
 
     public SqliteStorage getStorage() {

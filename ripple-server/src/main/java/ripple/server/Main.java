@@ -104,7 +104,7 @@ public class Main {
             server.getNode().setNodeList(nodeList);
             server.start();
             LOGGER.info("[Main] Ripple Server started. The API port is {}. The UI port is {}. The storage location is {}."
-                    , server.getApiPort(), server.getUiPort(), server.getNode().getStorage().getFileName());
+                    , server.getApiPort(), server.getUiPort(), server.getNode().getStorage().getLocation());
             LOGGER.info("[Main] Nodes in the cluster:");
             for (NodeMetadata nodeMetadata : server.getNode().getNodeList()) {
                 LOGGER.info("[Main] --> Id = {}, Address = {}, API port = {}", nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());

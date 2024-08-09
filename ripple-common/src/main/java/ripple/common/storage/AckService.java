@@ -10,9 +10,20 @@
 
 package ripple.common.storage;
 
+import ripple.common.entity.Ack;
+
+import java.util.List;
+import java.util.UUID;
+
 /**
  * @author Zhen Tang
  */
-public class PersistentMemoryBasedStorage {
+public interface AckService {
+    boolean initAck(UUID messageUuid, List<Integer> nodeList);
 
+    Ack getAck(UUID messageUuid);
+
+    List<Ack> getAllAcks();
+
+    boolean recordAck(UUID messageUuid, int serverId);
 }

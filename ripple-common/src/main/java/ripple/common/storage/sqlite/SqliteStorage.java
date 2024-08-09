@@ -8,7 +8,12 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.common.storage;
+package ripple.common.storage.sqlite;
+
+import ripple.common.storage.AckService;
+import ripple.common.storage.ItemService;
+import ripple.common.storage.MessageService;
+import ripple.common.storage.Storage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,19 +23,19 @@ import java.sql.Statement;
 /**
  * @author Zhen Tang
  */
-public class SqliteStorage {
-    private String fileName;
+public class SqliteStorage implements Storage {
+    private String location;
     private Connection connection;
-    private SqliteItemService itemService;
-    private SqliteMessageService messageService;
-    private SqliteAckService ackService;
+    private ItemService itemService;
+    private MessageService messageService;
+    private AckService ackService;
 
-    public String getFileName() {
-        return fileName;
+    public String getLocation() {
+        return location;
     }
 
-    private void setFileName(String fileName) {
-        this.fileName = fileName;
+    private void setLocation(String location) {
+        this.location = location;
     }
 
     public Connection getConnection() {
@@ -41,32 +46,32 @@ public class SqliteStorage {
         this.connection = connection;
     }
 
-    public SqliteItemService getItemService() {
+    public ItemService getItemService() {
         return itemService;
     }
 
-    private void setItemService(SqliteItemService itemService) {
+    private void setItemService(ItemService itemService) {
         this.itemService = itemService;
     }
 
-    public SqliteMessageService getMessageService() {
+    public MessageService getMessageService() {
         return messageService;
     }
 
-    private void setMessageService(SqliteMessageService messageService) {
+    private void setMessageService(MessageService messageService) {
         this.messageService = messageService;
     }
 
-    public SqliteAckService getAckService() {
+    public AckService getAckService() {
         return ackService;
     }
 
-    private void setAckService(SqliteAckService ackService) {
+    private void setAckService(AckService ackService) {
         this.ackService = ackService;
     }
 
-    public SqliteStorage(String fileName) {
-        this.setFileName(fileName);
+    public SqliteStorage(String location) {
+        this.setLocation(location);
         this.setItemService(new SqliteItemService(this));
         this.setMessageService(new SqliteMessageService(this));
         this.setAckService(new SqliteAckService(this));
@@ -75,7 +80,7 @@ public class SqliteStorage {
 
     private void init() {
         try {
-            this.setConnection(DriverManager.getConnection("jdbc:sqlite:" + this.getFileName()));
+            this.setConnection(DriverManager.getConnection("jdbc:sqlite:" + this.getLocation()));
             this.initTables();
         } catch (SQLException exception) {
             exception.printStackTrace();
