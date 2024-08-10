@@ -23,6 +23,7 @@ import ripple.common.entity.Item;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
+import ripple.common.tcp.message.Result;
 import ripple.common.tcp.message.SyncRequest;
 import ripple.common.tcp.message.SyncResponse;
 
@@ -51,7 +52,7 @@ public class SyncRequestHandler implements Handler {
         this.setRippleClient(rippleClient);
     }
 
-    private void applyMessage(AbstractMessage message) {
+    private Result applyMessage(AbstractMessage message) {
         String applicationName = message.getApplicationName();
         String key = message.getKey();
         Item item = this.getRippleClient().getStorage().getItemService().getItem(applicationName, key);
@@ -60,6 +61,9 @@ public class SyncRequestHandler implements Handler {
         }
         if (!this.getRippleClient().getStorage().getMessageService().exist(message.getUuid())) {
             this.getRippleClient().getStorage().getMessageService().newMessage(message);
+            return Result.SUCCESS;
+        } else {
+            return Result.DUPLICATED;
         }
     }
 
@@ -109,11 +113,10 @@ public class SyncRequestHandler implements Handler {
                     , syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         }
 
-        this.applyMessage(msg);
-
+        Result result = this.applyMessage(msg);
 
         // For logging
-        boolean loadTestEnabled = true;
+        boolean loadTestEnabled = false;
         if (loadTestEnabled) {
             long endTime = System.currentTimeMillis();
             String[] source = syncRequest.getValue().split(" ");
@@ -124,10 +127,10 @@ public class SyncRequestHandler implements Handler {
 
         SyncResponse syncResponse = new SyncResponse();
         syncResponse.setUuid(syncRequest.getUuid());
-        syncResponse.setSuccess(true);
-        LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Send SYNC response. UUID = {}, Success = {}."
+        syncResponse.setResult(result);
+        LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Send SYNC response. UUID = {}, Result = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
-                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.isSuccess());
+                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.getResult());
         return syncResponse;
     }
 }

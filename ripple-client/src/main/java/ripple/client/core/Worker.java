@@ -20,7 +20,7 @@ import ripple.common.entity.NodeMetadata;
  */
 public class Worker implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Worker.class);
-    private static final int INTERVAL = 1000;
+    private static final int INTERVAL = 10000;
 
     private RippleClient rippleClient;
 
@@ -40,7 +40,7 @@ public class Worker implements Runnable {
     public void run() {
         while (!Thread.currentThread().isInterrupted() && this.getRippleClient().isRunning()) {
             try {
-                LOGGER.info("[Worker] Gathering CPU usage.");
+                LOGGER.info("[Worker] Gathering CPU usage of servers for every {} ms.", INTERVAL);
                 for (NodeMetadata nodeMetadata : this.getRippleClient().getNodeList()) {
                     this.getRippleClient().systemInfo(nodeMetadata.getId());
                 }

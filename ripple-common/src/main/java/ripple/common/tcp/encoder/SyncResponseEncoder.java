@@ -25,6 +25,6 @@ public class SyncResponseEncoder implements Encoder {
         SyncResponse syncResponse = (SyncResponse) message;
         byteBuf.writeByte(syncResponse.getType().getValue());
         TypeHelper.writeUuid(syncResponse.getUuid(), byteBuf);
-        TypeHelper.writeBoolean(syncResponse.isSuccess(), byteBuf);
+        byteBuf.writeByte(syncResponse.getResult().getValue());
     }
 }

@@ -110,5 +110,6 @@ public class ClientMessageHandler extends MessageHandler {
                 , localAddress.getHostString(), localAddress.getPort()
                 , remoteAddress.getHostString(), remoteAddress.getPort()
                 , cause.getLocalizedMessage());
+        cause.printStackTrace();
     }
 }

@@ -21,6 +21,7 @@ import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
+import ripple.common.tcp.message.Result;
 import ripple.common.tcp.message.SyncRequest;
 import ripple.common.tcp.message.SyncResponse;
 import ripple.server.core.Node;
@@ -53,8 +54,6 @@ public class SyncRequestHandler implements Handler {
         SyncRequest syncRequest = (SyncRequest) message;
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
-
-        boolean result = false;
 
         AbstractMessage msg = null;
         if (syncRequest.getOperationType().equals(Constants.MESSAGE_TYPE_UPDATE)) {
@@ -92,14 +91,14 @@ public class SyncRequestHandler implements Handler {
                     , syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         }
 
-        result = this.getNode().propagateMessage(msg);
+        Result result = this.getNode().propagateMessage(msg);
 
         SyncResponse syncResponse = new SyncResponse();
         syncResponse.setUuid(syncRequest.getUuid());
-        syncResponse.setSuccess(result);
-        LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Send SYNC response. UUID = {}, Success = {}."
+        syncResponse.setResult(result);
+        LOGGER.info("[SyncRequestHandler] [{}:{}<-->{}:{}] Send SYNC response. UUID = {}, Result = {}."
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
-                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.isSuccess());
+                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.getResult());
         return syncResponse;
     }
 }

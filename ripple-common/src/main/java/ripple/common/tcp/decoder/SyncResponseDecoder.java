@@ -15,6 +15,7 @@ import ripple.common.helper.TypeHelper;
 import ripple.common.tcp.Decoder;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.MessageType;
+import ripple.common.tcp.message.Result;
 import ripple.common.tcp.message.SyncResponse;
 
 /**
@@ -25,7 +26,7 @@ public class SyncResponseDecoder implements Decoder {
     public Message decode(ByteBuf byteBuf, MessageType messageType) {
         SyncResponse syncResponse = new SyncResponse();
         syncResponse.setUuid(TypeHelper.readUuid(byteBuf));
-        syncResponse.setSuccess(TypeHelper.readBoolean(byteBuf));
+        syncResponse.setResult(Result.get(byteBuf.readByte()));
         return syncResponse;
     }
 }

@@ -31,6 +31,7 @@ import ripple.common.entity.NodeMetadata;
 import ripple.common.entity.UpdateMessage;
 import ripple.common.storage.Storage;
 import ripple.common.storage.sqlite.SqliteStorage;
+import ripple.common.tcp.message.Result;
 import ripple.server.core.dispatcher.ClientDispatcher;
 import ripple.server.core.dispatcher.EqualDivisionClientDispatcher;
 import ripple.server.core.overlay.Overlay;
@@ -308,9 +309,9 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
-        this.propagateMessage(message);
+        Result result = this.propagateMessage(message);
 
-        return true;
+        return (result == Result.SUCCESS);
     }
 
     public boolean incrementalUpdate(String applicationName, String key, UUID baseMessageUuid, String atomicOperation, String value) {
@@ -319,9 +320,9 @@ public class Node {
 
         IncrementalUpdateMessage message = new IncrementalUpdateMessage(applicationName, key
                 , baseMessageUuid, atomicOperation, value, lastUpdate, lastUpdateServerId);
-        this.propagateMessage(message);
+        Result result = this.propagateMessage(message);
 
-        return true;
+        return (result == Result.SUCCESS);
     }
 
     public boolean delete(String applicationName, String key) {
@@ -329,12 +330,17 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         DeleteMessage message = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
-        this.propagateMessage(message);
+        Result result = this.propagateMessage(message);
 
-        return true;
+        return (result == Result.SUCCESS);
     }
 
-    public boolean propagateMessage(final AbstractMessage message) {
+    public Result propagateMessage(final AbstractMessage message) {
+        // Check duplicated messages
+        if (this.getStorage().getMessageService().exist(message.getUuid())) {
+            return Result.DUPLICATED;
+        }
+
         // Update local storage
         this.applyMessageToStorage(message);
 
@@ -364,7 +370,7 @@ public class Node {
             }
         });
 
-        return true;
+        return Result.SUCCESS;
     }
 
     public NodeMetadata findServerById(int serverId) {

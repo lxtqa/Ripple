@@ -46,9 +46,9 @@ public class SyncResponseHandler implements Handler {
         SyncResponse syncResponse = (SyncResponse) message;
         InetSocketAddress localAddress = ((NioSocketChannel) channelHandlerContext.channel()).localAddress();
         InetSocketAddress remoteAddress = ((NioSocketChannel) channelHandlerContext.channel()).remoteAddress();
-        LOGGER.info("[SyncResponseHandler] [{}:{}<-->{}:{}] Receive SYNC response. UUID = {}, Success = {}"
+        LOGGER.info("[SyncResponseHandler] [{}:{}<-->{}:{}] Receive SYNC response. UUID = {}, Result = {}"
                 , localAddress.getHostString(), localAddress.getPort(), remoteAddress.getHostString()
-                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.isSuccess());
+                , remoteAddress.getPort(), syncResponse.getUuid(), syncResponse.getResult());
         return null;
     }
 }
