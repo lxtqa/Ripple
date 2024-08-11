@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -21,7 +21,8 @@ import java.util.List;
 public interface Overlay {
     void buildOverlay(List<NodeMetadata> nodeList);
 
-    List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current);
+    List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata from, NodeMetadata current);
 
+    // TODO: Currently it is only called in initProgress() method, for the source node of message
     List<NodeMetadata> calculateNodesToCollectAck(AbstractMessage message);
 }

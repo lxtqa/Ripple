@@ -54,6 +54,7 @@ public class Api {
         syncRequest.setOperationType(message.getType());
         syncRequest.setApplicationName(message.getApplicationName());
         syncRequest.setKey(message.getKey());
+        syncRequest.setFromId(message.getFromId());
         if (message instanceof UpdateMessage) {
             syncRequest.setValue(((UpdateMessage) message).getValue());
         } else if (message instanceof IncrementalUpdateMessage) {

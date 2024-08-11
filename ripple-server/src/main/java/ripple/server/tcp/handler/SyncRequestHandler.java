@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -14,11 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ripple.common.entity.AbstractMessage;
-import ripple.common.entity.Constants;
-import ripple.common.entity.DeleteMessage;
-import ripple.common.entity.IncrementalUpdateMessage;
-import ripple.common.entity.UpdateMessage;
+import ripple.common.entity.*;
 import ripple.common.tcp.Handler;
 import ripple.common.tcp.Message;
 import ripple.common.tcp.message.Result;
@@ -90,7 +86,10 @@ public class SyncRequestHandler implements Handler {
                     , syncRequest.getKey(), syncRequest.getBaseMessageUuid(), syncRequest.getAtomicOperation()
                     , syncRequest.getValue(), syncRequest.getLastUpdate(), syncRequest.getLastUpdateServerId());
         }
-
+        if (msg != null) {
+            msg.setFromId(syncRequest.getFromId());
+        }
+        
         Result result = this.getNode().propagateMessage(msg);
 
         SyncResponse syncResponse = new SyncResponse();

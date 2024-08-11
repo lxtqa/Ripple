@@ -29,6 +29,7 @@ public class SyncRequest extends Message {
     private String value;
     private Date lastUpdate;
     private int lastUpdateServerId;
+    private int fromId;
 
     public UUID getMessageUuid() {
         return messageUuid;
@@ -100,6 +101,14 @@ public class SyncRequest extends Message {
 
     public void setLastUpdateServerId(int lastUpdateServerId) {
         this.lastUpdateServerId = lastUpdateServerId;
+    }
+
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
     }
 
     public SyncRequest() {

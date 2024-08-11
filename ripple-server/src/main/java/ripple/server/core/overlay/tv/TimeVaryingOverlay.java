@@ -26,7 +26,7 @@ public class TimeVaryingOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current) {
+    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata from, NodeMetadata current) {
         // TODO
         return null;
     }

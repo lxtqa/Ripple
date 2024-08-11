@@ -39,5 +39,6 @@ public class SyncRequestEncoder implements Encoder {
         }
         byteBuf.writeLong(syncRequest.getLastUpdate().getTime());
         byteBuf.writeInt(syncRequest.getLastUpdateServerId());
+        byteBuf.writeInt(syncRequest.getFromId());
     }
 }

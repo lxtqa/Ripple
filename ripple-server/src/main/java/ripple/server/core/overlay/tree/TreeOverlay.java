@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -97,7 +97,7 @@ public class TreeOverlay implements Overlay {
     }
 
     @Override
-    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata current) {
+    public List<NodeMetadata> calculateNodesToSync(AbstractMessage message, NodeMetadata source, NodeMetadata from, NodeMetadata current) {
         LOGGER.info("[TreeOverlay] calculateNodesToSync() called. sourceId = {}, currentId = {}", source.getId(), current.getId());
         CompleteTree tree = this.getTrees().get(source);
         for (TreeNode treeNode : tree.getNodeList()) {

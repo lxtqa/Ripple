@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -23,6 +23,7 @@ public abstract class AbstractMessage {
     private String key;
     private Date lastUpdate;
     private int lastUpdateServerId;
+    private int fromId;
 
     public UUID getUuid() {
         return uuid;
@@ -70,6 +71,14 @@ public abstract class AbstractMessage {
 
     public void setLastUpdateServerId(int lastUpdateServerId) {
         this.lastUpdateServerId = lastUpdateServerId;
+    }
+
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
     }
 
     public AbstractMessage() {

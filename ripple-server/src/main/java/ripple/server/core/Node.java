@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -309,6 +309,7 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         UpdateMessage message = new UpdateMessage(applicationName, key, value, lastUpdate, lastUpdateServerId);
+        message.setFromId(this.getId());
         Result result = this.propagateMessage(message);
 
         return (result == Result.SUCCESS);
@@ -320,6 +321,7 @@ public class Node {
 
         IncrementalUpdateMessage message = new IncrementalUpdateMessage(applicationName, key
                 , baseMessageUuid, atomicOperation, value, lastUpdate, lastUpdateServerId);
+        message.setFromId(this.getId());
         Result result = this.propagateMessage(message);
 
         return (result == Result.SUCCESS);
@@ -330,6 +332,7 @@ public class Node {
         int lastUpdateServerId = this.getId();
 
         DeleteMessage message = new DeleteMessage(applicationName, key, lastUpdate, lastUpdateServerId);
+        message.setFromId(this.getId());
         Result result = this.propagateMessage(message);
 
         return (result == Result.SUCCESS);
@@ -353,6 +356,7 @@ public class Node {
         this.doNotifyClients(message);
 
         final int sourceId = message.getLastUpdateServerId();
+        final int fromId = message.getFromId();
         final int currentId = this.getId();
 
         // this.doSyncWithServer(message, sourceId, currentId);
@@ -361,7 +365,7 @@ public class Node {
             @Override
             public Void call() throws Exception {
                 try {
-                    doSyncWithServer(message, sourceId, currentId);
+                    doSyncWithServer(message, sourceId, fromId, currentId);
                     return null;
                 } catch (Exception exception) {
                     exception.printStackTrace();
@@ -382,10 +386,21 @@ public class Node {
         return null;
     }
 
-    private void doSyncWithServer(AbstractMessage message, int sourceId, int currentId) {
+    public NodeMetadata findServerByAddress(String address, int port) {
+        for (NodeMetadata nodeMetadata : this.getNodeList()) {
+            if (nodeMetadata.getAddress().equals(address)
+                    && nodeMetadata.getPort() == port) {
+                return nodeMetadata;
+            }
+        }
+        return null;
+    }
+
+    private void doSyncWithServer(AbstractMessage message, int sourceId, int fromId, int currentId) {
         NodeMetadata source = this.findServerById(sourceId);
+        NodeMetadata from = this.findServerById(fromId);
         NodeMetadata current = this.findServerById(currentId);
-        List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(message, source, current);
+        List<NodeMetadata> initialList = this.getOverlay().calculateNodesToSync(message, source, from, current);
         Queue<NodeMetadata> sendQueue = new LinkedBlockingDeque<>(initialList);
 
         // Sync to servers following the overlay
@@ -399,6 +414,8 @@ public class Node {
                     LOGGER.info("[Node-{}] Node-{} ({}:{}) is unreachable, skipping."
                             , this.getId(), nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
                 } else {
+                    // Replace fromId
+                    message.setFromId(this.getId());
                     Api.sync(channel, message);
                     LOGGER.info("[Node-{}] Record ACK of message {} from server {}.", this.getId(), message.getUuid(), nodeMetadata.getId());
                     this.getTracker().recordAck(message.getUuid(), message.getLastUpdateServerId(), nodeMetadata.getId());
@@ -406,7 +423,7 @@ public class Node {
             } else {
                 LOGGER.info("[Node-{}] Server {}:{} (id = {}) is unreachable, attempting to send to its children."
                         , this.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort(), nodeMetadata.getId());
-                List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(message, source, nodeMetadata);
+                List<NodeMetadata> list = this.getOverlay().calculateNodesToSync(message, source, from, nodeMetadata);
                 sendQueue.addAll(list);
             }
         }

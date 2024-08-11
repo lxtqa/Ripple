@@ -41,6 +41,7 @@ public class SyncRequestDecoder implements Decoder {
         }
         syncRequest.setLastUpdate(new Date(byteBuf.readLong()));
         syncRequest.setLastUpdateServerId(byteBuf.readInt());
+        syncRequest.setFromId(byteBuf.readInt());
         return syncRequest;
     }
 }
