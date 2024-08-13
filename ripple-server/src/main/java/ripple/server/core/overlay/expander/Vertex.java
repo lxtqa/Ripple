@@ -21,7 +21,7 @@ import java.util.List;
 public class Vertex {
     private int clusterId;
     private NodeMetadata nodeMetadata;
-    private List<NodeMetadata> neighbours;
+    private List<Vertex> neighbours;
 
     public int getClusterId() {
         return clusterId;
@@ -39,11 +39,11 @@ public class Vertex {
         this.nodeMetadata = nodeMetadata;
     }
 
-    public List<NodeMetadata> getNeighbours() {
+    public List<Vertex> getNeighbours() {
         return neighbours;
     }
 
-    public void setNeighbours(List<NodeMetadata> neighbours) {
+    public void setNeighbours(List<Vertex> neighbours) {
         this.neighbours = neighbours;
     }
 

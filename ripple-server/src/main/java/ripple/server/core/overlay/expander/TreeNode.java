@@ -10,36 +10,34 @@
 
 package ripple.server.core.overlay.expander;
 
-import ripple.common.entity.NodeMetadata;
-
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Zhen Tang
  */
-public class SpanningTreeNode {
-    private NodeMetadata nodeMetadata;
-    private List<SpanningTreeNode> children;
+public class TreeNode {
+    private Vertex vertex;
+    private List<TreeNode> children;
 
-    public SpanningTreeNode(NodeMetadata nodeMetadata) {
-        this.setNodeMetadata(nodeMetadata);
+    public TreeNode(Vertex vertex) {
+        this.setVertex(vertex);
         this.setChildren(new ArrayList<>());
     }
 
-    public NodeMetadata getNodeMetadata() {
-        return nodeMetadata;
+    public Vertex getVertex() {
+        return vertex;
     }
 
-    private void setNodeMetadata(NodeMetadata nodeMetadata) {
-        this.nodeMetadata = nodeMetadata;
+    public void setVertex(Vertex vertex) {
+        this.vertex = vertex;
     }
 
-    public List<SpanningTreeNode> getChildren() {
+    public List<TreeNode> getChildren() {
         return children;
     }
 
-    private void setChildren(List<SpanningTreeNode> children) {
+    private void setChildren(List<TreeNode> children) {
         this.children = children;
     }
 }
