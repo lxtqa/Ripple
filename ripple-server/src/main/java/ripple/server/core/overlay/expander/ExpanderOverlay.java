@@ -101,6 +101,8 @@ public class ExpanderOverlay implements Overlay {
     }
 
     private void threeLayerBuildOverlay(TreeNode treeNode, List<NodeMetadata> availableNodes) {
+        List<TreeNode> nodes = new ArrayList<>();
+        nodes.add(treeNode);
         Set<Integer> taggedCluster = new HashSet<>();
         taggedCluster.add(treeNode.getVertex().getClusterId());
 
@@ -112,6 +114,7 @@ public class ExpanderOverlay implements Overlay {
                     && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
                 TreeNode toAdd = new TreeNode(vertex);
                 treeNode.getChildren().add(toAdd);
+                nodes.add(toAdd);
                 availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
                 if (vertex.getClusterId() != treeNode.getVertex().getClusterId()) {
                     taggedCluster.add(vertex.getClusterId());
@@ -119,26 +122,27 @@ public class ExpanderOverlay implements Overlay {
             }
         }
         // Second layer: cross cluster by other nodes
-        List<TreeNode> twoLayerNodes = new ArrayList<>();
         for (TreeNode child : treeNode.getChildren()) {
             for (Vertex vertex : child.getVertex().getNeighbours()) {
                 if ((vertex.getClusterId() != child.getVertex().getClusterId() && !taggedCluster.contains(vertex.getClusterId()))
                         && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
                     TreeNode toAdd = new TreeNode(vertex);
                     child.getChildren().add(toAdd);
-                    twoLayerNodes.add(toAdd);
+                    nodes.add(toAdd);
                     availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
                     taggedCluster.add(vertex.getClusterId());
                 }
             }
         }
         // Third layer: inside other clusters
-        for (TreeNode child : twoLayerNodes) {
+        List<TreeNode> allNodes = new ArrayList<>(nodes);
+        for (TreeNode child : nodes) {
             for (Vertex vertex : child.getVertex().getNeighbours()) {
                 if (vertex.getClusterId() == child.getVertex().getClusterId()
                         && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
                     TreeNode toAdd = new TreeNode(vertex);
                     child.getChildren().add(toAdd);
+                    allNodes.add(toAdd);
                     availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
                 }
             }
@@ -184,9 +188,6 @@ public class ExpanderOverlay implements Overlay {
                 Vertex vertex = new Vertex(i + 1, this.getNodeList().get(index));
                 vertexList.add(vertex);
             }
-        }
-        for (Vertex vertex : vertexList) {
-            LOGGER.info("[ExpanderOverlay] node id: {}, cluster id: {}.", vertex.getNodeMetadata().getId(), vertex.getClusterId());
         }
         this.setClusterCount(clusterCount);
         this.setVertexList(vertexList);
