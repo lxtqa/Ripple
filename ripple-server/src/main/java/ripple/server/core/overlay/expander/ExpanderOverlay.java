@@ -15,9 +15,15 @@ import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.Overlay;
+import ripple.server.core.overlay.tree.CompleteTree;
+import ripple.server.core.overlay.tree.TreeNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
@@ -28,9 +34,11 @@ public class ExpanderOverlay implements Overlay {
     private List<NodeMetadata> nodeList;
     private int clusterCount;
     private List<Vertex> vertexList;
+    private ConcurrentHashMap<NodeMetadata, SpanningTreeNode> trees;
 
     public ExpanderOverlay(int scale) {
         this.setScale(scale);
+        this.setTrees(new ConcurrentHashMap<>());
     }
 
     public int getScale() {
@@ -65,12 +73,59 @@ public class ExpanderOverlay implements Overlay {
         this.vertexList = vertexList;
     }
 
+    public ConcurrentHashMap<NodeMetadata, SpanningTreeNode> getTrees() {
+        return trees;
+    }
+
+    public void setTrees(ConcurrentHashMap<NodeMetadata, SpanningTreeNode> trees) {
+        this.trees = trees;
+    }
+
     @Override
     public void buildOverlay(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
         this.assignCluster();
-        this.assignEdges();
         this.addFullConnectionsInsideCluster();
+        this.assignEdges();
+        this.buildSpanningTree();
+    }
+
+    private void buildSpanningTree() {
+        for (NodeMetadata nodeMetadata : this.getNodeList()) {
+            SpanningTreeNode treeNode = new SpanningTreeNode(nodeMetadata);
+            this.getTrees().put(nodeMetadata, treeNode);
+            List<NodeMetadata> availableNodes = new ArrayList<>(this.getNodeList());
+            this.addChildren(treeNode, availableNodes);
+        }
+    }
+
+    private void addChildren(SpanningTreeNode treeNode, List<NodeMetadata> availableNodes) {
+        // Using BFS
+        Queue<SpanningTreeNode> nodes = new ArrayBlockingQueue<>(this.getNodeList().size());
+        nodes.offer(treeNode);
+        while (!nodes.isEmpty()) {
+            SpanningTreeNode node = nodes.poll();
+            this.doAddChildren(node, availableNodes);
+            for (SpanningTreeNode elem : node.getChildren()) {
+                nodes.offer(elem);
+            }
+        }
+    }
+
+    private void doAddChildren(SpanningTreeNode treeNode, List<NodeMetadata> availableNodes) {
+        availableNodes.removeIf(n -> n.getId() == treeNode.getNodeMetadata().getId());
+        Optional<Vertex> optional = this.getVertexList().stream()
+                .filter(v -> v.getNodeMetadata().getId() == treeNode.getNodeMetadata().getId()).findFirst();
+        if (optional.isPresent()) {
+            Vertex vertex = optional.get();
+            for (NodeMetadata node : vertex.getNeighbours()) {
+                if (availableNodes.stream().anyMatch(n -> n.getId() == node.getId())) {
+                    SpanningTreeNode toAdd = new SpanningTreeNode(node);
+                    treeNode.getChildren().add(toAdd);
+                    availableNodes.removeIf(n -> n.getId() == toAdd.getNodeMetadata().getId());
+                }
+            }
+        }
     }
 
     private void assignCluster() {
