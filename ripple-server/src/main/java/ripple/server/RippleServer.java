@@ -13,7 +13,7 @@ package ripple.server;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.hashing.Hashing;
 import ripple.server.core.Node;
-import ripple.server.core.overlay.ExpanderOverlay;
+import ripple.server.core.overlay.expander.ExpanderOverlay;
 import ripple.server.core.overlay.GossipOverlay;
 import ripple.server.core.overlay.StarOverlay;
 import ripple.server.core.overlay.hashing.HashingBasedOverlay;

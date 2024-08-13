@@ -89,7 +89,7 @@ public class SyncRequestHandler implements Handler {
         if (msg != null) {
             msg.setFromId(syncRequest.getFromId());
         }
-        
+
         Result result = this.getNode().propagateMessage(msg);
 
         SyncResponse syncResponse = new SyncResponse();
