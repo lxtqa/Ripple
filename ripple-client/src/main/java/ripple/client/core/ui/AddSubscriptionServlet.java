@@ -49,12 +49,15 @@ public class AddSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">订阅新配置</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">");
+        stringBuilder.append(this.getClient().getStringTable().addSubscription());
+        stringBuilder.append("</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 订阅新配置", "订阅新配置", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().addSubscription()
+                , this.getClient().getStringTable().addSubscription(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -78,7 +81,8 @@ public class AddSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 订阅新配置", "订阅新配置", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().addSubscription()
+                , this.getClient().getStringTable().addSubscription(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

@@ -15,8 +15,6 @@ import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
 import ripple.common.storage.Storage;
 
-import java.sql.Connection;
-
 /**
  * @author Zhen Tang
  */

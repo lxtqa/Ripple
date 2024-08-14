@@ -49,12 +49,15 @@ public class RemoveSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">取消订阅</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">");
+        stringBuilder.append(this.getClient().getStringTable().removeSubscription());
+        stringBuilder.append("</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().removeSubscription()
+                , this.getClient().getStringTable().removeSubscription(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -78,7 +81,8 @@ public class RemoveSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().removeSubscription()
+                , this.getClient().getStringTable().removeSubscription(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

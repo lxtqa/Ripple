@@ -44,9 +44,10 @@ public class GetSubscriptionServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
-                .append("当前服务器节点中共检索到 <strong>")
+                .append(this.getNode().getStringTable().totalNumberOfSubscriptions())
+                .append(" <strong>")
                 .append(count)
-                .append("</strong> 条订阅信息。")
+                .append("</strong>")
                 .append("\n");
         stringBuilder.append("                </p>\n");
 
@@ -54,15 +55,21 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
-            stringBuilder.append("                        <th>序号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().lineNumber());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>");
             stringBuilder.append(this.getNode().getStringTable().applicationName());
             stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>");
             stringBuilder.append(this.getNode().getStringTable().key());
             stringBuilder.append("</th>\n");
-            stringBuilder.append("                        <th>客户端地址</th>\n");
-            stringBuilder.append("                        <th>客户端API端口号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().clientIpAddress());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().clientApiPort());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -98,7 +105,8 @@ public class GetSubscriptionServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 查询订阅关系", "查询订阅关系", content, this.getNode().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().serverGetSubscription()
+                , this.getNode().getStringTable().serverGetSubscription(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

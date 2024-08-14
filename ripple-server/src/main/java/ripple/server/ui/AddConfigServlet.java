@@ -84,9 +84,9 @@ public class AddConfigServlet extends BaseServlet {
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ");
         if (success) {
-            stringBuilder.append("操作已成功完成。");
+            stringBuilder.append(this.getNode().getStringTable().success());
         } else {
-            stringBuilder.append("出现错误，请重试。");
+            stringBuilder.append(this.getNode().getStringTable().error());
         }
         stringBuilder.append("\n");
         stringBuilder.append("                </p>\n");

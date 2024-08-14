@@ -50,12 +50,16 @@ public class IncrementalUpdateServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"key\">基准版本</label>\n");
-        stringBuilder.append("                        <input id=\"key\" name=\"baseMessageUuid\" class=\"form-control\" type=\"text\" />\n");
+        stringBuilder.append("                        <label for=\"baseMessageUuid\">");
+        stringBuilder.append(this.getClient().getStringTable().baseVersion());
+        stringBuilder.append("</label>\n");
+        stringBuilder.append("                        <input id=\"baseMessageUuid\" name=\"baseMessageUuid\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"key\">原子操作</label>\n");
-        stringBuilder.append("                        <input id=\"key\" name=\"atomicOperation\" class=\"form-control\" type=\"text\" />\n");
+        stringBuilder.append("                        <label for=\"atomicOperation\">");
+        stringBuilder.append(this.getClient().getStringTable().atomicOperation());
+        stringBuilder.append("</label>\n");
+        stringBuilder.append("                        <input id=\"atomicOperation\" name=\"atomicOperation\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
         stringBuilder.append("                        <label for=\"value\">");
@@ -64,12 +68,15 @@ public class IncrementalUpdateServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"value\" name=\"value\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">增量更新</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">");
+        stringBuilder.append(this.getClient().getStringTable().incrementalUpdate());
+        stringBuilder.append("</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 增量更新", "增量更新", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().incrementalUpdate()
+                , this.getClient().getStringTable().incrementalUpdate(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -97,7 +104,8 @@ public class IncrementalUpdateServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 增量更新", "增量更新", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().incrementalUpdate()
+                , this.getClient().getStringTable().incrementalUpdate(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

@@ -37,19 +37,28 @@ public class ServerClusterServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
-                .append("当前服务器集群共包含 <strong>")
+                .append(this.getNode().getStringTable().totalNumberOfServers())
+                .append(" <strong>")
                 .append(this.getNode().getNodeList().size())
-                .append("</strong> 个节点。")
+                .append("</strong>")
                 .append("\n");
         stringBuilder.append("                </p>\n");
         if (this.getNode().getNodeList().size() > 0) {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
-            stringBuilder.append("                        <th>序号</th>\n");
-            stringBuilder.append("                        <th>服务器ID</th>\n");
-            stringBuilder.append("                        <th>服务器地址</th>\n");
-            stringBuilder.append("                        <th>服务器API端口号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().lineNumber());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().serverId());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().serverIpAddress());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().serverApiPort());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -79,7 +88,8 @@ public class ServerClusterServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 服务器集群信息", "服务器集群信息", content, this.getNode().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().serverCluster()
+                , this.getNode().getStringTable().serverCluster(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

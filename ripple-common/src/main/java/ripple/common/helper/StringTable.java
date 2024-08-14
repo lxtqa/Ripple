@@ -25,4 +25,86 @@ public interface StringTable {
     String htmlLanguage();
 
     String operationSubmitted();
+
+    String addSubscription();
+
+    String messageTypeDelete();
+
+    String messageTypeUpdate();
+
+    String messageTypeIncrementalUpdate();
+
+    String getConfig();
+
+    String totalNumberOfConfiguration();
+
+    String home();
+
+    String configManagement();
+
+    String modifyConfig();
+
+    String incrementalUpdate();
+
+    String removeConfig();
+
+    String subscriptionManagement();
+
+    String clientGetSubscription();
+
+    String removeSubscription();
+
+    String basicInformation();
+
+    String connectedServer();
+
+    String lineNumber();
+
+    String serverIpAddress();
+
+    String serverApiPort();
+
+    String serverUiPort();
+
+    String history();
+
+    String clientIpAddress();
+
+    String clientApiPort();
+
+    String clientUiPort();
+
+    String type();
+
+    String baseVersion();
+
+    String atomicOperation();
+
+    String lastUpdate();
+
+    String serverId();
+
+    String clientNumberOfSubscription();
+
+    String clientNumberOfServerConnection();
+
+    String success();
+
+    String error();
+
+    String serverGetSubscription();
+
+    String clusterManagement();
+
+    String serverCluster();
+
+    String connectedClients();
+
+    String ackServer();
+
+    String totalNumberOfClients();
+
+    String totalNumberOfSubscriptions();
+
+    String totalNumberOfServers();
 }

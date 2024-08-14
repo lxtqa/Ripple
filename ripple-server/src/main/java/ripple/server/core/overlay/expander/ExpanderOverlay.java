@@ -15,10 +15,10 @@ import org.slf4j.LoggerFactory;
 import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.NodeMetadata;
 import ripple.server.core.overlay.Overlay;
-import ripple.server.core.overlay.tree.CompleteTree;
 
-import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

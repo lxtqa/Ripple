@@ -35,17 +35,18 @@ public class HomeServlet extends BaseServlet {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("服务器 IP地址：").append(this.getNode().getAddress()).append("\n");
+        stringBuilder.append("                    ").append(this.getNode().getStringTable().serverIpAddress()).append(": ").append(this.getNode().getAddress()).append("\n");
         stringBuilder.append("                </p>\n");
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("服务器 API端口号：").append(this.getNode().getApiPort()).append("\n");
+        stringBuilder.append("                    ").append(this.getNode().getStringTable().serverApiPort()).append(": ").append(this.getNode().getApiPort()).append("\n");
         stringBuilder.append("                </p>\n");
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("服务器 UI端口号：").append(this.getNode().getUiPort()).append("\n");
+        stringBuilder.append("                    ").append(this.getNode().getStringTable().serverUiPort()).append(": ").append(this.getNode().getUiPort()).append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 主页", "主页", content, this.getNode().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().home()
+                , this.getNode().getStringTable().home(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

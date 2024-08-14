@@ -49,12 +49,15 @@ public class RemoveConfigServlet extends BaseServlet {
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">删除配置</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">");
+        stringBuilder.append(this.getClient().getStringTable().removeConfig());
+        stringBuilder.append("</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 删除配置", "删除配置", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().removeConfig()
+                , this.getClient().getStringTable().removeConfig(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -78,7 +81,8 @@ public class RemoveConfigServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 删除配置", "删除配置", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().removeConfig()
+                , this.getClient().getStringTable().removeConfig(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

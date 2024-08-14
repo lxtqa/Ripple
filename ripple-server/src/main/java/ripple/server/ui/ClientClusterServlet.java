@@ -37,18 +37,25 @@ public class ClientClusterServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
-                .append("共有 <strong>")
+                .append(this.getNode().getStringTable().totalNumberOfClients())
+                .append(" <strong>")
                 .append(this.getNode().getConnectedClients().size())
-                .append("</strong> 个客户端连接到当前服务器节点并订阅配置。")
+                .append("</strong>")
                 .append("\n");
         stringBuilder.append("                </p>\n");
         if (this.getNode().getConnectedClients().size() > 0) {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
-            stringBuilder.append("                        <th>序号</th>\n");
-            stringBuilder.append("                        <th>客户端地址</th>\n");
-            stringBuilder.append("                        <th>客户端API端口号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().lineNumber());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().clientIpAddress());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().clientApiPort());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -75,7 +82,8 @@ public class ClientClusterServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 已连接的客户端", "已连接的客户端", content, this.getNode().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().connectedClients()
+                , this.getNode().getStringTable().connectedClients(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

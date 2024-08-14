@@ -38,42 +38,50 @@ public class GetConfigServlet extends BaseServlet {
     }
 
     private String parseMessageType(String messageType) {
-        if (messageType.equals(Constants.MESSAGE_TYPE_DELETE)) {
-            return "删除";
-        } else if (messageType.equals(Constants.MESSAGE_TYPE_UPDATE)) {
-            return "更新";
-        } else if (messageType.equals(Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE)) {
-            return "增量更新";
+        switch (messageType) {
+            case Constants.MESSAGE_TYPE_DELETE:
+                return this.getNode().getStringTable().messageTypeDelete();
+            case Constants.MESSAGE_TYPE_UPDATE:
+                return this.getNode().getStringTable().messageTypeUpdate();
+            case Constants.MESSAGE_TYPE_INCREMENTAL_UPDATE:
+                return this.getNode().getStringTable().messageTypeIncrementalUpdate();
+            default:
+                return null;
         }
-        return null;
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.info("[GetConfigServlet] Receive GET request.");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
         List<Item> allConfigs = this.getNode().getAll();
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ")
-                .append("当前服务器节点本地存储中共检索到 <strong>")
-                .append(allConfigs.size())
-                .append("</strong> 条配置。")
-                .append("\n");
+        stringBuilder.append("                    ");
+        stringBuilder.append(this.getNode().getStringTable().totalNumberOfConfiguration());
+        stringBuilder.append(" <strong>");
+        stringBuilder.append(allConfigs.size());
+        stringBuilder.append("</strong>");
+        stringBuilder.append("\n");
         stringBuilder.append("                </p>\n");
         if (allConfigs.size() > 0) {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
-            stringBuilder.append("                        <th>序号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().lineNumber());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>");
             stringBuilder.append(this.getNode().getStringTable().applicationName());
             stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>");
             stringBuilder.append(this.getNode().getStringTable().key());
             stringBuilder.append("</th>\n");
-            stringBuilder.append("                        <th>历史记录</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().history());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -88,20 +96,21 @@ public class GetConfigServlet extends BaseServlet {
                 for (AbstractMessage message : messageList) {
                     history += "                            <p>";
                     history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
-                    history += "                                <span>类型: " + this.parseMessageType(message.getType()) + "; </span> <br />";
+                    history += "                                <span>" + this.getNode().getStringTable().type() + ": " + this.parseMessageType(message.getType()) + "; </span> <br />";
                     if (message instanceof UpdateMessage) {
                         history += "                                <span>" + this.getNode().getStringTable().value() + ": " + ((UpdateMessage) message).getValue() + "; </span> <br />";
                     } else if (message instanceof IncrementalUpdateMessage) {
-                        history += "                                <span>基准版本: " + ((IncrementalUpdateMessage) message).getBaseMessageUuid() + "; </span> <br />";
-                        history += "                                <span>原子操作: " + ((IncrementalUpdateMessage) message).getAtomicOperation() + "; </span> <br />";
+                        history += "                                <span>" + this.getNode().getStringTable().baseVersion() + ": " + ((IncrementalUpdateMessage) message).getBaseMessageUuid() + "; </span> <br />";
+                        history += "                                <span>" + this.getNode().getStringTable().atomicOperation() + ": " + ((IncrementalUpdateMessage) message).getAtomicOperation() + "; </span> <br />";
                         history += "                                <span>" + this.getNode().getStringTable().value() + ": " + ((IncrementalUpdateMessage) message).getValue() + "; </span> <br />";
                     }
-                    history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
-                    history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
+                    history += "                                <span>" + this.getNode().getStringTable().lastUpdate() + ": " + simpleDateFormat.format(message.getLastUpdate()) + "; </span> <br />";
+                    history += "                                <span>" + this.getNode().getStringTable().serverId() + ": " + message.getLastUpdateServerId() + "; </span> <br />";
+                    // TODO: Currently the complete ack information only stored in the source node of the message
                     if (message.getLastUpdateServerId() == this.getNode().getId()) {
                         Set<Integer> set = this.getNode().getStorage().getAckService().getAck(message.getUuid()).getAckNodes();
                         if (set != null) {
-                            history += "                                <span>已推送到的服务器ID: ";
+                            history += "                                <span>" + this.getNode().getStringTable().ackServer() + ": ";
                             for (Integer id : set) {
                                 history += id + " ";
                             }
@@ -133,7 +142,8 @@ public class GetConfigServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 查询配置", "查询配置", content, this.getNode().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().getConfig()
+                , this.getNode().getStringTable().getConfig(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

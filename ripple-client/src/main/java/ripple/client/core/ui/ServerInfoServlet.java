@@ -37,19 +37,28 @@ public class ServerInfoServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
         stringBuilder.append("                    ")
-                .append("当前客户端节点共连接到了 <strong>")
+                .append(this.getClient().getStringTable().clientNumberOfServerConnection())
+                .append(" <strong>")
                 .append(this.getClient().getServerConnections().size())
-                .append("</strong> 台服务器。")
+                .append("</strong>")
                 .append("\n");
         stringBuilder.append("                </p>\n");
         if (this.getClient().getSubscriptions().size() > 0) {
             stringBuilder.append("                <table class=\"table table-striped\">\n");
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
-            stringBuilder.append("                        <th>序号</th>\n");
-            stringBuilder.append("                        <th>服务器ID</th>\n");
-            stringBuilder.append("                        <th>服务器IP地址</th>\n");
-            stringBuilder.append("                        <th>服务器API端口号</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getClient().getStringTable().lineNumber());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getClient().getStringTable().serverId());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getClient().getStringTable().serverIpAddress());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getClient().getStringTable().serverApiPort());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
             stringBuilder.append("                    <tbody>\n");
@@ -79,7 +88,8 @@ public class ServerInfoServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 已连接的服务器", "已连接的服务器", content, this.getClient().getStringTable());
+        String pageContent = PageGenerator.buildPage("Ripple Client - " + this.getClient().getStringTable().connectedServer()
+                , this.getClient().getStringTable().connectedServer(), content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
