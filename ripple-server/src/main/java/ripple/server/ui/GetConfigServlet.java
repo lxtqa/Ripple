@@ -67,8 +67,12 @@ public class GetConfigServlet extends BaseServlet {
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
             stringBuilder.append("                        <th>序号</th>\n");
-            stringBuilder.append("                        <th>应用名称</th>\n");
-            stringBuilder.append("                        <th>键</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().applicationName());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().key());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>历史记录</th>\n");
             stringBuilder.append("                    </tr>\n");
             stringBuilder.append("                    </thead>\n");
@@ -86,11 +90,11 @@ public class GetConfigServlet extends BaseServlet {
                     history += "                                <span>UUID: " + message.getUuid() + "; </span> <br />";
                     history += "                                <span>类型: " + this.parseMessageType(message.getType()) + "; </span> <br />";
                     if (message instanceof UpdateMessage) {
-                        history += "                                <span>值: " + ((UpdateMessage) message).getValue() + "; </span> <br />";
+                        history += "                                <span>" + this.getNode().getStringTable().value() + ": " + ((UpdateMessage) message).getValue() + "; </span> <br />";
                     } else if (message instanceof IncrementalUpdateMessage) {
                         history += "                                <span>基准版本: " + ((IncrementalUpdateMessage) message).getBaseMessageUuid() + "; </span> <br />";
                         history += "                                <span>原子操作: " + ((IncrementalUpdateMessage) message).getAtomicOperation() + "; </span> <br />";
-                        history += "                                <span>值: " + ((IncrementalUpdateMessage) message).getValue() + "; </span> <br />";
+                        history += "                                <span>" + this.getNode().getStringTable().value() + ": " + ((IncrementalUpdateMessage) message).getValue() + "; </span> <br />";
                     }
                     history += "                                <span>最后修改时间: " + SimpleDateFormat.getDateTimeInstance().format(message.getLastUpdate()) + "; </span> <br />";
                     history += "                                <span>服务器ID: " + message.getLastUpdateServerId() + "; </span> <br />";
@@ -129,7 +133,7 @@ public class GetConfigServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 查询配置", "查询配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 查询配置", "查询配置", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

@@ -18,9 +18,11 @@ public class PageHelper {
 
     }
 
-    public static void appendHtmlStartTag(StringBuilder stringBuilder) {
+    public static void appendHtmlStartTag(StringBuilder stringBuilder, String language) {
         stringBuilder.append("<!DOCTYPE html>\n");
-        stringBuilder.append("<html lang=\"zh-CN\">\n");
+        stringBuilder.append("<html lang=\"");
+        stringBuilder.append(language);
+        stringBuilder.append("\">\n");
     }
 
     public static void appendHtmlEndTag(StringBuilder stringBuilder) {

@@ -75,7 +75,7 @@ public class ClientClusterServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 已连接的客户端", "已连接的客户端", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 已连接的客户端", "已连接的客户端", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

@@ -55,8 +55,12 @@ public class GetSubscriptionServlet extends BaseServlet {
             stringBuilder.append("                    <thead>\n");
             stringBuilder.append("                    <tr>\n");
             stringBuilder.append("                        <th>序号</th>\n");
-            stringBuilder.append("                        <th>应用名称</th>\n");
-            stringBuilder.append("                        <th>键</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().applicationName());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().key());
+            stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>客户端地址</th>\n");
             stringBuilder.append("                        <th>客户端API端口号</th>\n");
             stringBuilder.append("                    </tr>\n");
@@ -94,7 +98,7 @@ public class GetSubscriptionServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 查询订阅关系", "查询订阅关系", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 查询订阅关系", "查询订阅关系", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

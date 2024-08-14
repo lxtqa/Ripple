@@ -29,6 +29,9 @@ import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.entity.UpdateMessage;
+import ripple.common.helper.ChineseStringTable;
+import ripple.common.helper.EnglishStringTable;
+import ripple.common.helper.StringTable;
 import ripple.common.storage.Storage;
 import ripple.common.storage.sqlite.SqliteStorage;
 import ripple.common.tcp.message.Result;
@@ -94,6 +97,8 @@ public class Node {
     private boolean running;
 
     private double currentCpuLoad;
+
+    private StringTable stringTable;
 
     public ExecutorService getExecutorService() {
         return executorService;
@@ -255,11 +260,23 @@ public class Node {
         this.currentCpuLoad = currentCpuLoad;
     }
 
+    public StringTable getStringTable() {
+        return stringTable;
+    }
+
+    private void setStringTable(StringTable stringTable) {
+        this.stringTable = stringTable;
+    }
+
     public Node(int id, Overlay overlay, String storageLocation) {
         this(id, overlay, storageLocation, 0, 0);
     }
 
     public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort) {
+        this(id, overlay, storageLocation, apiPort, uiPort, "english");
+    }
+
+    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort, String language) {
         this.setExecutorService(Executors.newCachedThreadPool());
         this.setId(id);
         this.setOverlay(overlay);
@@ -276,6 +293,12 @@ public class Node {
         this.setClientListCache(new ClientListCache());
         this.setClientDispatcher(new EqualDivisionClientDispatcher(this));
         this.updateCpuLoad(1000);
+
+        if (language.equalsIgnoreCase("chinese")) {
+            this.setStringTable(new ChineseStringTable());
+        } else {
+            this.setStringTable(new EnglishStringTable());
+        }
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {

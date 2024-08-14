@@ -79,7 +79,7 @@ public class ServerInfoServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 已连接的服务器", "已连接的服务器", content);
+        String pageContent = PageGenerator.buildPage("Ripple Client - 已连接的服务器", "已连接的服务器", content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

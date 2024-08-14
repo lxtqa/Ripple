@@ -53,6 +53,9 @@ import ripple.common.entity.ClientMetadata;
 import ripple.common.entity.Item;
 import ripple.common.entity.NodeMetadata;
 import ripple.common.hashing.ModHashing;
+import ripple.common.helper.ChineseStringTable;
+import ripple.common.helper.EnglishStringTable;
+import ripple.common.helper.StringTable;
 import ripple.common.storage.Storage;
 import ripple.common.storage.sqlite.SqliteStorage;
 
@@ -94,8 +97,9 @@ public class RippleClient {
     private ClientListCache clientListCache;
     private Map<String, Queue<AbstractMessage>> pendingMessages;
     private Map<NodeMetadata, Double> serverCpuUsage;
+    private StringTable stringTable;
 
-    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
+    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation, String language) {
         this.setStorage(new SqliteStorage(storageLocation));
         this.setRunning(false);
         this.setNodeList(nodeList);
@@ -108,6 +112,15 @@ public class RippleClient {
         this.setPendingMessages(new ConcurrentHashMap<>());
         this.setWorker(new Worker(this));
         this.setServerCpuUsage(new ConcurrentHashMap<>());
+        if (language.equalsIgnoreCase("chinese")) {
+            this.setStringTable(new ChineseStringTable());
+        } else {
+            this.setStringTable(new EnglishStringTable());
+        }
+    }
+
+    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
+        this(nodeList, nodeSelector, storageLocation, "english");
     }
 
     public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
@@ -280,6 +293,14 @@ public class RippleClient {
 
     private void setServerCpuUsage(Map<NodeMetadata, Double> serverCpuUsage) {
         this.serverCpuUsage = serverCpuUsage;
+    }
+
+    public StringTable getStringTable() {
+        return stringTable;
+    }
+
+    private void setStringTable(StringTable stringTable) {
+        this.stringTable = stringTable;
     }
 
     public Item get(String applicationName, String key) {

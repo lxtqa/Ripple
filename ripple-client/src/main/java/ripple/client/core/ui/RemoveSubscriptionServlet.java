@@ -37,11 +37,15 @@ public class RemoveSubscriptionServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <form action=\"").append(Endpoint.UI_REMOVE_SUBSCRIPTION).append("\" method=\"post\">\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"applicationName\">应用名称</label>\n");
+        stringBuilder.append("                        <label for=\"applicationName\">");
+        stringBuilder.append(this.getClient().getStringTable().applicationName());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"applicationName\" name=\"applicationName\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"key\">键</label>\n");
+        stringBuilder.append("                        <label for=\"key\">");
+        stringBuilder.append(this.getClient().getStringTable().key());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
@@ -50,7 +54,7 @@ public class RemoveSubscriptionServlet extends BaseServlet {
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content);
+        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -68,11 +72,13 @@ public class RemoveSubscriptionServlet extends BaseServlet {
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <p>\n");
-        stringBuilder.append("                    ").append("操作已成功提交").append("\n");
+        stringBuilder.append("                    ");
+        stringBuilder.append(this.getClient().getStringTable().operationSubmitted());
+        stringBuilder.append("\n");
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content);
+        String pageContent = PageGenerator.buildPage("Ripple Client - 取消订阅", "取消订阅", content, this.getClient().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

@@ -45,7 +45,7 @@ public class HomeServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 主页", "主页", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 主页", "主页", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

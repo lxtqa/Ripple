@@ -37,24 +37,33 @@ public class AddConfigServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <form action=\"").append(Endpoint.UI_ADD_CONFIG).append("\" method=\"post\">\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"applicationName\">应用名称</label>\n");
+        stringBuilder.append("                        <label for=\"applicationName\">");
+        stringBuilder.append(this.getNode().getStringTable().applicationName());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"applicationName\" name=\"applicationName\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"key\">键</label>\n");
+        stringBuilder.append("                        <label for=\"key\">");
+        stringBuilder.append(this.getNode().getStringTable().key());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"value\">值</label>\n");
+        stringBuilder.append("                        <label for=\"value\">");
+        stringBuilder.append(this.getNode().getStringTable().value());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"value\" name=\"value\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">添加配置</button>\n");
+        stringBuilder.append("                        <button type=\"submit\" class=\"form-control btn btn-outline-primary\">");
+        stringBuilder.append(this.getNode().getStringTable().addConfig());
+        stringBuilder.append("</button>\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 添加配置", "添加配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().addConfig()
+                , this.getNode().getStringTable().addConfig(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -83,7 +92,8 @@ public class AddConfigServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 添加配置", "添加配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - " + this.getNode().getStringTable().addConfig()
+                , this.getNode().getStringTable().addConfig(), content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

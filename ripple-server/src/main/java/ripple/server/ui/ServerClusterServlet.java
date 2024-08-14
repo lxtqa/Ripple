@@ -79,7 +79,7 @@ public class ServerClusterServlet extends BaseServlet {
 
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 服务器集群信息", "服务器集群信息", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 服务器集群信息", "服务器集群信息", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

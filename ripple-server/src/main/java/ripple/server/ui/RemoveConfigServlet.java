@@ -37,11 +37,15 @@ public class RemoveConfigServlet extends BaseServlet {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("                <form action=\"").append(Endpoint.UI_REMOVE_CONFIG).append("\" method=\"post\">\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"applicationName\">应用名称</label>\n");
+        stringBuilder.append("                        <label for=\"applicationName\">");
+        stringBuilder.append(this.getNode().getStringTable().applicationName());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"applicationName\" name=\"applicationName\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
-        stringBuilder.append("                        <label for=\"key\">键</label>\n");
+        stringBuilder.append("                        <label for=\"key\">");
+        stringBuilder.append(this.getNode().getStringTable().key());
+        stringBuilder.append("</label>\n");
         stringBuilder.append("                        <input id=\"key\" name=\"key\" class=\"form-control\" type=\"text\" />\n");
         stringBuilder.append("                    </div>\n");
         stringBuilder.append("                    <div class=\"form-group\">\n");
@@ -50,7 +54,7 @@ public class RemoveConfigServlet extends BaseServlet {
         stringBuilder.append("                </form>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 删除配置", "删除配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 删除配置", "删除配置", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);
@@ -78,7 +82,7 @@ public class RemoveConfigServlet extends BaseServlet {
         stringBuilder.append("                </p>\n");
         String content = stringBuilder.toString();
 
-        String pageContent = PageGenerator.buildPage("Ripple Server - 删除配置", "删除配置", content);
+        String pageContent = PageGenerator.buildPage("Ripple Server - 删除配置", "删除配置", content, this.getNode().getStringTable());
 
         response.setContentType("text/html;charset=UTF-8");
         response.setStatus(HttpStatus.OK_200);

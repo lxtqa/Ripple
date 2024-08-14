@@ -11,6 +11,7 @@
 package ripple.client.core.ui;
 
 import ripple.common.helper.PageHelper;
+import ripple.common.helper.StringTable;
 
 /**
  * @author Zhen Tang
@@ -20,7 +21,7 @@ public final class PageGenerator {
 
     }
 
-    private static void appendSideBar(StringBuilder stringBuilder, String currentFunction) {
+    private static void appendSideBar(StringBuilder stringBuilder, String currentFunction, StringTable stringTable) {
         stringBuilder.append("        <nav class=\"col-md-2 d-none d-md-block bg-light sidebar\">\n");
         stringBuilder.append("            <div class=\"sidebar-sticky\">\n");
         stringBuilder.append("                <ul class=\"nav flex-column mb-2\">\n");
@@ -29,7 +30,7 @@ public final class PageGenerator {
         PageHelper.buildSidebarTitle(stringBuilder, "配置管理");
         stringBuilder.append("                <ul class=\"nav flex-column mb-2\">\n");
         PageHelper.buildSidebarItem(stringBuilder, "查询配置", Endpoint.UI_GET_CONFIG, "search", currentFunction);
-        PageHelper.buildSidebarItem(stringBuilder, "添加配置", Endpoint.UI_ADD_CONFIG, "file-plus", currentFunction);
+        PageHelper.buildSidebarItem(stringBuilder, stringTable.addConfig(), Endpoint.UI_ADD_CONFIG, "file-plus", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "修改配置", Endpoint.UI_MODIFY_CONFIG, "edit", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "增量更新", Endpoint.UI_INCREMENTAL_UPDATE, "edit-3", currentFunction);
         PageHelper.buildSidebarItem(stringBuilder, "删除配置", Endpoint.UI_REMOVE_CONFIG, "trash-2", currentFunction);
@@ -48,14 +49,14 @@ public final class PageGenerator {
         stringBuilder.append("        </nav>\n");
     }
 
-    public static String buildPage(String pageTitle, String currentFunction, String content) {
+    public static String buildPage(String pageTitle, String currentFunction, String content, StringTable stringTable) {
         StringBuilder stringBuilder = new StringBuilder();
-        PageHelper.appendHtmlStartTag(stringBuilder);
+        PageHelper.appendHtmlStartTag(stringBuilder, stringTable.htmlLanguage());
         PageHelper.appendHeadSection(stringBuilder, pageTitle);
         PageHelper.appendBodyStartTag(stringBuilder);
         PageHelper.appendNavigationBar(stringBuilder, "Ripple Client");
         PageHelper.appendDivStartTag(stringBuilder);
-        PageGenerator.appendSideBar(stringBuilder, currentFunction);
+        PageGenerator.appendSideBar(stringBuilder, currentFunction, stringTable);
         PageHelper.appendMainSection(stringBuilder, currentFunction, content);
         PageHelper.appendDivEndTag(stringBuilder);
         PageHelper.appendFeatherScriptSection(stringBuilder);
