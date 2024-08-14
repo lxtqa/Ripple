@@ -31,11 +31,18 @@ public class ExpanderOverlay implements Overlay {
     private int clusterCount;
     private List<Vertex> vertexList;
     private ConcurrentHashMap<NodeMetadata, SpanningTree> trees;
+    private BuildStrategy buildStrategy;
 
-    public ExpanderOverlay(int scale) {
+    public ExpanderOverlay(int scale, BuildStrategy strategy) {
         this.setScale(scale);
         this.setTrees(new ConcurrentHashMap<>());
+        this.setBuildStrategy(strategy);
     }
+
+    public ExpanderOverlay(int scale) {
+        this(scale, new ThreeLayerBuildStrategy());
+    }
+
 
     public int getScale() {
         return scale;
@@ -77,6 +84,14 @@ public class ExpanderOverlay implements Overlay {
         this.trees = trees;
     }
 
+    public BuildStrategy getBuildStrategy() {
+        return buildStrategy;
+    }
+
+    public void setBuildStrategy(BuildStrategy buildStrategy) {
+        this.buildStrategy = buildStrategy;
+    }
+
     @Override
     public void buildOverlay(List<NodeMetadata> nodeList) {
         this.setNodeList(nodeList);
@@ -95,83 +110,7 @@ public class ExpanderOverlay implements Overlay {
                 SpanningTree spanningTree = new SpanningTree(treeNode);
                 this.getTrees().put(nodeMetadata, spanningTree);
                 List<NodeMetadata> availableNodes = new ArrayList<>(this.getNodeList());
-                // this.bfsBuildOverlay(spanningTree, availableNodes);
-                this.threeLayerBuildOverlay(spanningTree, availableNodes);
-            }
-        }
-    }
-
-    private void threeLayerBuildOverlay(SpanningTree spanningTree, List<NodeMetadata> availableNodes) {
-        TreeNode root = spanningTree.getRoot();
-        spanningTree.getNodeList().add(root);
-        Set<Integer> taggedCluster = new HashSet<>();
-        taggedCluster.add(root.getVertex().getClusterId());
-
-        // First layer: outbound of the root node
-        availableNodes.removeIf(n -> n.getId() == root.getVertex().getNodeMetadata().getId());
-        for (Vertex vertex : root.getVertex().getNeighbours()) {
-            if ((vertex.getClusterId() == root.getVertex().getClusterId()
-                    || (vertex.getClusterId() != root.getVertex().getClusterId() && !taggedCluster.contains(vertex.getClusterId())))
-                    && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
-                TreeNode toAdd = new TreeNode(vertex);
-                root.getChildren().add(toAdd);
-                spanningTree.getNodeList().add(toAdd);
-                availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
-                if (vertex.getClusterId() != root.getVertex().getClusterId()) {
-                    taggedCluster.add(vertex.getClusterId());
-                }
-            }
-        }
-        // Second layer: cross cluster by other nodes
-        for (TreeNode child : root.getChildren()) {
-            for (Vertex vertex : child.getVertex().getNeighbours()) {
-                if ((vertex.getClusterId() != child.getVertex().getClusterId() && !taggedCluster.contains(vertex.getClusterId()))
-                        && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
-                    TreeNode toAdd = new TreeNode(vertex);
-                    child.getChildren().add(toAdd);
-                    spanningTree.getNodeList().add(toAdd);
-                    availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
-                    taggedCluster.add(vertex.getClusterId());
-                }
-            }
-        }
-        // Third layer: inside other clusters
-        List<TreeNode> nodes = new ArrayList<>(spanningTree.getNodeList());
-        for (TreeNode child : nodes) {
-            for (Vertex vertex : child.getVertex().getNeighbours()) {
-                if (vertex.getClusterId() == child.getVertex().getClusterId()
-                        && availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
-                    TreeNode toAdd = new TreeNode(vertex);
-                    child.getChildren().add(toAdd);
-                    spanningTree.getNodeList().add(toAdd);
-                    availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
-                }
-            }
-        }
-    }
-
-    private void bfsBuildOverlay(SpanningTree spanningTree, List<NodeMetadata> availableNodes) {
-        // Using BFS
-        Queue<TreeNode> nodes = new ArrayBlockingQueue<>(this.getNodeList().size());
-        nodes.offer(spanningTree.getRoot());
-        spanningTree.getNodeList().add(spanningTree.getRoot());
-        while (!nodes.isEmpty()) {
-            TreeNode node = nodes.poll();
-            this.doAddChildren(spanningTree, node, availableNodes);
-            for (TreeNode elem : node.getChildren()) {
-                nodes.offer(elem);
-            }
-        }
-    }
-
-    private void doAddChildren(SpanningTree spanningTree, TreeNode treeNode, List<NodeMetadata> availableNodes) {
-        availableNodes.removeIf(n -> n.getId() == treeNode.getVertex().getNodeMetadata().getId());
-        for (Vertex vertex : treeNode.getVertex().getNeighbours()) {
-            if (availableNodes.stream().anyMatch(n -> n.getId() == vertex.getNodeMetadata().getId())) {
-                TreeNode toAdd = new TreeNode(vertex);
-                treeNode.getChildren().add(toAdd);
-                spanningTree.getNodeList().add(toAdd);
-                availableNodes.removeIf(n -> n.getId() == toAdd.getVertex().getNodeMetadata().getId());
+                this.getBuildStrategy().buildOverlay(spanningTree, availableNodes);
             }
         }
     }
