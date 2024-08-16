@@ -80,6 +80,9 @@ public class GetConfigServlet extends BaseServlet {
             stringBuilder.append(this.getNode().getStringTable().key());
             stringBuilder.append("</th>\n");
             stringBuilder.append("                        <th>");
+            stringBuilder.append(this.getNode().getStringTable().value());
+            stringBuilder.append("</th>\n");
+            stringBuilder.append("                        <th>");
             stringBuilder.append(this.getNode().getStringTable().history());
             stringBuilder.append("</th>\n");
             stringBuilder.append("                    </tr>\n");
@@ -91,6 +94,7 @@ public class GetConfigServlet extends BaseServlet {
                 Item item = allConfigs.get(i);
                 List<AbstractMessage> messageList = this.getNode().getStorage().getMessageService()
                         .findMessages(item.getApplicationName(), item.getKey());
+                this.getNode().getResolver().merge(item, messageList);
 
                 String history = "";
                 for (AbstractMessage message : messageList) {
@@ -129,6 +133,9 @@ public class GetConfigServlet extends BaseServlet {
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
                         .append(item.getKey())
+                        .append("</td>\n");
+                stringBuilder.append("                        <td>")
+                        .append(item.getValue())
                         .append("</td>\n");
                 stringBuilder.append("                        <td>")
                         .append(history)

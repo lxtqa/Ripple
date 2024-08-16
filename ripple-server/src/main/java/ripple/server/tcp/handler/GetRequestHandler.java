@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -14,6 +14,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ripple.common.entity.AbstractMessage;
 import ripple.common.entity.DeleteMessage;
 import ripple.common.entity.IncrementalUpdateMessage;
 import ripple.common.entity.Item;
@@ -59,12 +60,15 @@ public class GetRequestHandler implements Handler {
                 , remoteAddress.getPort(), getRequest.getUuid(), getRequest.getApplicationName(), getRequest.getKey());
 
         Item item = this.getNode().get(getRequest.getApplicationName(), getRequest.getKey());
+        List<AbstractMessage> messageList = this.getNode().getStorage().getMessageService()
+                .findMessages(item.getApplicationName(), item.getKey());
+        this.getNode().getResolver().merge(item, messageList);
+
         List<GetResponseItem> history = new ArrayList<>();
-        for (Object object : this.getNode().getStorage().getMessageService()
-                .findMessages(item.getApplicationName(), item.getKey())) {
+        for (AbstractMessage abstractMessage : messageList) {
             GetResponseItem elem = new GetResponseItem();
-            if (object instanceof UpdateMessage) {
-                UpdateMessage updateMessage = (UpdateMessage) object;
+            if (abstractMessage instanceof UpdateMessage) {
+                UpdateMessage updateMessage = (UpdateMessage) abstractMessage;
                 elem.setMessageUuid(updateMessage.getUuid());
                 elem.setOperationType(updateMessage.getType());
                 elem.setApplicationName(updateMessage.getApplicationName());
@@ -72,16 +76,16 @@ public class GetRequestHandler implements Handler {
                 elem.setValue(updateMessage.getValue());
                 elem.setLastUpdate(updateMessage.getLastUpdate());
                 elem.setLastUpdateServerId(updateMessage.getLastUpdateServerId());
-            } else if (object instanceof DeleteMessage) {
-                DeleteMessage deleteMessage = (DeleteMessage) object;
+            } else if (abstractMessage instanceof DeleteMessage) {
+                DeleteMessage deleteMessage = (DeleteMessage) abstractMessage;
                 elem.setMessageUuid(deleteMessage.getUuid());
                 elem.setOperationType(deleteMessage.getType());
                 elem.setApplicationName(deleteMessage.getApplicationName());
                 elem.setKey(deleteMessage.getKey());
                 elem.setLastUpdate(deleteMessage.getLastUpdate());
                 elem.setLastUpdateServerId(deleteMessage.getLastUpdateServerId());
-            } else if (object instanceof IncrementalUpdateMessage) {
-                IncrementalUpdateMessage incrementalUpdateMessage = (IncrementalUpdateMessage) object;
+            } else if (abstractMessage instanceof IncrementalUpdateMessage) {
+                IncrementalUpdateMessage incrementalUpdateMessage = (IncrementalUpdateMessage) abstractMessage;
                 elem.setMessageUuid(incrementalUpdateMessage.getUuid());
                 elem.setOperationType(incrementalUpdateMessage.getType());
                 elem.setApplicationName(incrementalUpdateMessage.getApplicationName());
@@ -99,11 +103,12 @@ public class GetRequestHandler implements Handler {
         getResponse.setUuid(getRequest.getUuid());
         getResponse.setApplicationName(getRequest.getApplicationName());
         getResponse.setKey(getRequest.getKey());
+        getResponse.setValue(item.getValue());
         getResponse.setItems(history);
 
-        LOGGER.info("[GetRequestHandler] [{}:{}<-->{}:{}] Send GET response."
+        LOGGER.info("[GetRequestHandler] [{}:{}<-->{}:{}] Send GET response. value = {}"
                 , localAddress.getHostString(), localAddress.getPort()
-                , remoteAddress.getHostString(), remoteAddress.getPort());
+                , remoteAddress.getHostString(), remoteAddress.getPort(), item.getValue());
         return getResponse;
     }
 }

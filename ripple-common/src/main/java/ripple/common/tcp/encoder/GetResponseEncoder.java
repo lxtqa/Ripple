@@ -29,6 +29,7 @@ public class GetResponseEncoder implements Encoder {
         TypeHelper.writeUuid(getResponse.getUuid(), byteBuf);
         TypeHelper.writeString(getResponse.getApplicationName(), byteBuf);
         TypeHelper.writeString(getResponse.getKey(), byteBuf);
+        TypeHelper.writeString(getResponse.getValue(), byteBuf);
         int itemsCount = getResponse.getItems().size();
         byteBuf.writeInt(itemsCount);
         int i = 0;

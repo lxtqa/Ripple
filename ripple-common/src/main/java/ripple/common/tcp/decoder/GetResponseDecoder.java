@@ -32,6 +32,7 @@ public class GetResponseDecoder implements Decoder {
         getResponse.setUuid(TypeHelper.readUuid(byteBuf));
         getResponse.setApplicationName(TypeHelper.readString(byteBuf));
         getResponse.setKey(TypeHelper.readString(byteBuf));
+        getResponse.setValue(TypeHelper.readString(byteBuf));
         getResponse.setItems(new ArrayList<>());
         int itemsCount = byteBuf.readInt();
         int i = 0;

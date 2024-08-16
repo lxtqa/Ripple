@@ -32,6 +32,8 @@ import ripple.common.entity.UpdateMessage;
 import ripple.common.helper.ChineseStringTable;
 import ripple.common.helper.EnglishStringTable;
 import ripple.common.helper.StringTable;
+import ripple.common.resolver.LastWriteWinsResolver;
+import ripple.common.resolver.MessageBasedResolver;
 import ripple.common.storage.Storage;
 import ripple.common.storage.sqlite.SqliteStorage;
 import ripple.common.tcp.message.Result;
@@ -99,6 +101,7 @@ public class Node {
     private double currentCpuLoad;
 
     private StringTable stringTable;
+    private MessageBasedResolver resolver;
 
     public ExecutorService getExecutorService() {
         return executorService;
@@ -268,6 +271,14 @@ public class Node {
         this.stringTable = stringTable;
     }
 
+    public MessageBasedResolver getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(MessageBasedResolver resolver) {
+        this.resolver = resolver;
+    }
+
     public Node(int id, Overlay overlay, String storageLocation) {
         this(id, overlay, storageLocation, 0, 0);
     }
@@ -299,6 +310,8 @@ public class Node {
         } else {
             this.setStringTable(new EnglishStringTable());
         }
+
+        this.setResolver(new LastWriteWinsResolver());
     }
 
     private void registerServlet(ServletContextHandler servletContextHandler, Servlet servlet, String endpoint) {
@@ -321,6 +334,12 @@ public class Node {
 
     public Item get(String applicationName, String key) {
         return this.getStorage().getItemService().getItem(applicationName, key);
+    }
+
+    public Item getWithValue(String applicationName, String key) {
+        Item item = this.get(applicationName, key);
+        this.getResolver().merge(item, this.getStorage().getMessageService().findMessages(item.getApplicationName(), item.getKey()));
+        return item;
     }
 
     public List<Item> getAll() {

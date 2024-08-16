@@ -18,6 +18,7 @@ import java.util.Objects;
 public class Item {
     private String applicationName;
     private String key;
+    private String value;
 
     public String getApplicationName() {
         return applicationName;
@@ -33,6 +34,14 @@ public class Item {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
@@ -52,7 +61,7 @@ public class Item {
     public String toString() {
         return "Item{" +
                 "applicationName='" + applicationName + '\'' +
-                ", key='" + key + '\'' +
+                ", key='" + key + ", value='" + value + '\'' +
                 '}';
     }
 

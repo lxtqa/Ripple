@@ -56,6 +56,8 @@ import ripple.common.hashing.ModHashing;
 import ripple.common.helper.ChineseStringTable;
 import ripple.common.helper.EnglishStringTable;
 import ripple.common.helper.StringTable;
+import ripple.common.resolver.LastWriteWinsResolver;
+import ripple.common.resolver.MessageBasedResolver;
 import ripple.common.storage.Storage;
 import ripple.common.storage.sqlite.SqliteStorage;
 
@@ -98,6 +100,7 @@ public class RippleClient {
     private Map<String, Queue<AbstractMessage>> pendingMessages;
     private Map<NodeMetadata, Double> serverCpuUsage;
     private StringTable stringTable;
+    private MessageBasedResolver resolver;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation, String language) {
         this.setStorage(new SqliteStorage(storageLocation));
@@ -117,6 +120,7 @@ public class RippleClient {
         } else {
             this.setStringTable(new EnglishStringTable());
         }
+        this.setResolver(new LastWriteWinsResolver());
     }
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
@@ -303,12 +307,27 @@ public class RippleClient {
         this.stringTable = stringTable;
     }
 
+    public MessageBasedResolver getResolver() {
+        return resolver;
+    }
+
+    public void setResolver(MessageBasedResolver resolver) {
+        this.resolver = resolver;
+    }
+
     public Item get(String applicationName, String key) {
         if (!this.isRunning()) {
             this.start();
         }
         return this.refreshItem(applicationName, key);
     }
+
+    public Item getWithValue(String applicationName, String key) {
+        Item item = this.get(applicationName, key);
+        this.getResolver().merge(item, this.getStorage().getMessageService().findMessages(item.getApplicationName(), item.getKey()));
+        return item;
+    }
+
 
     public void fullyGet(String applicationName, String key) {
         if (!this.isRunning()) {

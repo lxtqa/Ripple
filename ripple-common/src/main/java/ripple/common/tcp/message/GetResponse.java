@@ -22,6 +22,7 @@ import java.util.List;
 public class GetResponse extends Message {
     private String applicationName;
     private String key;
+    private String value;
     private List<GetResponseItem> items;
 
     public String getApplicationName() {
@@ -38,6 +39,14 @@ public class GetResponse extends Message {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
     }
 
     public List<GetResponseItem> getItems() {
