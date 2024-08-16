@@ -53,7 +53,7 @@ public class DirBasedItemService implements ItemService {
 
         String encodedApplicationName = StorageHelper.encodeString(applicationName);
         String encodedKey = StorageHelper.encodeString(key);
-        Path itemPath = Paths.get(this.getStorage().getLocation(), encodedApplicationName, encodedKey);
+        Path itemPath = Paths.get(this.getStorage().getLocation(), "data", encodedApplicationName, encodedKey);
         if (Files.exists(itemPath)) {
             return new Item(applicationName, key);
         } else {
@@ -65,7 +65,7 @@ public class DirBasedItemService implements ItemService {
     public List<Item> getAllItems() {
         try {
             List<Item> ret = new ArrayList<>();
-            Path rootPath = Paths.get(this.getStorage().getLocation());
+            Path rootPath = Paths.get(this.getStorage().getLocation(), "data");
             Files.list(rootPath).forEach(file -> {
                 try {
                     if (Files.isDirectory(file)) {
@@ -98,7 +98,7 @@ public class DirBasedItemService implements ItemService {
         try {
             String encodedApplicationName = StorageHelper.encodeString(applicationName);
             String encodedKey = StorageHelper.encodeString(key);
-            Path applicationNamePath = Paths.get(this.getStorage().getLocation(), encodedApplicationName);
+            Path applicationNamePath = Paths.get(this.getStorage().getLocation(), "data", encodedApplicationName);
             Path keyPath = Paths.get(applicationNamePath.toString(), encodedKey);
             if (!Files.exists(applicationNamePath)) {
                 Files.createDirectories(applicationNamePath);

@@ -13,11 +13,16 @@ package ripple.common.storage.dir;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.entity.Ack;
 import ripple.common.storage.AckService;
+import ripple.common.storage.StorageHelper;
 import ripple.common.storage.sqlite.SqliteStorage;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -56,27 +61,78 @@ public class DirBasedAckService implements AckService {
         return this.getLocks().get(messageUuid);
     }
 
+    private Path getPath(UUID messageUuid) {
+        return Paths.get(this.getStorage().getLocation(), "ack", messageUuid.toString());
+    }
+
     @Override
     public boolean initAck(UUID messageUuid, List<Integer> nodeList) {
-        // TODO
-        return false;
+        synchronized (this.getLock(messageUuid)) {
+            try {
+                Ack ack = new Ack();
+                ack.setMessageUuid(messageUuid);
+                ack.setNodeList(new HashSet<>(nodeList));
+                ack.setAckNodes(new HashSet<>());
+                Path fileName = this.getPath(messageUuid);
+                String content = MAPPER.writeValueAsString(ack);
+                Files.write(fileName, content.getBytes(StandardCharsets.UTF_8));
+                return true;
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return false;
+            }
+        }
     }
 
     @Override
     public Ack getAck(UUID messageUuid) {
-        // TODO
-        return null;
+        synchronized (this.getLock(messageUuid)) {
+            try {
+                Path fileName = this.getPath(messageUuid);
+                if (!Files.exists(fileName)) {
+                    return null;
+                }
+                String content = new String(Files.readAllBytes(fileName), StandardCharsets.UTF_8);
+                return MAPPER.readValue(content, Ack.class);
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return null;
+            }
+        }
     }
 
     @Override
     public List<Ack> getAllAcks() {
-        // TODO
-        return Collections.emptyList();
+        try {
+            List<Ack> ret = new ArrayList<>();
+            Path root = Paths.get(this.getStorage().getLocation(), "ack");
+            if (Files.isDirectory(root)) {
+                Files.list(root).forEach(ack -> ret.add(this.getAck(UUID.fromString(ack.getFileName().toString()))));
+            }
+            return ret;
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
     @Override
     public boolean recordAck(UUID messageUuid, int serverId) {
-        // TODO
-        return false;
+        synchronized (this.getLock(messageUuid)) {
+            try {
+                Ack ack = this.getAck(messageUuid);
+                if (!ack.getAckNodes().contains(serverId)) {
+                    ack.getAckNodes().add(serverId);
+                }
+                String newAck = MAPPER.writeValueAsString(ack);
+                System.out.println(newAck);
+                Path fileName = this.getPath(messageUuid);
+                Files.write(fileName, newAck.getBytes(StandardCharsets.UTF_8));
+                return true;
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return false;
+            }
+        }
     }
 }

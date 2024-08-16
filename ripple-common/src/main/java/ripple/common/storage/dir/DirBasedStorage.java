@@ -91,6 +91,8 @@ public class DirBasedStorage implements Storage {
     private void init() {
         try {
             Files.createDirectories(Paths.get(this.getLocation()));
+            Files.createDirectories(Paths.get(this.getLocation(), "data"));
+            Files.createDirectories(Paths.get(this.getLocation(), "ack"));
         } catch (IOException exception) {
             exception.printStackTrace();
         }

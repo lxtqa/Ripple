@@ -45,7 +45,7 @@ public class DirBasedMessageService implements MessageService {
 
     private Path getFile(String applicationName, String key, UUID messageUuid, Date lastUpdate) {
         String fileName = messageUuid.toString() + "+" + lastUpdate.getTime();
-        return Paths.get(this.getStorage().getLocation(), StorageHelper.encodeString(applicationName)
+        return Paths.get(this.getStorage().getLocation(), "data", StorageHelper.encodeString(applicationName)
                 , StorageHelper.encodeString(key), fileName);
     }
 
@@ -70,7 +70,7 @@ public class DirBasedMessageService implements MessageService {
 
     private String doFindMessage(UUID messageUuid) {
         try {
-            Path root = Paths.get(this.getStorage().getLocation());
+            Path root = Paths.get(this.getStorage().getLocation(), "data");
             List<Path> applicationNames = Files.list(root).collect(Collectors.toList());
             for (Path applicationName : applicationNames) {
                 if (Files.isDirectory(applicationName)) {
@@ -109,7 +109,10 @@ public class DirBasedMessageService implements MessageService {
 
     @Override
     public List<AbstractMessage> findMessages(String applicationName, String key) {
-        Path messageRoot = Paths.get(this.getStorage().getLocation(), StorageHelper.encodeString(applicationName)
+        // TODO: Is it necessary to trigger recycling here
+        this.getStorage().getRecycleStrategy().recycle(applicationName, key);
+
+        Path messageRoot = Paths.get(this.getStorage().getLocation(), "data", StorageHelper.encodeString(applicationName)
                 , StorageHelper.encodeString(key));
         List<AbstractMessage> ret = new ArrayList<>();
         try {
