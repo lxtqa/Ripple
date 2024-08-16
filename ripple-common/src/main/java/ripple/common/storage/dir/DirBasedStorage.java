@@ -15,15 +15,24 @@ import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
 import ripple.common.storage.RecycleStrategy;
 import ripple.common.storage.Storage;
+import ripple.common.storage.sqlite.SqliteAckService;
+import ripple.common.storage.sqlite.SqliteItemService;
+import ripple.common.storage.sqlite.SqliteMaxNumberRecycleStrategy;
+import ripple.common.storage.sqlite.SqliteMessageService;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * @author Zhen Tang
  */
-public class DirectoryBasedStorage implements Storage {
+public class DirBasedStorage implements Storage {
     private String location;
     private ItemService itemService;
     private MessageService messageService;
     private AckService ackService;
+    private RecycleStrategy recycleStrategy;
 
     @Override
     public String getLocation() {
@@ -63,6 +72,28 @@ public class DirectoryBasedStorage implements Storage {
 
     @Override
     public RecycleStrategy getRecycleStrategy() {
-        return null;
+        return recycleStrategy;
+    }
+
+    public void setRecycleStrategy(RecycleStrategy recycleStrategy) {
+        this.recycleStrategy = recycleStrategy;
+    }
+
+    public DirBasedStorage(String location, int maxNumberOfMessagePerItem) {
+        this.setLocation(location);
+        this.setItemService(new DirBasedItemService(this));
+        this.setMessageService(new DirBasedMessageService(this));
+        this.setAckService(new DirBasedAckService(this));
+        this.setRecycleStrategy(new DirBasedMaxNumberRecycleStrategy(this, maxNumberOfMessagePerItem));
+        this.init();
+    }
+
+    private void init() {
+        // TODO
+        try {
+            Files.createDirectories(Paths.get(this.getLocation()));
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 }

@@ -24,6 +24,7 @@ public class PMBasedStorage implements Storage {
     private ItemService itemService;
     private MessageService messageService;
     private AckService ackService;
+    private RecycleStrategy recycleStrategy;
 
     @Override
     public String getLocation() {
@@ -63,6 +64,11 @@ public class PMBasedStorage implements Storage {
 
     @Override
     public RecycleStrategy getRecycleStrategy() {
-        return null;
+        return recycleStrategy;
     }
+
+    public void setRecycleStrategy(RecycleStrategy recycleStrategy) {
+        this.recycleStrategy = recycleStrategy;
+    }
+
 }

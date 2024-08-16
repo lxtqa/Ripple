@@ -12,6 +12,7 @@ package ripple.common.storage.dir;
 
 import ripple.common.entity.AbstractMessage;
 import ripple.common.storage.MessageService;
+import ripple.common.storage.sqlite.SqliteStorage;
 
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +21,21 @@ import java.util.UUID;
 /**
  * @author Zhen Tang
  */
-public class DirectoryBasedMessageService implements MessageService {
+public class DirBasedMessageService implements MessageService {
+    private DirBasedStorage storage;
+
+    public DirBasedStorage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(DirBasedStorage storage) {
+        this.storage = storage;
+    }
+
+    public DirBasedMessageService(DirBasedStorage storage) {
+        this.setStorage(storage);
+    }
+
     @Override
     public boolean newMessage(AbstractMessage message) {
         // TODO

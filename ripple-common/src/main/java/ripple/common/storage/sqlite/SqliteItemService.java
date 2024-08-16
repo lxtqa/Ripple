@@ -41,10 +41,10 @@ public class SqliteItemService implements ItemService {
 
     @Override
     public Item getItem(String applicationName, String key) {
-        // TODO: Is it necessary to trigger recycling here
-        this.getStorage().getRecycleStrategy().recycle(applicationName, key);
-
         try {
+            // TODO: Is it necessary to trigger recycling here
+            this.getStorage().getRecycleStrategy().recycle(applicationName, key);
+
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [item] WHERE [application_name] = ? AND [key] = ?;";
             PreparedStatement statement = connection.prepareStatement(sql);
