@@ -10,18 +10,9 @@
 
 package ripple.common.storage;
 
-
 /**
  * @author Zhen Tang
  */
-public interface Storage {
-    String getLocation();
-
-    ItemService getItemService();
-
-    MessageService getMessageService();
-
-    AckService getAckService();
-
-    RecycleStrategy getRecycleStrategy();
+public interface RecycleStrategy {
+    void recycle(String applicationName, String key);
 }

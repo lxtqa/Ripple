@@ -103,7 +103,7 @@ public class RippleClient {
     private MessageBasedResolver resolver;
 
     public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation, String language) {
-        this.setStorage(new SqliteStorage(storageLocation));
+        this.setStorage(new SqliteStorage(storageLocation, 3));
         this.setRunning(false);
         this.setNodeList(nodeList);
         this.setMappingCache(new ConcurrentHashMap<>());

@@ -13,6 +13,7 @@ package ripple.common.storage.pm;
 import ripple.common.storage.AckService;
 import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
+import ripple.common.storage.RecycleStrategy;
 import ripple.common.storage.Storage;
 
 /**
@@ -58,5 +59,10 @@ public class PMBasedStorage implements Storage {
 
     private void setAckService(AckService ackService) {
         this.ackService = ackService;
+    }
+
+    @Override
+    public RecycleStrategy getRecycleStrategy() {
+        return null;
     }
 }

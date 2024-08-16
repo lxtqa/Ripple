@@ -41,6 +41,9 @@ public class SqliteItemService implements ItemService {
 
     @Override
     public Item getItem(String applicationName, String key) {
+        // TODO: Is it necessary to trigger recycling here
+        this.getStorage().getRecycleStrategy().recycle(applicationName, key);
+
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [item] WHERE [application_name] = ? AND [key] = ?;";
@@ -77,6 +80,11 @@ public class SqliteItemService implements ItemService {
                 ret.add(item);
             }
             resultSet.close();
+
+            // TODO: Is it necessary to trigger recycling here
+            for (Item item : ret) {
+                this.getStorage().getRecycleStrategy().recycle(item.getApplicationName(), item.getKey());
+            }
             return ret;
         } catch (SQLException exception) {
             exception.printStackTrace();

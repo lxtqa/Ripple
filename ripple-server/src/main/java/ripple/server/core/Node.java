@@ -292,7 +292,7 @@ public class Node {
         this.setId(id);
         this.setOverlay(overlay);
         this.setTracker(new Tracker(this, overlay));
-        this.setStorage(new SqliteStorage(storageLocation));
+        this.setStorage(new SqliteStorage(storageLocation, 3));
         this.setHealthManager(new HealthManager(this));
         this.setWorker(new Worker(this));
 

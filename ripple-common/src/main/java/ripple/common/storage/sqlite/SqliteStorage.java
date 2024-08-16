@@ -13,6 +13,7 @@ package ripple.common.storage.sqlite;
 import ripple.common.storage.AckService;
 import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
+import ripple.common.storage.RecycleStrategy;
 import ripple.common.storage.Storage;
 
 import java.sql.Connection;
@@ -29,6 +30,7 @@ public class SqliteStorage implements Storage {
     private ItemService itemService;
     private MessageService messageService;
     private AckService ackService;
+    private RecycleStrategy recycleStrategy;
 
     @Override
     public String getLocation() {
@@ -74,11 +76,21 @@ public class SqliteStorage implements Storage {
         this.ackService = ackService;
     }
 
-    public SqliteStorage(String location) {
+    @Override
+    public RecycleStrategy getRecycleStrategy() {
+        return recycleStrategy;
+    }
+
+    public void setRecycleStrategy(RecycleStrategy recycleStrategy) {
+        this.recycleStrategy = recycleStrategy;
+    }
+
+    public SqliteStorage(String location, int maxNumberOfMessagePerItem) {
         this.setLocation(location);
         this.setItemService(new SqliteItemService(this));
         this.setMessageService(new SqliteMessageService(this));
         this.setAckService(new SqliteAckService(this));
+        this.setRecycleStrategy(new SqliteMaxNumberRecycleStrategy(this, maxNumberOfMessagePerItem));
         this.init();
     }
 

@@ -181,6 +181,9 @@ public class SqliteMessageService implements MessageService {
 
     @Override
     public List<AbstractMessage> findMessages(String applicationName, String key) {
+        // TODO: Is it necessary to trigger recycling here
+        this.getStorage().getRecycleStrategy().recycle(applicationName, key);
+
         try {
             Connection connection = this.getStorage().getConnection();
             String sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ?;";
