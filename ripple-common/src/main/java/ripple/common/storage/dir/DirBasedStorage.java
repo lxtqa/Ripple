@@ -89,7 +89,6 @@ public class DirBasedStorage implements Storage {
     }
 
     private void init() {
-        // TODO
         try {
             Files.createDirectories(Paths.get(this.getLocation()));
         } catch (IOException exception) {
