@@ -10,21 +10,111 @@
 
 package ripple.common.storage.pm;
 
+import java.nio.charset.StandardCharsets;
+
 /**
  * @author Zhen Tang
  */
 public class PMCacheAdapter {
+    private static boolean BypassPMCache;
+
     static {
-        System.loadLibrary("PMCacheAdapter");
+        try {
+            System.loadLibrary("PMCacheAdapter");
+            PMCacheAdapter.BypassPMCache = false;
+        } catch (UnsatisfiedLinkError exception) {
+            PMCacheAdapter.BypassPMCache = true;
+            System.out.println("Cannot find PMCache library, using filesystem based key-value storage.");
+        }
     }
 
-    public native long openCache(String location);
+    private long handle;
 
-    public native void closeCache(long handle);
+    public long getHandle() {
+        return handle;
+    }
+
+    public void setHandle(long handle) {
+        this.handle = handle;
+    }
+
+    private native byte[] cacheGet(byte[] key);
+
+    private native boolean cachePut(byte[] key, byte[] value);
+
+    private native boolean cacheDelete(byte[] key);
+
+    private native long openCache(String location);
+
+    private native void closeCache(long handle);
+
+    public void open(String location) {
+        if (!BypassPMCache) {
+            this.setHandle(this.openCache(location));
+        } else {
+            // TODO
+            System.out.println("Underlying open called.");
+        }
+    }
+
+    public void close() {
+        if (!BypassPMCache) {
+            this.closeCache(this.getHandle());
+        } else {
+            // TODO
+            System.out.println("Underlying close called.");
+        }
+    }
+
+    public byte[] get(byte[] key) {
+        if (!BypassPMCache) {
+            return this.cacheGet(key);
+        } else {
+            return this.underlyingGet(key);
+        }
+    }
+
+    public boolean put(byte[] key, byte[] value) {
+        if (!BypassPMCache) {
+            return this.cachePut(key, value);
+        } else {
+            return this.underlyingPut(key, value);
+        }
+    }
+
+    public boolean delete(byte[] key) {
+        if (!BypassPMCache) {
+            return this.cacheDelete(key);
+        } else {
+            return this.underlyingDelete(key);
+        }
+    }
+
+    private byte[] underlyingGet(byte[] key) {
+        // TODO
+        System.out.println("Underlying Get called. Key = " + new String(key, StandardCharsets.UTF_8));
+        return null;
+    }
+
+    private boolean underlyingPut(byte[] key, byte[] value) {
+        // TODO
+        System.out.println("Underlying Put called. Key = " + new String(key, StandardCharsets.UTF_8)
+                + ", Value = " + new String(value, StandardCharsets.UTF_8));
+        return false;
+    }
+
+    private boolean underlyingDelete(byte[] key) {
+        // TODO
+        System.out.println("Underlying Delete called. Key = " + new String(key, StandardCharsets.UTF_8));
+        return false;
+    }
 
     public static void main(String[] args) {
         PMCacheAdapter adapter = new PMCacheAdapter();
-        long handle = adapter.openCache("test");
-        adapter.closeCache(handle);
+        adapter.open("test");
+        adapter.get("test".getBytes(StandardCharsets.UTF_8));
+        adapter.put("testKey".getBytes(StandardCharsets.UTF_8), "testValue".getBytes(StandardCharsets.UTF_8));
+        adapter.delete("test".getBytes(StandardCharsets.UTF_8));
+        adapter.close();
     }
 }
