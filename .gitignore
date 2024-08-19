@@ -5,6 +5,9 @@ target/
 .idea/
 out/
 
+# JNI Header
+jni/
+
 *.iws
 *.iml
 *.ipr
