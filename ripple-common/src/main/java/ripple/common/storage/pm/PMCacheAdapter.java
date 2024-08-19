@@ -38,11 +38,11 @@ public class PMCacheAdapter {
         this.handle = handle;
     }
 
-    private native byte[] cacheGet(byte[] key);
+    private native byte[] cacheGet(long handle, byte[] key);
 
-    private native boolean cachePut(byte[] key, byte[] value);
+    private native boolean cachePut(long handle, byte[] key, byte[] value);
 
-    private native boolean cacheDelete(byte[] key);
+    private native boolean cacheDelete(long handle, byte[] key);
 
     private native long openCache(String location);
 
@@ -68,7 +68,7 @@ public class PMCacheAdapter {
 
     public byte[] get(byte[] key) {
         if (!BypassPMCache) {
-            return this.cacheGet(key);
+            return this.cacheGet(this.getHandle(), key);
         } else {
             return this.underlyingGet(key);
         }
@@ -76,7 +76,7 @@ public class PMCacheAdapter {
 
     public boolean put(byte[] key, byte[] value) {
         if (!BypassPMCache) {
-            return this.cachePut(key, value);
+            return this.cachePut(this.getHandle(), key, value);
         } else {
             return this.underlyingPut(key, value);
         }
@@ -84,7 +84,7 @@ public class PMCacheAdapter {
 
     public boolean delete(byte[] key) {
         if (!BypassPMCache) {
-            return this.cacheDelete(key);
+            return this.cacheDelete(this.getHandle(), key);
         } else {
             return this.underlyingDelete(key);
         }
@@ -111,10 +111,11 @@ public class PMCacheAdapter {
 
     public static void main(String[] args) {
         PMCacheAdapter adapter = new PMCacheAdapter();
-        adapter.open("test");
-        adapter.get("test".getBytes(StandardCharsets.UTF_8));
+        adapter.open("/mnt/pmem0/pool");
+        byte[] getResult = adapter.get("testKey".getBytes(StandardCharsets.UTF_8));
+        System.out.println(getResult == null ? "Get: null" : "Get: " + new String(getResult, StandardCharsets.UTF_8));
         adapter.put("testKey".getBytes(StandardCharsets.UTF_8), "testValue".getBytes(StandardCharsets.UTF_8));
-        adapter.delete("test".getBytes(StandardCharsets.UTF_8));
+        adapter.delete("testKey".getBytes(StandardCharsets.UTF_8));
         adapter.close();
     }
 }
