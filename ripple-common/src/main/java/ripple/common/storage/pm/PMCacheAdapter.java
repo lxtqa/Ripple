@@ -10,7 +10,13 @@
 
 package ripple.common.storage.pm;
 
+import ripple.common.storage.StorageHelper;
+
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * @author Zhen Tang
@@ -29,6 +35,8 @@ public class PMCacheAdapter {
     }
 
     private long handle;
+    private String cacheLocation;
+    private String storageLocation;
 
     public long getHandle() {
         return handle;
@@ -36,6 +44,22 @@ public class PMCacheAdapter {
 
     public void setHandle(long handle) {
         this.handle = handle;
+    }
+
+    public String getCacheLocation() {
+        return cacheLocation;
+    }
+
+    public void setCacheLocation(String cacheLocation) {
+        this.cacheLocation = cacheLocation;
+    }
+
+    public String getStorageLocation() {
+        return storageLocation;
+    }
+
+    public void setStorageLocation(String storageLocation) {
+        this.storageLocation = storageLocation;
     }
 
     private native byte[] cacheGet(long handle, byte[] key);
@@ -48,12 +72,18 @@ public class PMCacheAdapter {
 
     private native void closeCache(long handle);
 
-    public void open(String location) {
-        if (!BypassPMCache) {
-            this.setHandle(this.openCache(location));
-        } else {
-            // TODO
-            System.out.println("Underlying open called.");
+    public void open(String cacheLocation, String storageLocation) {
+        try {
+            this.setCacheLocation(cacheLocation);
+            this.setStorageLocation(storageLocation);
+            if (!BypassPMCache) {
+                this.setHandle(this.openCache(cacheLocation));
+            } else {
+                Files.createDirectories(Paths.get(storageLocation));
+                System.out.println("Underlying open called.");
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
         }
     }
 
@@ -61,14 +91,17 @@ public class PMCacheAdapter {
         if (!BypassPMCache) {
             this.closeCache(this.getHandle());
         } else {
-            // TODO
             System.out.println("Underlying close called.");
         }
     }
 
     public byte[] get(byte[] key) {
         if (!BypassPMCache) {
-            return this.cacheGet(this.getHandle(), key);
+            byte[] ret = this.cacheGet(this.getHandle(), key);
+            if (ret == null) {
+                return this.underlyingGet(key);
+            }
+            return ret;
         } else {
             return this.underlyingGet(key);
         }
@@ -91,31 +124,46 @@ public class PMCacheAdapter {
     }
 
     private byte[] underlyingGet(byte[] key) {
-        // TODO
-        System.out.println("Underlying Get called. Key = " + new String(key, StandardCharsets.UTF_8));
-        return null;
+        try {
+            String keyString = new String(key, StandardCharsets.UTF_8);
+            System.out.println("Underlying Get called. Key = " + keyString);
+            Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
+            if (Files.exists(fileName)) {
+                return Files.readAllBytes(fileName);
+            }
+            return null;
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return null;
+        }
     }
 
     private boolean underlyingPut(byte[] key, byte[] value) {
-        // TODO
-        System.out.println("Underlying Put called. Key = " + new String(key, StandardCharsets.UTF_8)
-                + ", Value = " + new String(value, StandardCharsets.UTF_8));
-        return false;
+        try {
+            String keyString = new String(key, StandardCharsets.UTF_8);
+            String valueString = new String(value, StandardCharsets.UTF_8);
+            Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
+            Files.write(fileName, value);
+            System.out.println("Underlying Put called. Key = " + keyString + ", Value = " + valueString);
+            return false;
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return false;
+        }
     }
 
     private boolean underlyingDelete(byte[] key) {
-        // TODO
-        System.out.println("Underlying Delete called. Key = " + new String(key, StandardCharsets.UTF_8));
-        return false;
-    }
-
-    public static void main(String[] args) {
-        PMCacheAdapter adapter = new PMCacheAdapter();
-        adapter.open("/mnt/pmem0/pool");
-        byte[] getResult = adapter.get("testKey".getBytes(StandardCharsets.UTF_8));
-        System.out.println(getResult == null ? "Get: null" : "Get: " + new String(getResult, StandardCharsets.UTF_8));
-        adapter.put("testKey".getBytes(StandardCharsets.UTF_8), "testValue".getBytes(StandardCharsets.UTF_8));
-        adapter.delete("testKey".getBytes(StandardCharsets.UTF_8));
-        adapter.close();
+        try {
+            String keyString = new String(key, StandardCharsets.UTF_8);
+            System.out.println("Underlying Delete called. Key = " + keyString);
+            Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
+            if (Files.exists(fileName)) {
+                return Files.deleteIfExists(fileName);
+            }
+            return true;
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            return false;
+        }
     }
 }
