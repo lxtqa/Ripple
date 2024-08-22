@@ -68,7 +68,6 @@ public class PMBasedItemService implements ItemService {
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-
     }
 
     private String getEncodedKey(String applicationName, String key) {
@@ -77,11 +76,18 @@ public class PMBasedItemService implements ItemService {
 
     @Override
     public Item getItem(String applicationName, String key) {
+        // TODO: Is it necessary to trigger recycling here
+        this.getStorage().getRecycleStrategy().recycle(applicationName, key);
+        return this.doGetItem(applicationName, key);
+    }
+
+    private Item doGetItem(String applicationName, String key) {
         try {
             String encodedKey = this.getEncodedKey(applicationName, key);
             byte[] valueBytes = this.getStorage().getPmCacheAdapter().get(encodedKey.getBytes(StandardCharsets.UTF_8));
             if (valueBytes != null) {
                 String value = new String(valueBytes, StandardCharsets.UTF_8);
+                System.out.println("doGetItem: " + value);
                 return MAPPER.readValue(value, Item.class);
             } else {
                 return null;
@@ -100,8 +106,14 @@ public class PMBasedItemService implements ItemService {
         } else {
             List<Item> ret = new ArrayList<>();
             for (ItemEntry entry : itemEntries) {
-                ret.add(this.getItem(entry.getApplicationName(), entry.getKey()));
+                ret.add(this.doGetItem(entry.getApplicationName(), entry.getKey()));
             }
+
+            // TODO: Is it necessary to trigger recycling here
+            for (Item item : ret) {
+                this.getStorage().getRecycleStrategy().recycle(item.getApplicationName(), item.getKey());
+            }
+
             return ret;
         }
     }
