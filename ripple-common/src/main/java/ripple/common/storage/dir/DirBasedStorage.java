@@ -15,10 +15,6 @@ import ripple.common.storage.ItemService;
 import ripple.common.storage.MessageService;
 import ripple.common.storage.RecycleStrategy;
 import ripple.common.storage.Storage;
-import ripple.common.storage.sqlite.SqliteAckService;
-import ripple.common.storage.sqlite.SqliteItemService;
-import ripple.common.storage.sqlite.SqliteMaxNumberRecycleStrategy;
-import ripple.common.storage.sqlite.SqliteMessageService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -96,5 +92,10 @@ public class DirBasedStorage implements Storage {
         } catch (IOException exception) {
             exception.printStackTrace();
         }
+    }
+
+    @Override
+    public void close() {
+
     }
 }

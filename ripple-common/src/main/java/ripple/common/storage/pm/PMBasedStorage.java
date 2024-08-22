@@ -16,15 +16,21 @@ import ripple.common.storage.MessageService;
 import ripple.common.storage.RecycleStrategy;
 import ripple.common.storage.Storage;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 /**
  * @author Zhen Tang
  */
 public class PMBasedStorage implements Storage {
     private String location;
+    private String cacheLocation;
     private ItemService itemService;
     private MessageService messageService;
     private AckService ackService;
     private RecycleStrategy recycleStrategy;
+    private PMCacheAdapter pmCacheAdapter;
 
     @Override
     public String getLocation() {
@@ -33,6 +39,14 @@ public class PMBasedStorage implements Storage {
 
     private void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCacheLocation() {
+        return cacheLocation;
+    }
+
+    public void setCacheLocation(String cacheLocation) {
+        this.cacheLocation = cacheLocation;
     }
 
     @Override
@@ -69,6 +83,39 @@ public class PMBasedStorage implements Storage {
 
     public void setRecycleStrategy(RecycleStrategy recycleStrategy) {
         this.recycleStrategy = recycleStrategy;
+    }
+
+    public PMCacheAdapter getPmCacheAdapter() {
+        return pmCacheAdapter;
+    }
+
+    public void setPmCacheAdapter(PMCacheAdapter pmCacheAdapter) {
+        this.pmCacheAdapter = pmCacheAdapter;
+    }
+
+    public PMBasedStorage(String location, String cacheLocation, int maxNumberOfMessagePerItem) {
+        this.setLocation(location);
+        this.setCacheLocation(cacheLocation);
+        this.setItemService(new PMBasedItemService(this));
+        this.setMessageService(new PMBasedMessageService(this));
+        this.setAckService(new PMBasedAckService(this));
+        this.setRecycleStrategy(new PMBasedMaxNumberRecycleStrategy(this, maxNumberOfMessagePerItem));
+        this.setPmCacheAdapter(new PMCacheAdapter());
+        this.init();
+    }
+
+    private void init() {
+        try {
+            Files.createDirectories(Paths.get(this.getLocation()));
+            this.getPmCacheAdapter().open(this.getCacheLocation(), this.getLocation());
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    @Override
+    public void close() {
+        this.getPmCacheAdapter().close();
     }
 
 }

@@ -2,7 +2,11 @@ package ripple.common.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ripple.common.entity.*;
+import ripple.common.entity.AbstractMessage;
+import ripple.common.entity.Constants;
+import ripple.common.entity.DeleteMessage;
+import ripple.common.entity.IncrementalUpdateMessage;
+import ripple.common.entity.UpdateMessage;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;

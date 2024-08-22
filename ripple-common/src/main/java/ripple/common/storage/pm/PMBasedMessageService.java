@@ -21,6 +21,20 @@ import java.util.UUID;
  * @author Zhen Tang
  */
 public class PMBasedMessageService implements MessageService {
+    private PMBasedStorage storage;
+
+    public PMBasedStorage getStorage() {
+        return storage;
+    }
+
+    public void setStorage(PMBasedStorage storage) {
+        this.storage = storage;
+    }
+
+    public PMBasedMessageService(PMBasedStorage storage) {
+        this.setStorage(storage);
+    }
+
     @Override
     public boolean newMessage(AbstractMessage message) {
         // TODO

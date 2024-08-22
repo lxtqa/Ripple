@@ -10,17 +10,51 @@
 
 package ripple.common.storage.pm;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.entity.Ack;
 import ripple.common.storage.AckService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author Zhen Tang
  */
 public class PMBasedAckService implements AckService {
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+    private PMBasedStorage storage;
+    private ConcurrentHashMap<UUID, Object> locks;
+
+    public PMBasedStorage getStorage() {
+        return storage;
+    }
+
+    private void setStorage(PMBasedStorage storage) {
+        this.storage = storage;
+    }
+
+    private ConcurrentHashMap<UUID, Object> getLocks() {
+        return locks;
+    }
+
+    private void setLocks(ConcurrentHashMap<UUID, Object> locks) {
+        this.locks = locks;
+    }
+
+    public PMBasedAckService(PMBasedStorage storage) {
+        this.setStorage(storage);
+        this.setLocks(new ConcurrentHashMap<>());
+    }
+
+    private synchronized Object getLock(UUID messageUuid) {
+        if (!this.getLocks().containsKey(messageUuid)) {
+            this.getLocks().put(messageUuid, new Object());
+        }
+        return this.getLocks().get(messageUuid);
+    }
+
     @Override
     public boolean initAck(UUID messageUuid, List<Integer> nodeList) {
         // TODO

@@ -10,7 +10,6 @@
 
 package ripple.common.storage.sqlite;
 
-import ripple.common.entity.Item;
 import ripple.common.storage.RecycleStrategy;
 
 import java.sql.Connection;

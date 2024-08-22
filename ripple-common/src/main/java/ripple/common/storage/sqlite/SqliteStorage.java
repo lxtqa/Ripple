@@ -141,6 +141,7 @@ public class SqliteStorage implements Storage {
         }
     }
 
+    @Override
     public void close() {
         try {
             if (this.getConnection() != null) {
