@@ -10,6 +10,8 @@
 
 package ripple.common.storage.pm;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ripple.common.storage.StorageHelper;
 
 import java.io.IOException;
@@ -22,6 +24,7 @@ import java.nio.file.Paths;
  * @author Zhen Tang
  */
 public class PMCacheAdapter {
+    private static final Logger LOGGER = LoggerFactory.getLogger(PMCacheAdapter.class);
     private static boolean BypassPMCache;
 
     static {
@@ -30,7 +33,7 @@ public class PMCacheAdapter {
             PMCacheAdapter.BypassPMCache = false;
         } catch (UnsatisfiedLinkError exception) {
             PMCacheAdapter.BypassPMCache = true;
-            System.out.println("Cannot find PMCache library, using filesystem based key-value storage.");
+            LOGGER.info("Cannot find PMCache library, using filesystem based key-value storage.");
         }
     }
 
@@ -80,7 +83,7 @@ public class PMCacheAdapter {
                 this.setHandle(this.openCache(cacheLocation));
             } else {
                 Files.createDirectories(Paths.get(storageLocation));
-                System.out.println("Underlying open called.");
+                LOGGER.info("Underlying open called.");
             }
         } catch (IOException exception) {
             exception.printStackTrace();
@@ -91,7 +94,7 @@ public class PMCacheAdapter {
         if (!BypassPMCache) {
             this.closeCache(this.getHandle());
         } else {
-            System.out.println("Underlying close called.");
+            LOGGER.info("Underlying close called.");
         }
     }
 
@@ -126,7 +129,7 @@ public class PMCacheAdapter {
     private byte[] underlyingGet(byte[] key) {
         try {
             String keyString = new String(key, StandardCharsets.UTF_8);
-            System.out.println("Underlying Get called. Key = " + keyString);
+            LOGGER.info("Underlying Get called. Key = {}", keyString);
             Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
             if (Files.exists(fileName)) {
                 return Files.readAllBytes(fileName);
@@ -144,8 +147,8 @@ public class PMCacheAdapter {
             String valueString = new String(value, StandardCharsets.UTF_8);
             Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
             Files.write(fileName, value);
-            System.out.println("Underlying Put called. Key = " + keyString + ", Value = " + valueString);
-            return false;
+            LOGGER.info("Underlying Put called. Key = {}, Value = {}", keyString, valueString);
+            return true;
         } catch (IOException exception) {
             exception.printStackTrace();
             return false;
@@ -155,7 +158,7 @@ public class PMCacheAdapter {
     private boolean underlyingDelete(byte[] key) {
         try {
             String keyString = new String(key, StandardCharsets.UTF_8);
-            System.out.println("Underlying Delete called. Key = " + keyString);
+            LOGGER.info("Underlying Delete called. Key = {}", keyString);
             Path fileName = Paths.get(this.getStorageLocation(), StorageHelper.encodeString(keyString));
             if (Files.exists(fileName)) {
                 return Files.deleteIfExists(fileName);

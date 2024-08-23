@@ -124,7 +124,6 @@ public class DirBasedAckService implements AckService {
                     ack.getAckNodes().add(serverId);
                 }
                 String newAck = MAPPER.writeValueAsString(ack);
-                System.out.println(newAck);
                 Path fileName = this.getPath(messageUuid);
                 Files.write(fileName, newAck.getBytes(StandardCharsets.UTF_8));
                 return true;

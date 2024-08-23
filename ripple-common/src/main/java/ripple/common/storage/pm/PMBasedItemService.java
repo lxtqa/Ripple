@@ -71,7 +71,7 @@ public class PMBasedItemService implements ItemService {
     }
 
     private String getEncodedKey(String applicationName, String key) {
-        return StorageHelper.encodeString(applicationName) + "-" + StorageHelper.encodeString(key);
+        return StorageHelper.encodeString(applicationName) + "+" + StorageHelper.encodeString(key);
     }
 
     @Override
@@ -87,7 +87,6 @@ public class PMBasedItemService implements ItemService {
             byte[] valueBytes = this.getStorage().getPmCacheAdapter().get(encodedKey.getBytes(StandardCharsets.UTF_8));
             if (valueBytes != null) {
                 String value = new String(valueBytes, StandardCharsets.UTF_8);
-                System.out.println("doGetItem: " + value);
                 return MAPPER.readValue(value, Item.class);
             } else {
                 return null;

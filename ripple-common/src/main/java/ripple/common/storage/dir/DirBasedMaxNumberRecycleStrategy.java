@@ -11,6 +11,15 @@
 package ripple.common.storage.dir;
 
 import ripple.common.storage.RecycleStrategy;
+import ripple.common.storage.StorageHelper;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.stream.Collectors;
 
 /**
  * @author Zhen Tang
@@ -42,6 +51,30 @@ public class DirBasedMaxNumberRecycleStrategy implements RecycleStrategy {
 
     @Override
     public synchronized void recycle(String applicationName, String key) {
-
+        Path messageRoot = Paths.get(this.getStorage().getLocation(), "data", StorageHelper.encodeString(applicationName)
+                , StorageHelper.encodeString(key));
+        PriorityQueue<Long> minHeap = new PriorityQueue<>();
+        try {
+            Files.list(messageRoot).forEach(elem -> {
+                String fileName = elem.getFileName().toString();
+                Long lastUpdate = Long.valueOf(fileName.substring(fileName.indexOf('+') + 1));
+                if (minHeap.size() < this.getMaxNumberOfMessages()) {
+                    minHeap.offer(lastUpdate);
+                } else if (minHeap.peek() < lastUpdate) {
+                    minHeap.poll();
+                    minHeap.offer(lastUpdate);
+                }
+            });
+            List<Path> messages = Files.list(messageRoot).collect(Collectors.toList());
+            for (Path message : messages) {
+                String fileName = message.getFileName().toString();
+                Long lastUpdate = Long.valueOf(fileName.substring(fileName.indexOf('+') + 1));
+                if (!minHeap.contains(lastUpdate)) {
+                    Files.deleteIfExists(message);
+                }
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
     }
 }

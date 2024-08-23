@@ -16,11 +16,8 @@ import ripple.common.entity.AbstractMessage;
 import ripple.common.storage.MessageService;
 import ripple.common.storage.StorageHelper;
 
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -46,7 +43,7 @@ public class PMBasedMessageService implements MessageService {
     }
 
     private String getEncodedKeyForMessageList(String applicationName, String key) {
-        return "messages-" + StorageHelper.encodeString(applicationName) + "-" + StorageHelper.encodeString(key);
+        return "messages+" + StorageHelper.encodeString(applicationName) + "+" + StorageHelper.encodeString(key);
     }
 
     private Set<UUID> getMessageUuidList(String applicationName, String key) {
@@ -56,7 +53,6 @@ public class PMBasedMessageService implements MessageService {
                     .get(this.getEncodedKeyForMessageList(applicationName, key).getBytes(StandardCharsets.UTF_8));
             if (valueBytes != null) {
                 String value = new String(valueBytes, StandardCharsets.UTF_8);
-                System.out.println("getMessageUuidList value: " + value);
                 return MAPPER.readValue(value, listType);
             } else {
                 return new HashSet<>();
@@ -79,7 +75,7 @@ public class PMBasedMessageService implements MessageService {
     }
 
     private String getKeyForMessage(UUID messageUuid) {
-        return "message-" + messageUuid.toString();
+        return "message+" + messageUuid.toString();
     }
 
     @Override

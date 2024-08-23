@@ -14,14 +14,9 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ripple.common.entity.Ack;
 import ripple.common.storage.AckService;
-import ripple.common.storage.StorageHelper;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,7 +61,7 @@ public class PMBasedAckService implements AckService {
     }
 
     private String getKeyForAck(UUID messageUuid) {
-        return "ack-" + messageUuid.toString();
+        return "ack+" + messageUuid.toString();
     }
 
     private Set<UUID> getAckList() {
