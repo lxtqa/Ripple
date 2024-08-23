@@ -46,7 +46,7 @@ public class PMBasedMessageService implements MessageService {
         return "messages+" + StorageHelper.encodeString(applicationName) + "+" + StorageHelper.encodeString(key);
     }
 
-    private Set<UUID> getMessageUuidList(String applicationName, String key) {
+    public Set<UUID> getMessageUuidList(String applicationName, String key) {
         try {
             JavaType listType = MAPPER.getTypeFactory().constructCollectionType(HashSet.class, UUID.class);
             byte[] valueBytes = this.getStorage().getPmCacheAdapter()
@@ -63,7 +63,7 @@ public class PMBasedMessageService implements MessageService {
         }
     }
 
-    private void writeMessageUuidList(String applicationName, String key, Set<UUID> uuids) {
+    public void writeMessageUuidList(String applicationName, String key, Set<UUID> uuids) {
         try {
             String value = MAPPER.writeValueAsString(uuids);
             this.getStorage().getPmCacheAdapter()
@@ -74,7 +74,7 @@ public class PMBasedMessageService implements MessageService {
         }
     }
 
-    private String getKeyForMessage(UUID messageUuid) {
+    public String getKeyForMessage(UUID messageUuid) {
         return "message+" + messageUuid.toString();
     }
 

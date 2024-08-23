@@ -10,7 +10,18 @@
 
 package ripple.common.storage.pm;
 
+import ripple.common.entity.AbstractMessage;
 import ripple.common.storage.RecycleStrategy;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author Zhen Tang
@@ -42,6 +53,33 @@ public class PMBasedMaxNumberRecycleStrategy implements RecycleStrategy {
 
     @Override
     public synchronized void recycle(String applicationName, String key) {
-
+        Set<UUID> messageList = ((PMBasedMessageService) this.getStorage().getMessageService()).getMessageUuidList(applicationName, key);
+        if (messageList == null) {
+            return;
+        }
+        PriorityQueue<Long> minHeap = new PriorityQueue<>();
+        List<AbstractMessage> messages = new ArrayList<>();
+        for (UUID uuid : messageList) {
+            AbstractMessage message = this.getStorage().getMessageService().getMessageByUuid(uuid);
+            Long lastUpdate = message.getLastUpdate().getTime();
+            if (minHeap.size() < this.getMaxNumberOfMessages()) {
+                minHeap.offer(lastUpdate);
+            } else if (minHeap.peek() < lastUpdate) {
+                minHeap.poll();
+                minHeap.offer(lastUpdate);
+            }
+            messages.add(message);
+        }
+        Set<UUID> newMessageList = new HashSet<>();
+        for (AbstractMessage message : messages) {
+            if (!minHeap.contains(message.getLastUpdate().getTime())) {
+                String messageKey = ((PMBasedMessageService) this.getStorage().getMessageService()).getKeyForMessage(message.getUuid());
+                this.getStorage().getPmCacheAdapter().delete(messageKey.getBytes(StandardCharsets.UTF_8));
+                System.out.println("Removing " + message.getLastUpdate());
+            } else {
+                newMessageList.add(message.getUuid());
+            }
+        }
+        ((PMBasedMessageService) this.getStorage().getMessageService()).writeMessageUuidList(applicationName, key, newMessageList);
     }
 }
