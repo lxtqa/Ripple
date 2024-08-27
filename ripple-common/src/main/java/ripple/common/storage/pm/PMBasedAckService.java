@@ -161,8 +161,25 @@ public class PMBasedAckService implements AckService {
                 }
                 String value = MAPPER.writeValueAsString(ack);
                 String key = this.getKeyForAck(messageUuid);
-                this.getStorage().getPmCacheAdapter().put(key.getBytes(StandardCharsets.UTF_8), value.getBytes(StandardCharsets.UTF_8));
-                return true;
+                return this.getStorage().getPmCacheAdapter().put(key.getBytes(StandardCharsets.UTF_8)
+                        , value.getBytes(StandardCharsets.UTF_8));
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return false;
+            }
+        }
+    }
+
+    @Override
+    public boolean removeAck(UUID messageUuid) {
+        synchronized (this.getLock(messageUuid)) {
+            try {
+                Ack ack = this.getAck(messageUuid);
+                if (ack == null) {
+                    return false;
+                }
+                String key = this.getKeyForAck(messageUuid);
+                return this.getStorage().getPmCacheAdapter().delete(key.getBytes(StandardCharsets.UTF_8));
             } catch (Exception exception) {
                 exception.printStackTrace();
                 return false;

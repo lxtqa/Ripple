@@ -26,4 +26,6 @@ public interface AckService {
     List<Ack> getAllAcks();
 
     boolean recordAck(UUID messageUuid, int serverId);
+
+    boolean removeAck(UUID messageUuid);
 }

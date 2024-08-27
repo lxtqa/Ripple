@@ -15,8 +15,6 @@ import ripple.common.storage.RecycleStrategy;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -75,7 +73,7 @@ public class PMBasedMaxNumberRecycleStrategy implements RecycleStrategy {
             if (!minHeap.contains(message.getLastUpdate().getTime())) {
                 String messageKey = ((PMBasedMessageService) this.getStorage().getMessageService()).getKeyForMessage(message.getUuid());
                 this.getStorage().getPmCacheAdapter().delete(messageKey.getBytes(StandardCharsets.UTF_8));
-                System.out.println("Removing " + message.getLastUpdate());
+                this.getStorage().getAckService().removeAck(message.getUuid());
             } else {
                 newMessageList.add(message.getUuid());
             }

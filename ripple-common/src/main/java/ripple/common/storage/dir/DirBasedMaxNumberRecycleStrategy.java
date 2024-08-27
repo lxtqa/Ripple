@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -69,8 +70,10 @@ public class DirBasedMaxNumberRecycleStrategy implements RecycleStrategy {
             for (Path message : messages) {
                 String fileName = message.getFileName().toString();
                 Long lastUpdate = Long.valueOf(fileName.substring(fileName.indexOf('+') + 1));
+                UUID messageUuid = UUID.fromString(fileName.substring(0, fileName.indexOf('+')));
                 if (!minHeap.contains(lastUpdate)) {
                     Files.deleteIfExists(message);
+                    this.getStorage().getAckService().removeAck(messageUuid);
                 }
             }
         } catch (IOException exception) {

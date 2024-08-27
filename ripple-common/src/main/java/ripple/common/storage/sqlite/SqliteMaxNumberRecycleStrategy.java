@@ -17,6 +17,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author Zhen Tang
@@ -50,24 +53,53 @@ public class SqliteMaxNumberRecycleStrategy implements RecycleStrategy {
     public synchronized void recycle(String applicationName, String key) {
         try {
             Connection connection = this.getStorage().getConnection();
-            String sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ? ORDER BY [last_update] DESC LIMIT ?;";
+            String sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ?;";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, applicationName);
             statement.setString(2, key);
-            statement.setInt(3, this.getMaxNumberOfMessages());
             ResultSet resultSet = statement.executeQuery();
+            Set<UUID> before = new HashSet<>();
+            while (resultSet.next()) {
+                before.add(UUID.fromString(resultSet.getString("uuid")));
+            }
+            resultSet.close();
+
+            connection = this.getStorage().getConnection();
+            sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ? ORDER BY [last_update] DESC LIMIT ?;";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, applicationName);
+            statement.setString(2, key);
+            statement.setInt(3, this.getMaxNumberOfMessages());
+            resultSet = statement.executeQuery();
             Date lastUpdate = null;
             while (resultSet.next()) {
                 lastUpdate = new Date(resultSet.getLong("last_update"));
             }
             resultSet.close();
             if (lastUpdate != null) {
-                String deleteSql = "DELETE FROM [message] WHERE [item_application_name] = ? AND [item_key] = ? AND [last_update] < ?";
-                PreparedStatement deleteStatement = connection.prepareStatement(deleteSql);
-                deleteStatement.setString(1, applicationName);
-                deleteStatement.setString(2, key);
-                deleteStatement.setLong(3, lastUpdate.getTime());
-                deleteStatement.executeUpdate();
+                sql = "DELETE FROM [message] WHERE [item_application_name] = ? AND [item_key] = ? AND [last_update] < ?";
+                statement = connection.prepareStatement(sql);
+                statement.setString(1, applicationName);
+                statement.setString(2, key);
+                statement.setLong(3, lastUpdate.getTime());
+                statement.executeUpdate();
+            }
+
+            sql = "SELECT * FROM [message] WHERE [item_application_name] = ? AND [item_key] = ?;";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, applicationName);
+            statement.setString(2, key);
+            resultSet = statement.executeQuery();
+            Set<UUID> after = new HashSet<>();
+            while (resultSet.next()) {
+                after.add(UUID.fromString(resultSet.getString("uuid")));
+            }
+            resultSet.close();
+
+            for (UUID messageUuid : before) {
+                if (!after.contains(messageUuid)) {
+                    this.getStorage().getAckService().removeAck(messageUuid);
+                }
             }
         } catch (SQLException exception) {
             exception.printStackTrace();

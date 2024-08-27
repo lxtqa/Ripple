@@ -155,4 +155,25 @@ public class SqliteAckService implements AckService {
             }
         }
     }
+
+    @Override
+    public boolean removeAck(UUID messageUuid) {
+        synchronized (this.getLock(messageUuid)) {
+            try {
+                Ack ack = this.getAck(messageUuid);
+                if (ack == null) {
+                    return false;
+                }
+                Connection connection = this.getStorage().getConnection();
+                String sql = "DELETE FROM [ack] WHERE [message_uuid] = ?;";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, messageUuid.toString());
+                int count = statement.executeUpdate();
+                return count == 1;
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                return false;
+            }
+        }
+    }
 }

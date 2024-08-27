@@ -79,10 +79,10 @@ public class PMCacheAdapter {
         try {
             this.setCacheLocation(cacheLocation);
             this.setStorageLocation(storageLocation);
+            Files.createDirectories(Paths.get(storageLocation));
             if (!BypassPMCache) {
                 this.setHandle(this.openCache(cacheLocation));
             } else {
-                Files.createDirectories(Paths.get(storageLocation));
                 LOGGER.info("Underlying open called.");
             }
         } catch (IOException exception) {
@@ -156,6 +156,7 @@ public class PMCacheAdapter {
     }
 
     private boolean underlyingDelete(byte[] key) {
+        // TODO: Fix this
         try {
             String keyString = new String(key, StandardCharsets.UTF_8);
             LOGGER.info("Underlying Delete called. Key = {}", keyString);
