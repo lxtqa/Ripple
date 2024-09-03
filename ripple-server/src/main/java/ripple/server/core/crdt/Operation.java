@@ -8,7 +8,7 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.server.core.resolver;
+package ripple.server.core.crdt;
 
 import java.util.Date;
 import java.util.UUID;

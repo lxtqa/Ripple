@@ -1,4 +1,4 @@
-// Copyright (c) 2023 Institute of Software, Chinese Academy of Sciences
+// Copyright (c) 2024 Institute of Software, Chinese Academy of Sciences
 // Ripple is licensed under Mulan PSL v2.
 // You can use this software according to the terms and conditions of the Mulan PSL v2.
 // You may obtain a copy of Mulan PSL v2 at:
@@ -8,22 +8,23 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.server.core.resolver;
+package ripple.common.storage.ft;
 
-import ripple.common.entity.Item;
+import java.util.List;
 
 /**
- * Public interface for a state based conflict resolver.
- *
  * @author Zhen Tang
  */
-public interface StateBasedConflictResolver {
-    /**
-     * Apply target state on local data replica and resolve conflicts for concurrent updates
-     *
-     * @param current current value of the item
-     * @param target  target value of the item
-     */
-    void merge(Item current, Item target);
-}
+public interface ReplicaStrategy {
+    int getCount();
 
+    void setLocations(List<String> locations);
+
+    String read(String key);
+
+    String readAndRepair(String key);
+
+    void write(String key, String value);
+
+    void delete(String key);
+}

@@ -8,21 +8,20 @@
 // MERCHANTABILITY OR FIT FOR A PARTICULAR PURPOSE.
 // See the Mulan PSL v2 for more details.
 
-package ripple.server.core.resolver;
-
-import ripple.common.entity.Item;
+package ripple.server.core.crdt;
 
 /**
- * Public interface for a operation based conflict resolver.
+ * Type of atomic operations
  *
  * @author Zhen Tang
  */
-public interface OperationBasedConflictResolver {
+public enum OperationType {
     /**
-     * Apply target operation on local data replica and resolve conflicts for concurrent operations
-     *
-     * @param current current value of the item
-     * @param toApply the operation to apply
+     * Add a new entry to a specific item
      */
-    void merge(Item current, Operation toApply);
+    ADD_ENTRY,
+    /**
+     * Remove an entry from a specific item
+     */
+    REMOVE_ENTRY,
 }

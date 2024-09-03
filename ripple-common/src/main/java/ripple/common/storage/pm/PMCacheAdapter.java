@@ -156,7 +156,6 @@ public class PMCacheAdapter {
     }
 
     private boolean underlyingDelete(byte[] key) {
-        // TODO: Fix this
         try {
             String keyString = new String(key, StandardCharsets.UTF_8);
             LOGGER.info("Underlying Delete called. Key = {}", keyString);
