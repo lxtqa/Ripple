@@ -45,29 +45,17 @@ public class FileBasedSignatureStrategy implements SignatureStrategy {
         }
     }
 
-    private byte[] calculateSignature(byte[] value) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
-            return digest.digest(value);
-        } catch (NoSuchAlgorithmException exception) {
-            return null;
-        }
-    }
-
-    private String getSignatureFileName(String key) {
-        return key + ".signature";
-    }
-
     @Override
     public String read(String key) {
         try {
             Path fileName = Paths.get(this.getLocation(), key);
-            if (!Files.exists(fileName)) {
+            Path signatureFileName = Paths.get(this.getLocation(), SignatureHelper.getSignatureFileName(key));
+            if (!Files.exists(fileName) || !Files.exists(signatureFileName)) {
                 return null;
             }
             byte[] value = Files.readAllBytes(fileName);
-            byte[] digest = this.calculateSignature(value);
-            byte[] digestInDisk = Files.readAllBytes(Paths.get(this.getLocation(), this.getSignatureFileName(key)));
+            byte[] digest = SignatureHelper.calculateSignature(value);
+            byte[] digestInDisk = Files.readAllBytes(signatureFileName);
             if (!Arrays.equals(digest, digestInDisk)) {
                 return null;
             }
@@ -81,11 +69,12 @@ public class FileBasedSignatureStrategy implements SignatureStrategy {
     @Override
     public void write(String key, String value) {
         try {
-            Path fileName = Paths.get(location, key);
+            Path fileName = Paths.get(this.getLocation(), key);
+            Path signatureFileName = Paths.get(this.getLocation(), SignatureHelper.getSignatureFileName(key));
             byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
             Files.write(fileName, valueBytes);
-            byte[] digest = this.calculateSignature(valueBytes);
-            Files.write(Paths.get(this.getLocation(), this.getSignatureFileName(key)), digest);
+            byte[] digest = SignatureHelper.calculateSignature(valueBytes);
+            Files.write(signatureFileName, digest);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -95,7 +84,7 @@ public class FileBasedSignatureStrategy implements SignatureStrategy {
     public void delete(String key) {
         try {
             Path fileName = Paths.get(this.getLocation(), key);
-            Path signatureFileName = Paths.get(this.getLocation(), this.getSignatureFileName(key));
+            Path signatureFileName = Paths.get(this.getLocation(), SignatureHelper.getSignatureFileName(key));
             if (Files.exists(fileName)) {
                 Files.deleteIfExists(fileName);
             }
