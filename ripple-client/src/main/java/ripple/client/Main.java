@@ -52,6 +52,10 @@ public class Main {
             LOGGER.info("[Main] Missing parameter: nodeSelector (-DnodeSelector). Using HASHING selector.");
             nodeSelector = "hashing";
         }
+        if (!nodeSelector.equals("hashing") && !nodeSelector.equals("loadbalance")) {
+            LOGGER.info("[Main] Incorrect parameter value: nodeSelector (-DnodeSelector). Allowed: hashing, loadbalance. Using HASHING selector.");
+            nodeSelector = "hashing";
+        }
 
         String nodes = System.getProperty("nodes");
         if (nodes == null) {
@@ -107,21 +111,19 @@ public class Main {
                 LOGGER.info("[Main] Missing parameter: cpuThreshold for LOAD_BALANCED selector (-DcpuThreshold). Using default: " + defaultCpuThreshold);
                 cpuThreshold = defaultCpuThreshold;
             }
-            client = new RippleClient(nodeList, new LoadBalancedSelector(new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor))
-                    , Double.parseDouble(backupRatio), Double.parseDouble(cpuThreshold)), storageLocation);
+            LoadBalancedSelector selector = new LoadBalancedSelector(new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor))
+                    , Double.parseDouble(backupRatio), Double.parseDouble(cpuThreshold));
+            client = new RippleClient(nodeList, selector, storageLocation);
+            selector.setRippleClient(client);
         }
-        if (client != null) {
-            client.setUiPort(Integer.parseInt(uiPort));
-            client.setApiPort(Integer.parseInt(apiPort));
-        }
-        if (client != null) {
-            client.start();
-            LOGGER.info("[Main] Ripple Client started. The API port is {}. The UI port is {}. The storage location is {}."
-                    , client.getApiPort(), client.getUiPort(), client.getStorage().getLocation());
-            LOGGER.info("[Main] Nodes in the server cluster:");
-            for (NodeMetadata nodeMetadata : client.getNodeList()) {
-                LOGGER.info("[Main] --> Id = {}, Address = {}, API port = {}", nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
-            }
+        client.setUiPort(Integer.parseInt(uiPort));
+        client.setApiPort(Integer.parseInt(apiPort));
+        client.start();
+        LOGGER.info("[Main] Ripple Client started. The API port is {}. The UI port is {}. The storage location is {}."
+                , client.getApiPort(), client.getUiPort(), client.getStorage().getLocation());
+        LOGGER.info("[Main] Nodes in the server cluster:");
+        for (NodeMetadata nodeMetadata : client.getNodeList()) {
+            LOGGER.info("[Main] --> Id = {}, Address = {}, API port = {}", nodeMetadata.getId(), nodeMetadata.getAddress(), nodeMetadata.getPort());
         }
     }
 }
