@@ -115,6 +115,8 @@ public class RippleClient {
         this.setPendingMessages(new ConcurrentHashMap<>());
         this.setWorker(new Worker(this));
         this.setServerCpuUsage(new ConcurrentHashMap<>());
+        this.setApiPort(0);
+        this.setUiPort(0);
         if (language.equalsIgnoreCase("chinese")) {
             this.setStringTable(new ChineseStringTable());
         } else {
@@ -151,7 +153,7 @@ public class RippleClient {
         return uiPort;
     }
 
-    private void setUiPort(int uiPort) {
+    public void setUiPort(int uiPort) {
         this.uiPort = uiPort;
     }
 
@@ -549,7 +551,7 @@ public class RippleClient {
 
             this.setServer(new Server());
             ServerConnector serverConnector = new ServerConnector(this.getServer());
-            serverConnector.setPort(0);
+            serverConnector.setPort(this.getUiPort());
             this.getServer().setConnectors(new Connector[]{serverConnector});
             ServletContextHandler servletContextHandler = new ServletContextHandler();
             this.registerHandlers(servletContextHandler);

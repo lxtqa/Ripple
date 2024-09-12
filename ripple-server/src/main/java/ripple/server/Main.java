@@ -25,9 +25,6 @@ public class Main {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        // 以默认端口启动，数据库位于同目录下：java -jar -Did="1" -Dprotocol="tree" -Dbranch="3" -Dnodes="[id]:[address]:[port],2:192.168.1.3:2345" ripple-server.jar
-        // 以指定端口和数据库文件位置启动：java -DapiPort=xxx -DuiPort=xxx -DstorageLocation=xxx -jar ripple-server.jar
-
         String storageLocation = System.getProperty("storageLocation");
         if (storageLocation == null) {
             String defaultStorageLocation = "database.sqlite";
