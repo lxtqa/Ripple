@@ -116,13 +116,17 @@ public class SyncRequestHandler implements Handler {
         Result result = this.applyMessage(msg);
 
         // For logging
-        boolean loadTestEnabled = false;
-        if (loadTestEnabled) {
-            long endTime = System.currentTimeMillis();
-            String[] source = syncRequest.getValue().split(" ");
-            long startTime = Long.parseLong(source[2]);
-            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                    + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From SYNC.");
+        try {
+            boolean loadTestEnabled = false;
+            if (loadTestEnabled) {
+                long endTime = System.currentTimeMillis();
+                String[] source = syncRequest.getValue().split(" ");
+                long startTime = Long.parseLong(source[2]);
+                System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                        + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From SYNC.");
+            }
+        } catch (NumberFormatException ignored) {
+
         }
 
         SyncResponse syncResponse = new SyncResponse();

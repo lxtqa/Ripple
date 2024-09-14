@@ -117,13 +117,17 @@ public class DispatchRequestHandler implements Handler {
         }
 
         // For logging
-        boolean loadTestEnabled = true;
-        if (loadTestEnabled) {
-            long endTime = System.currentTimeMillis();
-            String[] source = dispatchRequest.getValue().split(" ");
-            long startTime = Long.parseLong(source[2]);
-            System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
-                    + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
+        try {
+            boolean loadTestEnabled = false;
+            if (loadTestEnabled) {
+                long endTime = System.currentTimeMillis();
+                String[] source = dispatchRequest.getValue().split(" ");
+                long startTime = Long.parseLong(source[2]);
+                System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                        + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
+            }
+        } catch (NumberFormatException ignored) {
+
         }
 
         DispatchResponse dispatchResponse = new DispatchResponse();
