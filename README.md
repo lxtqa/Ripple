@@ -1,6 +1,6 @@
 # Ripple
 
-A flexible pub-sub system for large scale clusters
+A flexible pub-sub system for large-scale clusters
 
 - [Ripple](#ripple)
   - [Quick start](#quick-start)
@@ -94,7 +94,7 @@ After subscribing, you may add/modify configuration from the web-based console o
 
 See [Quick start](#requirements) for instructions.
 
-1. Maven
+2. Maven
 
 Download and extract files.
 ```shell
@@ -367,12 +367,17 @@ Modify the `ripple.client.core.tcp.handler.DispatchRequestHandler` and `ripple.c
 
 ```java
 // For logging
-boolean loadTestEnabled = true;
-if (loadTestEnabled) {
-    long endTime = System.currentTimeMillis();
-    String[] source = dispatchRequest.getValue().split(" ");
-    long startTime = Long.parseLong(source[2]);
-    System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis())) + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
+try {
+    boolean loadTestEnabled = true;
+    if (loadTestEnabled) {
+        long endTime = System.currentTimeMillis();
+        String[] source = syncRequest.getValue().split(" ");
+        long startTime = Long.parseLong(source[2]);
+        System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
+                + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
+    }
+} catch (NumberFormatException ignored) {
+
 }
 ```
 
@@ -382,6 +387,7 @@ Finally, save the console output to file for further analysis.
 
 You can simply extract latency from the console output and save the timestamp and latency in a csv format.
 ```java
+List<String> pushing = new ArrayList<>();
 pushing.add("timestamp,second,latency");
 for (String line : content) {
     if (line.contains("] Received: ")) {
