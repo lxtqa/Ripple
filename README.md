@@ -350,14 +350,16 @@ Then, you may control specific clients in the `rippleClients` and act as the pub
 You may record the timestamp of sending requests as a part of the payload, and calcualte the latency in the handlers of the clients. For example, to randomly select a client from the cluster, creating a value with timestamp, and the publish it in the speed of 5 req/s, lasting for 120 seconds.
 
 ```java
-int qps=5;
-int duration=120;
+int qps = 5;
+int duration = 120;
+int payloadSize = 1024;
 int sleepTime = 1000 / qps;
+Random random = new Random();
 int i = 0;
 for (i = 0; i < duration * qps; i++) {
     RippleClient client = clientCluster.get(random.nextInt(clientCluster.size()));
     long currentTime = System.currentTimeMillis();
-    String value = (currentTime - startTime) + " " + (int) Math.floor((currentTime - startTime + 0.0) / 1000) + " " + currentTime + " " + "payload";
+    String value = (currentTime - startTime) + " " + (int) Math.floor((currentTime - startTime + 0.0) / 1000) + " " + currentTime + " " + generatePayload(payloadSize);
     client.put("testApp", "test", value);
     Thread.sleep(sleepTime);
 }
@@ -371,7 +373,7 @@ try {
     boolean loadTestEnabled = true;
     if (loadTestEnabled) {
         long endTime = System.currentTimeMillis();
-        String[] source = syncRequest.getValue().split(" ");
+        String[] source = dispatchRequest.getValue().split(" ");
         long startTime = Long.parseLong(source[2]);
         System.out.println("[" + simpleDateFormat.format(new Date(System.currentTimeMillis()))
                 + "] Received: " + source[0] + "," + source[1] + "," + (endTime - startTime) + "ms. From DISPATCH.");
@@ -391,8 +393,7 @@ List<String> pushing = new ArrayList<>();
 pushing.add("timestamp,second,latency");
 for (String line : content) {
     if (line.contains("] Received: ")) {
-        pushing.add(line.substring(line.indexOf("] ") + 2, line.indexOf("ms"))
-                .replace("Received: ", ""));
+        pushing.add(line.substring(line.indexOf("] ") + 2, line.indexOf("ms")).replace("Received: ", ""));
     }
 }
 ```
