@@ -38,6 +38,8 @@ For Ubuntu/Debian
 apt-get install openjdk-8-jdk
 ```
 
+For Windows or Mac, please download the installation files from Oracle website (`https://www.oracle.com/java/technologies/downloads/`).
+
 Confirm with `java -version` command.
 
 ### Download the package
@@ -71,6 +73,8 @@ Simply use `kill` command or `Ctrl+C` to stop the server.
 
 The web-based console are located in: `http://127.0.0.1:4001`, `http://127.0.0.1:4002`, `http://127.0.0.1:4003`, which can be used to manage configurations.
 
+> Known issues: please confirm that there is only one active ip for the server node, i.e., please disable other network connections in OS to guarantee that ripple-server is binded to correct address.
+
 ### Start the clients
 Run the following command to start a client connected to the server cluster above.
 ```shell
@@ -81,6 +85,8 @@ java -jar -DapiPort=5001 -DuiPort=6001 -DstorageLocation=client-1.db -Dnodes="1:
 Simply use `kill` command or `Ctrl+C` to stop the client.
 
 The web-based console is located in: `http://127.0.0.1:6001`, which can be used to manage configurations.
+
+> Known issues: please confirm that there is only one active ip for the client node, i.e., please disable other network connections in OS to guarantee that ripple-client is binded to correct address.
 
 ### Publish/Subscribe
 Simply use the web-based console of the client to subscribe/unsubscribe specific topics, providing the application name and the key.
