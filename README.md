@@ -73,7 +73,7 @@ Simply use `kill` command or `Ctrl+C` to stop the server.
 
 The web-based console are located in: `http://127.0.0.1:4001`, `http://127.0.0.1:4002`, `http://127.0.0.1:4003`, which can be used to manage configurations.
 
-> Known issues: please confirm that there is only one active ip for the server node, i.e., please disable other network connections in OS to guarantee that ripple-server is binded to correct address.
+> Known issues: As Ripple simply binds IP address to `0.0.0.0:port`, please confirm that there is only one active IP address for the node or provide correct IP address in the node list. A simple way is to disable other network connections in OS.
 
 ### Start the clients
 Run the following command to start a client connected to the server cluster above.
@@ -86,7 +86,7 @@ Simply use `kill` command or `Ctrl+C` to stop the client.
 
 The web-based console is located in: `http://127.0.0.1:6001`, which can be used to manage configurations.
 
-> Known issues: please confirm that there is only one active ip for the client node, i.e., please disable other network connections in OS to guarantee that ripple-client is binded to correct address.
+> Known issues: As Ripple simply binds IP address to `0.0.0.0:port`, please confirm that there is only one active IP address for the node or provide correct IP address in the node list. A simple way is to disable other network connections in OS.
 
 ### Publish/Subscribe
 Simply use the web-based console of the client to subscribe/unsubscribe specific topics, providing the application name and the key.
