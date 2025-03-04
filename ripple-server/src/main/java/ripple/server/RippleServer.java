@@ -39,12 +39,20 @@ public class RippleServer {
         return new RippleServer(new Node(id, new StarOverlay(), storageLocation, apiPort, uiPort));
     }
 
+    public static RippleServer starProtocol(int id, String storageLocation, int apiPort, int uiPort, String language) {
+        return new RippleServer(new Node(id, new StarOverlay(), storageLocation, apiPort, uiPort,language));
+    }
+
     public static RippleServer treeProtocol(int id, String storageLocation, int branch) {
         return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation));
     }
 
     public static RippleServer treeProtocol(int id, String storageLocation, int apiPort, int uiPort, int branch) {
         return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, apiPort, uiPort));
+    }
+
+    public static RippleServer treeProtocol(int id, String storageLocation, int apiPort, int uiPort, int branch, String language) {
+        return new RippleServer(new Node(id, new TreeOverlay(branch), storageLocation, apiPort, uiPort, language));
     }
 
     public static RippleServer expanderProtocol(int id, String storageLocation, int scale) {
@@ -55,6 +63,10 @@ public class RippleServer {
         return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, apiPort, uiPort));
     }
 
+    public static RippleServer expanderProtocol(int id, String storageLocation, int apiPort, int uiPort, int scale, String language) {
+        return new RippleServer(new Node(id, new ExpanderOverlay(scale), storageLocation, apiPort, uiPort, language));
+    }
+
     public static RippleServer gossipProtocol(int id, String storageLocation, int fanout) {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation));
     }
@@ -63,12 +75,20 @@ public class RippleServer {
         return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, apiPort, uiPort));
     }
 
+    public static RippleServer gossipProtocol(int id, String storageLocation, int apiPort, int uiPort, int fanout, String language) {
+        return new RippleServer(new Node(id, new GossipOverlay(fanout), storageLocation, apiPort, uiPort , language));
+    }
+
     public static RippleServer hashingBasedProtocol(int id, String storageLocation, Hashing hashing) {
         return new RippleServer(new Node(id, new HashingBasedOverlay(hashing), storageLocation));
     }
 
     public static RippleServer hashingBasedProtocol(int id, String storageLocation, int apiPort, int uiPort, Hashing hashing) {
         return new RippleServer(new Node(id, new HashingBasedOverlay(hashing), storageLocation, apiPort, uiPort));
+    }
+
+    public static RippleServer hashingBasedProtocol(int id, String storageLocation, int apiPort, int uiPort, Hashing hashing, String language) {
+        return new RippleServer(new Node(id, new HashingBasedOverlay(hashing), storageLocation, apiPort, uiPort, language));
     }
 
     public Node getNode() {

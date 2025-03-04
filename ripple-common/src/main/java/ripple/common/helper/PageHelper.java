@@ -43,12 +43,12 @@ public class PageHelper {
         stringBuilder.append("    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"/>\n");
         stringBuilder.append("    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>\n");
         stringBuilder.append("    <title>").append(title).append("</title>\n");
-        stringBuilder.append("    <link href=\"https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/css/bootstrap.min.css\" rel=\"stylesheet\">\n");
+        stringBuilder.append("    <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css\" rel=\"stylesheet\">\n");
         stringBuilder.append("    <link href=\"/Style\" rel=\"stylesheet\" type=\"text/css\"/>\n");
-        stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/jquery/3.5.1/jquery.slim.min.js\"></script>\n");
-        stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/popper.js/2.5.4/umd/popper.min.js\"></script>\n");
-        stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.5.3/js/bootstrap.min.js\"></script>\n");
-        stringBuilder.append("    <script src=\"https://cdn.bootcdn.net/ajax/libs/feather-icons/4.28.0/feather.min.js\"></script>\n");
+        stringBuilder.append("    <script src=\"https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js\"></script>\n");
+        stringBuilder.append("    <script src=\"https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js\"></script>\n");
+        stringBuilder.append("    <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js\"></script>\n");
+        stringBuilder.append("    <script src=\"https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/feather.min.js\"></script>\n");
         stringBuilder.append("</head>\n");
     }
 
