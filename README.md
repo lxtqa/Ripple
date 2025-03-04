@@ -62,24 +62,22 @@ Run the following command to start a 3-node server cluster in a machine. Please 
 ```shell
 cd ripple-server
 # Node 1
-java -jar -Did=1 -DapiPort=3001 -DuiPort=4001 -DstorageLocation=node-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
+java -jar -Did=1 -Daddress="127.0.0.1" -DapiPort=3001 -DuiPort=4001 -DstorageLocation=node-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
 # Node 2
-java -jar -Did=2 -DapiPort=3002 -DuiPort=4002 -DstorageLocation=node-2.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
+java -jar -Did=2 -Daddress="127.0.0.1" -DapiPort=3002 -DuiPort=4002 -DstorageLocation=node-2.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
 # Node 3
-java -jar -Did=3 -DapiPort=3003 -DuiPort=4003 -DstorageLocation=node-3.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
+java -jar -Did=3 -Daddress="127.0.0.1" -DapiPort=3003 -DuiPort=4003 -DstorageLocation=node-3.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -Dprotocol=hashing ripple-server.jar &
 ```
 
 Simply use `kill` command or `Ctrl+C` to stop the server.
 
 The web-based console are located in: `http://127.0.0.1:4001`, `http://127.0.0.1:4002`, `http://127.0.0.1:4003`, which can be used to manage configurations.
 
-> Known issues: As Ripple simply binds IP address to `0.0.0.0:port`, please confirm that there is only one active IP address for the node or provide correct IP address in the node list. A simple way is to disable other network connections in OS.
-
 ### Start the clients
 Run the following command to start a client connected to the server cluster above.
 ```shell
 cd ripple-client
-java -jar -DapiPort=5001 -DuiPort=6001 -DstorageLocation=client-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -DnodeSelector=loadbalance ripple-client.jar
+java -jar -Daddress="127.0.0.1" -DapiPort=5001 -DuiPort=6001 -DstorageLocation=client-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -DnodeSelector=loadbalance ripple-client.jar
 ```
 
 Simply use `kill` command or `Ctrl+C` to stop the client.
@@ -151,7 +149,8 @@ java -jar -Darg1=value1 -Darg2=value2 ripple-server.jar
 
 The arguments supported are:
 
-- (Required) Use the `-Did=[id]` argument to specify the id for different nodees.
+- (Required) Use the `-Did=[id]` argument to specify the id for different nodes.
+- (Required) Use the `-Daddress=[address]` argument to specify the local address to bind.
 - (Required) Use the `-Dnodes=[nodes]` argument to specify the node list inside the cluster. The address of a node is given by the format `id:address:port`, and addresses are split by commas.
 - (Optional) Use the `-DapiPort=[apiPort]` argument to specify the port used by Ripple.
 - (Optional) Use the `-DuiPort=[uiPort]` argument to specify the port of Web console.
@@ -192,7 +191,7 @@ int i = 0;
 for (i = 0; i < SERVER_COUNT; i++) {
     int serverId = i + 1;
     String storageLocation = DATABASE_PATH + "/server-" + serverId + ".db";
-    RippleServer rippleServer = RippleServer.hashingBasedProtocol(serverId, storageLocation, new ModHashing());
+    RippleServer rippleServer = RippleServer.hashingBasedProtocol(serverId, storageLocation, "127.0.0.1", new ModHashing());
     
     rippleServer.start();
     serverList.add(rippleServer);
@@ -218,6 +217,7 @@ java -jar -Darg1=value1 -Darg2=value2 ripple-client.jar
 
 The arguments supported are:
 - (Required) Use the `-Dnodes=[nodes]` argument to specify the node list inside the server cluster. The address of a node is given by the format `id:address:port`, and addresses are split by commas.
+- (Required) Use the `-Daddress=[address]` argument to specify the local address to bind.
 - (Optional) Use the `-DapiPort=[apiPort]` argument to specify the port used by Ripple client.
 - (Optional) Use the `-DuiPort=[uiPort]` argument to specify the port of Web console.
 - (Optional) Use the `-DstorageLocation=[storageLocation]` argument to specify the location of persistent storage.
@@ -225,7 +225,7 @@ The arguments supported are:
 
 For example, to start a client connected to the 3-node server cluster and use the load balanced consistent hashing based node selector:
 ```shell
-java -jar -DapiPort=5001 -DuiPort=6001 -DstorageLocation=client-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -DnodeSelector=loadbalance ripple-client.jar
+java -jar -Daddress="127.0.0.1" -DapiPort=5001 -DuiPort=6001 -DstorageLocation=client-1.db -Dnodes="1:127.0.0.1:3001,2:127.0.0.1:3002,3:127.0.0.1:3003" -DnodeSelector=loadbalance ripple-client.jar
 ```
 
 A simple Web console is provided via `uiPort` and can be used for publishing/subscribing. Use `Ctrl+C` to stop the client.
@@ -249,7 +249,7 @@ nodeList.add(new NodeMetadata(1,"127.0.0.1",3001));
 nodeList.add(new NodeMetadata(2,"127.0.0.1",3002));
 nodeList.add(new NodeMetadata(3,"127.0.0.1",3003));
 String storageLocation = DATABASE_PATH + "/client.db";
-RippleClient rippleClient = new RippleClient(nodeList, new HashingBasedSelector(new ModHashing(6, 200)), storageLocation);
+RippleClient rippleClient = new RippleClient(nodeList, new HashingBasedSelector(new ModHashing(6, 200)), storageLocation, "127.0.0.1");
 rippleClient.start();
 ```
 3. Call the `subscribe()`, `unsubscribe()`, `get()`, `put()` or `delete()` for publishing and subscribing.
@@ -323,7 +323,7 @@ ExecutorService pool = Executors.newFixedThreadPool(clientClusterSize);
 for (i = 0; i < clientClusterSize; i++) {
     Files.createDirectories(Paths.get(DATABASE_PATH));
     String storageLocation = DATABASE_PATH + "/" + UUID.randomUUID().toString() + ".db";
-    RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB.subList(0, serverClusterSize), new HashingBasedSelector(new ModHashing(6, 200)), storageLocation);
+    RippleClient rippleClient = new RippleClient(CLUSTER_VM_LAB.subList(0, serverClusterSize), new HashingBasedSelector(new ModHashing(6, 200)), storageLocation, "127.0.0.1");
     pool.submit(new StartTask(rippleClient, i + 1));
     rippleClients.add(rippleClient);
 }

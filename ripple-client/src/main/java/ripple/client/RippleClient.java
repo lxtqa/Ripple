@@ -102,7 +102,7 @@ public class RippleClient {
     private StringTable stringTable;
     private MessageBasedResolver resolver;
 
-    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation, String language) {
+    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation, String address, String language) {
         this.setStorage(new SqliteStorage(storageLocation, 3));
         this.setRunning(false);
         this.setNodeList(nodeList);
@@ -115,6 +115,7 @@ public class RippleClient {
         this.setPendingMessages(new ConcurrentHashMap<>());
         this.setWorker(new Worker(this));
         this.setServerCpuUsage(new ConcurrentHashMap<>());
+        this.setAddress(address);
         this.setApiPort(0);
         this.setUiPort(0);
         if (language.equalsIgnoreCase("chinese")) {
@@ -125,12 +126,12 @@ public class RippleClient {
         this.setResolver(new LastWriteWinsResolver());
     }
 
-    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String storageLocation) {
-        this(nodeList, nodeSelector, storageLocation, "english");
+    public RippleClient(List<NodeMetadata> nodeList, NodeSelector nodeSelector, String address, String storageLocation) {
+        this(nodeList, nodeSelector, storageLocation, address, "english");
     }
 
-    public RippleClient(List<NodeMetadata> nodeList, String storageLocation) {
-        this(nodeList, new HashingBasedSelector(new ModHashing()), storageLocation);
+    public RippleClient(List<NodeMetadata> nodeList, String storageLocation, String address) {
+        this(nodeList, new HashingBasedSelector(new ModHashing()), storageLocation, address);
     }
 
     public Storage getStorage() {
@@ -536,7 +537,7 @@ public class RippleClient {
                     .childHandler(new ClientChannelInitializer(this));
             CountDownLatch latch = new CountDownLatch(1);
 
-            ChannelFuture future = serverBootstrap.bind(this.getApiPort()).addListener(new ChannelFutureListener() {
+            ChannelFuture future = serverBootstrap.bind(this.getAddress(), this.getApiPort()).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
                     LOGGER.info("[RippleClient] Started.");
@@ -558,7 +559,6 @@ public class RippleClient {
             this.getServer().setHandler(servletContextHandler);
             this.getServer().start();
 
-            this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setUiPort(serverConnector.getLocalPort());
 
             this.setWorkingThread(new Thread(this.getWorker()));

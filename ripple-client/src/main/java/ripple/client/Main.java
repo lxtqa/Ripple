@@ -63,9 +63,15 @@ public class Main {
             return;
         }
 
+        String address = System.getProperty("address");
+        if (address == null) {
+            LOGGER.info("[Main] Missing parameter: address (-Daddress).");
+            return;
+        }
+
         List<NodeMetadata> nodeList = new ArrayList<>();
-        String[] address = nodes.split(",");
-        for (String item : address) {
+        String[] nodeAddress = nodes.split(",");
+        for (String item : nodeAddress) {
             String[] result = item.split(":");
             NodeMetadata metadata = new NodeMetadata(Integer.parseInt(result[0]), result[1], Integer.parseInt(result[2]));
             nodeList.add(metadata);
@@ -85,7 +91,7 @@ public class Main {
                 LOGGER.info("[Main] Missing parameter: candidateCount for HASHING selector (-DcandidateCount). Using default: " + defaultCandidateCount);
                 candidateCount = defaultCandidateCount;
             }
-            client = new RippleClient(nodeList, new HashingBasedSelector(new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor))), storageLocation);
+            client = new RippleClient(nodeList, new HashingBasedSelector(new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor))), storageLocation, address);
         } else if (nodeSelector.equals("loadbalance")) {
             String divisor = System.getProperty("divisor");
             String candidateCount = System.getProperty("candidateCount");
@@ -113,7 +119,7 @@ public class Main {
             }
             LoadBalancedSelector selector = new LoadBalancedSelector(new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor))
                     , Double.parseDouble(backupRatio), Double.parseDouble(cpuThreshold));
-            client = new RippleClient(nodeList, selector, storageLocation);
+            client = new RippleClient(nodeList, selector, storageLocation, address);
             selector.setRippleClient(client);
         }
         client.setUiPort(Integer.parseInt(uiPort));

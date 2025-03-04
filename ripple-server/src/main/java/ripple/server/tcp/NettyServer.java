@@ -40,6 +40,7 @@ public class NettyServer {
     private Node node;
 
     private boolean running;
+    private String address;
     private int port;
     private Channel serverChannel;
     private List<Channel> connectedNodes;
@@ -61,6 +62,14 @@ public class NettyServer {
 
     private void setRunning(boolean running) {
         this.running = running;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    private void setAddress(String address) {
+        this.address = address;
     }
 
     public int getPort() {
@@ -103,8 +112,9 @@ public class NettyServer {
         this.workerGroup = workerGroup;
     }
 
-    public NettyServer(Node node, int port) {
+    public NettyServer(Node node, String address, int port) {
         this.setNode(node);
+        this.setAddress(address);
         this.setPort(port);
     }
 
@@ -126,7 +136,7 @@ public class NettyServer {
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ServerChannelInitializer(this));
 
-            ChannelFuture future = serverBootstrap.bind(this.getPort()).addListener(new ChannelFutureListener() {
+            ChannelFuture future = serverBootstrap.bind(this.getAddress(), this.getPort()).addListener(new ChannelFutureListener() {
                 @Override
                 public void operationComplete(ChannelFuture channelFuture) throws Exception {
                     LOGGER.info("[NettyServer] [Server-{}] start(): Completed.", getNode().getId());
