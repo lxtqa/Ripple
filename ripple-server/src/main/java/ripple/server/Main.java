@@ -62,6 +62,12 @@ public class Main {
             return;
         }
 
+        String address = System.getProperty("address");
+        if (address == null) {
+            LOGGER.info("[Main] Missing parameter: address (-Daddress).");
+            return;
+        }
+
         RippleServer server = null;
         if (protocol.equals("tree")) {
             String branch = System.getProperty("branch");
@@ -70,9 +76,9 @@ public class Main {
                 LOGGER.info("[Main] Missing parameter: branch for TREE protocol (-Dbranch). Using default: " + defaultBranch);
                 branch = defaultBranch;
             }
-            server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort), Integer.parseInt(branch));
+            server = RippleServer.treeProtocol(Integer.parseInt(id), storageLocation, address, Integer.parseInt(apiPort), Integer.parseInt(uiPort), Integer.parseInt(branch));
         } else if (protocol.equals("star")) {
-            server = RippleServer.starProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort), Integer.parseInt(uiPort));
+            server = RippleServer.starProtocol(Integer.parseInt(id), storageLocation, address, Integer.parseInt(apiPort), Integer.parseInt(uiPort));
         } else if (protocol.equals("hashing")) {
             String divisor = System.getProperty("divisor");
             String candidateCount = System.getProperty("candidateCount");
@@ -86,14 +92,14 @@ public class Main {
                 LOGGER.info("[Main] Missing parameter: candidateCount for HASHING protocol (-DcandidateCount). Using default: " + defaultCandidateCount);
                 candidateCount = defaultCandidateCount;
             }
-            server = RippleServer.hashingBasedProtocol(Integer.parseInt(id), storageLocation, Integer.parseInt(apiPort)
+            server = RippleServer.hashingBasedProtocol(Integer.parseInt(id), storageLocation, address, Integer.parseInt(apiPort)
                     , Integer.parseInt(uiPort), new ModHashing(Integer.parseInt(candidateCount), Integer.parseInt(divisor)));
         }
 
         if (server != null) {
             List<NodeMetadata> nodeList = new ArrayList<>();
-            String[] address = nodes.split(",");
-            for (String item : address) {
+            String[] nodeAddress = nodes.split(",");
+            for (String item : nodeAddress) {
                 String[] result = item.split(":");
                 NodeMetadata metadata = new NodeMetadata(Integer.parseInt(result[0]), result[1], Integer.parseInt(result[2]));
                 nodeList.add(metadata);

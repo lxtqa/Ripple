@@ -279,15 +279,15 @@ public class Node {
         this.resolver = resolver;
     }
 
-    public Node(int id, Overlay overlay, String storageLocation) {
-        this(id, overlay, storageLocation, 0, 0);
+    public Node(int id, Overlay overlay, String storageLocation, String address) {
+        this(id, overlay, storageLocation, address, 0, 0);
     }
 
-    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort) {
-        this(id, overlay, storageLocation, apiPort, uiPort, "english");
+    public Node(int id, Overlay overlay, String storageLocation, String address, int apiPort, int uiPort) {
+        this(id, overlay, storageLocation, address, apiPort, uiPort, "english");
     }
 
-    public Node(int id, Overlay overlay, String storageLocation, int apiPort, int uiPort, String language) {
+    public Node(int id, Overlay overlay, String storageLocation, String address, int apiPort, int uiPort, String language) {
         this.setExecutorService(Executors.newCachedThreadPool());
         this.setId(id);
         this.setOverlay(overlay);
@@ -298,6 +298,7 @@ public class Node {
 
         this.setNodeList(new ArrayList<>());
         this.setSubscription(new ConcurrentHashMap<>());
+        this.setAddress(address);
         this.setApiPort(apiPort);
         this.setUiPort(uiPort);
         this.setConnectedClients(new HashSet<>());
@@ -495,7 +496,7 @@ public class Node {
             return true;
         }
         try {
-            this.setApiServer(new NettyServer(this, this.getApiPort()));
+            this.setApiServer(new NettyServer(this, this.getAddress(), this.getApiPort()));
             this.getApiServer().start();
             this.setApiPort(this.getApiServer().getPort());
 
@@ -507,7 +508,6 @@ public class Node {
             this.registerHandlers(servletContextHandler);
             this.getUiServer().setHandler(servletContextHandler);
             this.getUiServer().start();
-            this.setAddress(InetAddress.getLocalHost().getHostAddress());
             this.setUiPort(serverConnector.getLocalPort());
             if (this.getExecutorService() == null || this.getExecutorService().isShutdown()) {
                 this.setExecutorService(Executors.newCachedThreadPool());
